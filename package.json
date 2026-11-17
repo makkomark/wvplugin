@@ -2,14 +2,18 @@
   "name": "wv-members",
   "version": "1.0.0",
   "private": true,
-  "description": "WitsValley Members — React apps (member dashboard + admin)",
+  "description": "WitsValley Members \u2014 React apps (member dashboard + admin)",
   "scripts": {
-    "build": "wp-scripts build member=./assets/src/member/index.tsx admin=./assets/src/admin/index.tsx --output-path=build",
-    "start": "wp-scripts start member=./assets/src/member/index.tsx admin=./assets/src/admin/index.tsx --output-path=build",
-    "typecheck": "tsc --noEmit",
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint:js": "wp-scripts lint-js assets/src",
     "test:e2e": "playwright test --trace off",
-    "plugin-zip": "bash bin/build-release.sh"
+    "plugin-zip": "bash bin/build-release.sh",
+    "build:member": "WVM_ENTRY=member wp-scripts build",
+    "build:admin": "WVM_ENTRY=admin wp-scripts build",
+    "typecheck:member": "tsc --noEmit -p tsconfig.member.json",
+    "typecheck:admin": "tsc --noEmit -p tsconfig.admin.json"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
