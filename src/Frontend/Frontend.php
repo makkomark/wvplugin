@@ -38,6 +38,7 @@ final class Frontend {
 		add_action( 'wp_login', array( $this, 'onLogin' ), 10, 2 );
 		add_filter( 'show_admin_bar', array( $this, 'adminBar' ) );
 		add_filter( 'display_post_states', array( $this, 'postStates' ), 10, 2 );
+		add_filter( 'body_class', array( $this, 'bodyClass' ) );
 	}
 
 	public function rewrites(): void {
@@ -185,6 +186,25 @@ final class Frontend {
 				$this->enqueueApp();
 			}
 		}
+	}
+
+	/**
+	 * Mark plugin app pages so the theme's own page title can be hidden (the apps render their own headers).
+	 *
+	 * @param list<string> $classes
+	 * @return list<string>
+	 */
+	public function bodyClass( array $classes ): array {
+		$post = is_singular() ? get_post() : null;
+		if ( $post ) {
+			foreach ( array( 'wvm_dashboard' => 'dashboard', 'wvm_pricing' => 'pricing', 'wvm_enterprise_form' => 'enterprise' ) as $code => $view ) {
+				if ( has_shortcode( (string) $post->post_content, $code ) ) {
+					$classes[] = 'wvm-app-page';
+					$classes[] = 'wvm-app-page--' . $view;
+				}
+			}
+		}
+		return $classes;
 	}
 
 	/* ------------------------------------------------------------------

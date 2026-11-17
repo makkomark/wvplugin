@@ -1,0 +1,262 @@
+/*
+ * Scoped base + reset for the member app. Everything lives under .wvm-root so the block theme
+ * (Twenty Twenty-Five etc.) can't leak typography, link or form styles in — and ours can't leak out.
+ */
+
+.wvm-root {
+	font-family: var(--wvm-font);
+	font-size: var(--wvm-text-md);
+	line-height: 1.5;
+	color: var(--wvm-text);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+	letter-spacing: normal;
+	text-align: left;
+	box-sizing: border-box;
+}
+
+/* Break out of the theme's narrow content column. */
+.wvm-root.wvm-root--dashboard,
+.wvm-root.wvm-root--pricing,
+.wvm-root.wvm-root--enterprise {
+	width: 100%;
+	max-width: 1180px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.wvm-root *,
+.wvm-root *::before,
+.wvm-root *::after {
+	box-sizing: border-box;
+}
+
+.wvm-root :is(h1, h2, h3, h4, h5, h6, p, ul, ol, li, dl, dt, dd, figure, blockquote) {
+	margin: 0;
+	padding: 0;
+	font-family: inherit;
+	font-style: normal;
+	letter-spacing: inherit;
+	text-transform: none;
+	color: inherit;
+}
+
+.wvm-root :is(h1, h2, h3, h4, h5, h6) {
+	font-weight: 700;
+	line-height: 1.2;
+	font-size: inherit;
+}
+
+.wvm-root :is(ul, ol) {
+	list-style: none;
+}
+
+.wvm-root a {
+	color: var(--wvm-primary);
+	text-decoration: none;
+	transition: color 0.15s var(--wvm-ease), background-color 0.15s var(--wvm-ease), border-color 0.15s var(--wvm-ease), box-shadow 0.15s var(--wvm-ease), transform 0.15s var(--wvm-ease);
+}
+
+.wvm-root :is(button, input, select, textarea) {
+	font: inherit;
+	color: inherit;
+	letter-spacing: inherit;
+	margin: 0;
+	text-transform: none;
+}
+
+.wvm-root button {
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	text-align: inherit;
+	border-radius: 0;
+	box-shadow: none;
+	min-height: 0;
+	line-height: inherit;
+	width: auto;
+}
+
+.wvm-root button:disabled {
+	cursor: not-allowed;
+}
+
+.wvm-root img,
+.wvm-root svg {
+	display: block;
+	max-width: 100%;
+}
+
+.wvm-root svg.wvm-icon {
+	flex: none;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.wvm-root :focus {
+	outline: none;
+}
+
+.wvm-root :focus-visible {
+	outline: 2px solid var(--wvm-primary);
+	outline-offset: 2px;
+	box-shadow: var(--wvm-ring);
+	border-radius: 10px;
+}
+
+.wvm-root strong {
+	font-weight: 700;
+	color: var(--wvm-ink);
+}
+
+/* Typography */
+.wvm-root .wvm-display {
+	font-size: clamp(30px, 6.4vw, 48px);
+	line-height: 1.08;
+	letter-spacing: -0.035em;
+	font-weight: 800;
+	color: var(--wvm-ink);
+	text-wrap: balance;
+}
+
+.wvm-root .wvm-h1 {
+	font-size: clamp(24px, 4.8vw, 30px);
+	line-height: 1.15;
+	letter-spacing: -0.025em;
+	font-weight: 800;
+	color: var(--wvm-ink);
+}
+
+.wvm-root .wvm-h2 {
+	font-size: var(--wvm-text-xl);
+	line-height: 1.25;
+	letter-spacing: -0.02em;
+	font-weight: 750;
+	color: var(--wvm-ink);
+}
+
+.wvm-root .wvm-h3 {
+	font-size: var(--wvm-text-lg);
+	line-height: 1.3;
+	letter-spacing: -0.012em;
+	font-weight: 700;
+	color: var(--wvm-ink);
+}
+
+.wvm-root .wvm-lead {
+	font-size: clamp(16px, 2.4vw, 18px);
+	line-height: 1.6;
+	color: var(--wvm-muted);
+	text-wrap: pretty;
+}
+
+.wvm-root .wvm-eyebrow {
+	font-size: var(--wvm-text-xs);
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--wvm-primary);
+	margin-bottom: 4px;
+}
+
+.wvm-root .wvm-muted { color: var(--wvm-muted); }
+.wvm-root .wvm-subtle { color: var(--wvm-subtle); }
+.wvm-root .wvm-small { font-size: var(--wvm-text-sm); }
+.wvm-root .wvm-strong { font-weight: 650; color: var(--wvm-ink); }
+.wvm-root .wvm-center { text-align: center; }
+.wvm-root .wvm-right { text-align: right; justify-content: flex-end; }
+.wvm-root .wvm-num,
+.wvm-root .wvm-money,
+.wvm-root .wvm-stat { font-variant-numeric: tabular-nums; }
+.wvm-root .wvm-mono { font-family: var(--wvm-font-mono); letter-spacing: 0.02em; }
+.wvm-root .wvm-break { overflow-wrap: anywhere; min-width: 0; }
+.wvm-root .wvm-rot-180 { transform: rotate(180deg); }
+
+.wvm-root .wvm-link {
+	color: var(--wvm-primary);
+	font-weight: 600;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--wvm-primary) 35%, transparent);
+	text-underline-offset: 3px;
+	text-decoration-thickness: 1.5px;
+	display: inline;
+}
+
+.wvm-root .wvm-link:hover {
+	color: var(--wvm-primary-700);
+	text-decoration-color: currentColor;
+}
+
+.wvm-root .wvm-sr {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Layout helpers */
+.wvm-root .wvm-stack { display: flex; flex-direction: column; gap: var(--wvm-space-4); }
+.wvm-root .wvm-stack--lg { gap: var(--wvm-space-5); }
+.wvm-root .wvm-row { display: flex; align-items: center; gap: var(--wvm-space-3); flex-wrap: wrap; }
+.wvm-root .wvm-row--between { justify-content: space-between; }
+.wvm-root .wvm-row--center { justify-content: center; }
+.wvm-root .wvm-row--tight { gap: var(--wvm-space-2); }
+
+.wvm-root .wvm-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--wvm-space-4);
+}
+
+@media (min-width: 900px) {
+	.wvm-root .wvm-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--wvm-space-5);
+	}
+	.wvm-root .wvm-span-2 { grid-column: 1 / -1; }
+}
+
+.wvm-root .wvm-mt-n2 { margin-top: -8px; }
+.wvm-root .wvm-mt-2 { margin-top: var(--wvm-space-2); }
+.wvm-root .wvm-mt-3 { margin-top: var(--wvm-space-3); }
+.wvm-root .wvm-mt-4 { margin-top: var(--wvm-space-4); }
+.wvm-root .wvm-mt-6 { margin-top: var(--wvm-space-6); }
+.wvm-root .wvm-mb-4 { margin-bottom: var(--wvm-space-4); }
+.wvm-root .wvm-mb-6 { margin-bottom: var(--wvm-space-6); }
+.wvm-root .wvm-pad { padding: var(--wvm-space-5); }
+.wvm-root .wvm-pad--b0 { padding-bottom: 0; }
+
+.wvm-root .wvm-prose p + p { margin-top: 10px; }
+.wvm-root .wvm-prose { color: var(--wvm-text); line-height: 1.6; }
+
+/* Scroll lock when a modal is open */
+html.wvm-scroll-lock,
+html.wvm-scroll-lock body {
+	overflow: hidden !important;
+}
+
+/* PHP-rendered boot dots shown until the app mounts (React replaces them). */
+.wvm-root .wvm-boot { display: flex; justify-content: center; gap: 8px; padding: 64px 0; }
+.wvm-root .wvm-boot__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--wvm-primary); opacity: 0.25; animation: wvm-boot 1s var(--wvm-ease) infinite; }
+.wvm-root .wvm-boot__dot:nth-child(2) { animation-delay: 0.15s; }
+.wvm-root .wvm-boot__dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes wvm-boot { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-6px); } }
+
+@media (prefers-reduced-motion: reduce) {
+	.wvm-root *,
+	.wvm-root *::before,
+	.wvm-root *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

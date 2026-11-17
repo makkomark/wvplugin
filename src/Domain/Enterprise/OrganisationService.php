@@ -298,6 +298,11 @@ final class OrganisationService {
 		$this->audit->log( 'organisation.invite_withdrawn', 'organisation', $orgId, array( 'email' => $seat['email'] ), null );
 	}
 
+	/** End of a contract day in the site's timezone, as UTC (so the term never shows as the next day). */
+	public static function endOfDayUtc( string $date ): \DateTimeImmutable {
+		return ( new \DateTimeImmutable( $date . ' 23:59:59', wp_timezone() ) )->setTimezone( new \DateTimeZone( 'UTC' ) );
+	}
+
 	public static function acceptUrl( string $token ): string {
 		return home_url( '/enterprise/accept/' . $token . '/' );
 	}
@@ -340,7 +345,7 @@ final class OrganisationService {
 			throw DomainError::conflict( 'You already hold a seat in this programme.' );
 		}
 		$plan = $this->enterprisePlan();
-		$end  = $org['term_end'] ? new \DateTimeImmutable( $org['term_end'] . ' 23:59:59', new \DateTimeZone( 'UTC' ) ) : null;
+		$end  = $org['term_end'] ? self::endOfDayUtc( (string) $org['term_end'] ) : null;
 		$sub  = wvm( SubscriptionService::class )->start( (int) $member['id'], (int) $plan['id'], null, null, 'Joined organisation ' . $org['name'], (int) $org['id'], $end );
 		$this->seats->update(
 			(int) $seat['id'],
@@ -620,7 +625,7 @@ final class OrganisationService {
 				'status'          => array( 'active', 'past_due', 'suspended' ),
 			)
 		) as $sub ) {
-			$this->subs->update( (int) $sub['id'], array( 'current_period_end' => $org['term_end'] . ' 23:59:59' ) );
+			$this->subs->update( (int) $sub['id'], array( 'current_period_end' => Clock::mysql( self::endOfDayUtc( (string) $org['term_end'] ) ) ) );
 		}
 	}
 
