@@ -52,6 +52,15 @@ final class EnterpriseController extends Controller {
 			},
 			$cap
 		);
+		$this->route(
+			'DELETE',
+			'/organisations/(?P<id>\d+)/invites/(?P<inviteId>\d+)',
+			function ( $r ) {
+				$this->orgs->withdrawInvite( $this->id( $r ), $this->id( $r, 'inviteId' ) );
+				return $this->orgs->seatList( $this->id( $r ) );
+			},
+			$cap
+		);
 		$this->route( 'PUT', '/organisations/(?P<id>\d+)/content', fn( $r ) => $this->orgs->assignContent( $this->id( $r ), array_map( 'intval', (array) ( $this->body( $r )['post_ids'] ?? array() ) ) ), $cap );
 		$this->route(
 			'POST',

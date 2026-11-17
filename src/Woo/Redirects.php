@@ -107,7 +107,14 @@ final class Redirects {
 
 	/** @param mixed $user */
 	public function wpLoginRedirect( string $redirect, string $requested, $user ): string {
-		if ( ! $user instanceof \WP_User || user_can( $user, 'manage_options' ) || user_can( $user, 'wvm_access' ) || user_can( $user, 'edit_posts' ) ) {
+		if ( ! $user instanceof \WP_User || user_can( $user, 'manage_options' ) ) {
+			return $redirect;
+		}
+		if ( user_can( $user, 'wvm_access' ) ) {
+			// Staff land on the WitsValley admin unless they asked for a specific page.
+			return ( ! $requested || admin_url() === $requested || str_ends_with( $requested, '/wp-admin/' ) || str_contains( $requested, 'profile.php' ) ) ? admin_url( 'admin.php?page=wvm' ) : $redirect;
+		}
+		if ( user_can( $user, 'edit_posts' ) ) {
 			return $redirect;
 		}
 		if ( ! $requested || str_contains( $requested, 'wp-admin' ) || str_contains( $requested, 'my-account' ) ) {

@@ -220,7 +220,7 @@ function SeatsPanel( { org, onChanged }: { org: Organisation; onChanged: () => v
 						},
 						{ key: 'role', header: 'Role', render: ( s ) => <Chip tone={ s.role === 'admin' ? 'primary' : 'neutral' }>{ s.role === 'admin' ? 'Org admin' : 'Member' }</Chip> },
 						{ key: 'status', header: 'Status', render: ( s ) => <StatusChip status={ s.status } /> },
-						{ key: 'when', header: 'Since', render: ( s ) => <Muted>{ relativeTime( s.joined_at || s.invited_at ) }</Muted> },
+						{ key: 'when', header: 'Since', render: ( s ) => <span className="wvm-a-nowrap wvm-a-muted">{ relativeTime( s.joined_at || s.invited_at ) }</span> },
 						{
 							key: 'act',
 							header: '',
@@ -309,9 +309,12 @@ function SeatsPanel( { org, onChanged }: { org: Organisation; onChanged: () => v
 					if ( ! revoke ) {
 						return;
 					}
-					// Joined seats are addressed by member id; pending invites by seat id.
-					const target = revoke.member_id || revoke.id;
-					await api.del( `organisations/${ org.id }/seats/${ target }${ reason ? `?reason=${ encodeURIComponent( reason ) }` : '' }` );
+					// Joined seats are revoked by member id; pending invites are withdrawn by seat id.
+					if ( revoke.member_id ) {
+						await api.del( `organisations/${ org.id }/seats/${ revoke.member_id }${ reason ? `?reason=${ encodeURIComponent( reason ) }` : '' }` );
+					} else {
+						await api.del( `organisations/${ org.id }/invites/${ revoke.id }` );
+					}
 					toast.success( 'Seat revoked' );
 					setRevoke( null );
 					onChanged();
@@ -529,7 +532,7 @@ function InvoiceModal( { open, org, onClose, onDone }: { open: boolean; org: Org
 			open={ open }
 			title="Invoice order"
 			submitLabel={ result ? 'Done' : 'Create invoice order' }
-			canSubmit={ !! result || ( !! amount && amount > 0 ) }
+			canSubmit={ !! result || ( !! org.contact_member_id && !! amount && amount > 0 ) }
 			description="Creates a WooCommerce order and emails a pay link to the organisation contact."
 			onClose={ onClose }
 			onSubmit={ async () => {

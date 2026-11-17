@@ -657,6 +657,12 @@ final class OrderService {
 			}
 		}
 		$payment_gateway = $row['pay_gateway'] ?? null;
+		$provider_ref    = $row['pay_ref'] ?? null;
+		if ( null === $provider_ref && in_array( $row['status'], array( 'paid', 'refunded', 'needs_review' ), true ) ) {
+			$latest          = $this->payments->first( array( 'order_id' => (int) $row['id'] ) );
+			$provider_ref    = $latest ? (string) $latest['provider_ref'] : null;
+			$payment_gateway = $payment_gateway ?? ( $latest ? (string) $latest['gateway'] : null );
+		}
 		if ( null === $payment_gateway && $row['woo_order_id'] && function_exists( 'wc_get_order' ) ) {
 			$wc              = wc_get_order( (int) $row['woo_order_id'] );
 			$payment_gateway = $wc ? ( $wc->get_payment_method() ?: null ) : null;
@@ -686,7 +692,7 @@ final class OrderService {
 			'status'          => (string) $row['status'],
 			'description'     => (string) ( $row['description'] ?? '' ),
 			'gateway'         => $payment_gateway,
-			'provider_ref'    => $row['pay_ref'] ?? null,
+			'provider_ref'    => $provider_ref,
 			'period_start'    => Clock::iso( $row['period_start'] ),
 			'period_end'      => Clock::iso( $row['period_end'] ),
 			'receipt_number'  => $row['receipt_number'] ?? null,

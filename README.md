@@ -44,7 +44,7 @@ npm run start          # watch mode
 npm run typecheck
 vendor/bin/phpcs       # WordPress-Extra + WordPress-Docs
 WP_CORE_DIR=/path/to/wordpress vendor/bin/phpunit   # needs a WP install with WooCommerce in wp-content/plugins and a throwaway DB (see tests/wp-tests-config.php)
-npx playwright test --trace off                      # E2E join flow against WVM_BASE_URL (sandbox mode)
+npx playwright test --trace off                      # E2E join flow against WVM_BASE_URL (sandbox mode). Each run creates members; on staging raise the sign-up limit with `add_filter( 'wvm_rate_limit', fn( $max, $bucket ) => 'signup' === $bucket ? 500 : $max, 10, 2 );`
 wp eval-file bin/seed-demo.php                       # demo members in every lifecycle state (staging only)
 ```
 

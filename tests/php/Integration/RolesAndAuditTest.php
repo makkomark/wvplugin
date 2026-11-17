@@ -23,6 +23,17 @@ final class RolesAndAuditTest extends TestCase {
 		$this->assertSame( 200, $this->call( 'GET', '/orders' )->get_status(), 'Finance can see payments.' );
 	}
 
+	public function test_staff_roles_reach_wp_admin_and_can_read_plans(): void {
+		foreach ( array( 'wvm_finance', 'wvm_support', 'wvm_content' ) as $role ) {
+			wp_set_current_user( $this->staff( $role ) );
+			$this->assertFalse( (bool) apply_filters( 'woocommerce_prevent_admin_access', true ), "{$role} must not be locked out of wp-admin by WooCommerce." );
+			$this->assertSame( 200, $this->call( 'GET', '/plans' )->get_status(), "{$role} can list plans for pickers." );
+		}
+		wp_set_current_user( $this->member()['user_id'] );
+		$this->assertTrue( (bool) apply_filters( 'woocommerce_prevent_admin_access', true ), 'Members stay out of wp-admin.' );
+		$this->assertSame( 403, $this->call( 'GET', '/plans' )->get_status() );
+	}
+
 	public function test_support_cannot_refund(): void {
 		$p = $this->paidMember( 'basic' );
 		wp_set_current_user( $this->staff( 'wvm_support' ) );

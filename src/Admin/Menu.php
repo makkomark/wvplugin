@@ -35,6 +35,9 @@ final class Menu {
 		add_action( 'admin_enqueue_scripts', array( $this, 'assets' ) );
 		add_filter( 'admin_body_class', array( $this, 'bodyClass' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( WVM_FILE ), array( $this, 'actionLinks' ) );
+		// WooCommerce bars users without edit_posts from wp-admin; WitsValley staff roles (Finance, Support) need it.
+		add_filter( 'woocommerce_prevent_admin_access', static fn( $prevent ) => current_user_can( 'wvm_access' ) ? false : $prevent );
+		add_filter( 'woocommerce_disable_admin_bar', static fn( $disable ) => current_user_can( 'wvm_access' ) ? false : $disable );
 	}
 
 	public function menu(): void {

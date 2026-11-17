@@ -11,8 +11,10 @@ final class PlansController extends Controller {
 	public function __construct( private PlanService $plans ) {}
 
 	public function routes(): void {
-		$this->route( 'GET', '/plans', fn( $r ) => $this->plans->list( ! empty( $r['include_archived'] ) ), 'wvm_manage_plans' );
-		$this->route( 'GET', '/plans/(?P<id>\d+)', fn( $r ) => $this->plans->get( $this->id( $r ) ), 'wvm_manage_plans' );
+		// Reading plans is needed by every staff picker (manual payment, change plan, grant, filters).
+		$read = array( 'any' => array( 'wvm_manage_plans', 'wvm_view_members', 'wvm_view_payments', 'wvm_manage_workshops', 'wvm_manage_enterprise' ) );
+		$this->route( 'GET', '/plans', fn( $r ) => $this->plans->list( ! empty( $r['include_archived'] ) ), $read );
+		$this->route( 'GET', '/plans/(?P<id>\d+)', fn( $r ) => $this->plans->get( $this->id( $r ) ), $read );
 		$this->route( 'POST', '/plans', fn( $r ) => $this->ok( $this->plans->create( $this->body( $r ) ), null, 201 ), Capabilities::PLANS_FULL );
 		$this->route( 'PATCH', '/plans/(?P<id>\d+)', fn( $r ) => $this->plans->update( $this->id( $r ), $this->body( $r ), ! current_user_can( Capabilities::PLANS_FULL ) ), 'wvm_manage_plans' );
 		$this->route( 'DELETE', '/plans/(?P<id>\d+)', fn( $r ) => $this->plans->archive( $this->id( $r ) ), Capabilities::PLANS_FULL );

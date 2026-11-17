@@ -155,6 +155,11 @@ abstract class Controller {
 
 	/** Simple per-IP rate limit. */
 	protected function rateLimit( string $bucket, int $max, int $window = HOUR_IN_SECONDS ): void {
+		/** Filter: raise or disable (0) a rate limit, e.g. for E2E runs on staging. */
+		$max = (int) apply_filters( 'wvm_rate_limit', $max, $bucket, self::ip() );
+		if ( $max <= 0 ) {
+			return;
+		}
 		$key   = 'wvm_rl_' . $bucket . '_' . md5( self::ip() );
 		$count = (int) get_transient( $key );
 		if ( $count >= $max ) {

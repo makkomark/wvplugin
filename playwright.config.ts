@@ -8,6 +8,8 @@ export default defineConfig( {
 	testDir: './tests/e2e',
 	timeout: 120_000,
 	retries: process.env.CI ? 1 : 0,
+	// One worker: the flow is stateful against a single site (and PHP's dev server is single-threaded).
+	workers: 1,
 	reporter: [ [ 'list' ] ],
 	use: {
 		baseURL: process.env.WVM_BASE_URL || 'http://localhost:8080',

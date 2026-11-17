@@ -240,7 +240,7 @@ function PlanCard( p: { plan: Plan; draggable?: boolean; dragging?: boolean; ove
 			</ul>
 			<footer>
 				<span>
-					<Icon name="users" size={ 14 } /> <strong>{ plan.member_count ?? 0 }</strong> members
+					<Icon name="users" size={ 14 } /> <strong>{ plan.member_count ?? 0 }</strong> member{ plan.member_count === 1 ? '' : 's' }
 				</span>
 				<span>
 					<Icon name="lock" size={ 14 } /> L{ plan.level } · { levelLabel( plan.level ) }

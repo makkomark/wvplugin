@@ -169,7 +169,13 @@ final class InsightsService {
 			'total' => $total,
 		);
 		if ( $byMethod ) {
-			$out['by_method'] = $wpdb->get_results( $wpdb->prepare( "SELECT py.gateway, COUNT(*) paid FROM {$o} o INNER JOIN {$py} py ON py.order_id = o.id WHERE o.type IN ('renewal','reactivation') AND o.status = 'paid' AND o.created_at BETWEEN %s AND %s GROUP BY py.gateway", $start, $end ), ARRAY_A ); // phpcs:ignore WordPress.DB
+			$out['by_method'] = array_map(
+				static fn( $r ) => array(
+					'gateway' => (string) $r['gateway'],
+					'paid'    => (int) $r['paid'],
+				),
+				(array) $wpdb->get_results( $wpdb->prepare( "SELECT py.gateway, COUNT(*) paid FROM {$o} o INNER JOIN {$py} py ON py.order_id = o.id WHERE o.type IN ('renewal','reactivation') AND o.status = 'paid' AND o.created_at BETWEEN %s AND %s GROUP BY py.gateway", $start, $end ), ARRAY_A ) // phpcs:ignore WordPress.DB
+			);
 		}
 		return $out;
 	}

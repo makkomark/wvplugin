@@ -29,9 +29,12 @@ export function compact( n: number ): string {
 	}
 }
 
-function niceScale( max: number, ticks = 4 ): { top: number; step: number } {
+function niceScale( max: number, ticks = 4, integer = false ): { top: number; step: number } {
 	if ( max <= 0 ) {
 		return { top: ticks, step: 1 };
+	}
+	if ( integer && max <= ticks ) {
+		return { top: Math.max( 1, Math.ceil( max ) ), step: 1 };
 	}
 	const raw = max / ticks;
 	const mag = Math.pow( 10, Math.floor( Math.log10( raw ) ) );
@@ -111,7 +114,7 @@ export function BarChart( { data, series, height = 220, format = compact }: { da
 	const plotW = width - left - 8;
 	const plotH = height - bottom - top;
 	const max = Math.max( 0, ...data.flatMap( ( d ) => d.values ) );
-	const { top: yTop, step } = niceScale( max );
+	const { top: yTop, step } = niceScale( max, 4, data.every( ( d ) => d.values.every( ( v ) => Number.isInteger( v ) ) ) );
 	const ticks: number[] = [];
 	for ( let v = 0; v <= yTop + 1e-9; v += step ) {
 		ticks.push( v );
@@ -405,7 +408,7 @@ export function Gauge( { value, label, color = SERIES[ 0 ] }: { value: number; l
 		<div className="wvm-a-gauge" style={ { width: size, height: size } }>
 			<svg width={ size } height={ size }>
 				<circle cx={ size / 2 } cy={ size / 2 } r={ r } fill="none" stroke="var(--wvm-neutral-bg)" strokeWidth="12" />
-				<circle cx={ size / 2 } cy={ size / 2 } r={ r } fill="none" stroke={ color } strokeWidth="12" strokeLinecap="round" strokeDasharray={ `${ ( anim / 100 ) * c } ${ c }` } transform={ `rotate(-90 ${ size / 2 } ${ size / 2 })` } style={ { transition: 'stroke-dasharray .6s var(--wvm-ease)' } } />
+				<circle cx={ size / 2 } cy={ size / 2 } r={ r } fill="none" stroke={ color } strokeWidth="12" strokeLinecap="round" opacity={ anim > 0 ? 1 : 0 } strokeDasharray={ `${ ( anim / 100 ) * c } ${ c }` } transform={ `rotate(-90 ${ size / 2 } ${ size / 2 })` } style={ { transition: 'stroke-dasharray .6s var(--wvm-ease)' } } />
 			</svg>
 			<div className="wvm-a-gauge__center">
 				<strong>{ Math.round( pct * 10 ) / 10 }%</strong>

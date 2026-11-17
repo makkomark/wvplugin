@@ -27,7 +27,7 @@ const ENTITY_ICON: Record< string, IconName > = {
 	term: 'tag',
 };
 
-export function entityLink( row: Pick< AuditRow, 'entity_type' | 'entity_id' | 'before' | 'after' > ): { to: string; label: string } | null {
+export function entityLink( row: Pick< AuditRow, 'entity_type' | 'entity_id' | 'before' | 'after' > & { reason?: string | null } ): { to: string; label: string } | null {
 	const id = row.entity_id;
 	const any = ( row.after || row.before || {} ) as Record< string, unknown >;
 	switch ( row.entity_type ) {
@@ -50,7 +50,7 @@ export function entityLink( row: Pick< AuditRow, 'entity_type' | 'entity_id' | '
 		case 'email_template':
 			return any.key ? { to: `/settings/emails?template=${ any.key }`, label: String( any.name || any.key ) } : null;
 		case 'settings':
-			return { to: '/settings/general', label: 'Settings' };
+			return row.reason && /^(general|payments|lifecycle|emails|kit|tools)$/.test( row.reason ) ? { to: `/settings/${ row.reason }`, label: `Settings › ${ row.reason }` } : row.reason === 'access' ? { to: '/access?tab=settings', label: 'Settings › access' } : { to: '/settings/general', label: 'Settings' };
 		default:
 			return id ? { to: `/audit?entity_type=${ row.entity_type }&entity_id=${ id }`, label: `${ row.entity_type } #${ id }` } : null;
 	}

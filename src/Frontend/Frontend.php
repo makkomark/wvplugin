@@ -197,7 +197,11 @@ final class Frontend {
 	public function bodyClass( array $classes ): array {
 		$post = is_singular() ? get_post() : null;
 		if ( $post ) {
-			foreach ( array( 'wvm_dashboard' => 'dashboard', 'wvm_pricing' => 'pricing', 'wvm_enterprise_form' => 'enterprise' ) as $code => $view ) {
+			foreach ( array(
+				'wvm_dashboard'       => 'dashboard',
+				'wvm_pricing'         => 'pricing',
+				'wvm_enterprise_form' => 'enterprise',
+			) as $code => $view ) {
 				if ( has_shortcode( (string) $post->post_content, $code ) ) {
 					$classes[] = 'wvm-app-page';
 					$classes[] = 'wvm-app-page--' . $view;

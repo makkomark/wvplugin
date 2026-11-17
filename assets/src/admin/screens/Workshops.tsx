@@ -127,9 +127,9 @@ export function Workshops( { route }: { route: Route } ) {
 							<button type="button" aria-label="Next month" onClick={ () => setMonth( new Date( month.getFullYear(), month.getMonth() + 1, 1 ) ) }>
 								<Icon name="chevronRight" size={ 16 } />
 							</button>
-							<Btn size="compact" variant="ghost" onClick={ () => setMonth( new Date( new Date().getFullYear(), new Date().getMonth(), 1 ) ) }>
+							<button type="button" className="wvm-a-monthnav__today" onClick={ () => setMonth( new Date( new Date().getFullYear(), new Date().getMonth(), 1 ) ) }>
 								Today
-							</Btn>
+							</button>
 						</div>
 					) }
 					<FilterSelect label="Status" value={ status } onChange={ setStatus } options={ STATUSES.map( ( s ) => ( { value: s, label: STATUS_LABELS[ s ] || s } ) ) } />
