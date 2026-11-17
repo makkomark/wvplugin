@@ -171,6 +171,9 @@ final class ToolsService {
 		$sandbox = (bool) $this->settings->get( 'payments', 'sandbox_mode', false );
 		$add( 'sandbox', 'Payment mode', $sandbox ? 'warning' : 'ok', $sandbox ? 'Sandbox mode is ON — real payments are not processed.' : 'Live', admin_url( 'admin.php?page=wvm-settings#/settings/payments' ) );
 
+		$coming = 'yes' === get_option( 'woocommerce_coming_soon' );
+		$add( 'coming_soon', 'WooCommerce visibility', $coming ? 'warning' : 'ok', $coming ? 'Store is in "Coming soon" mode. Membership checkout still works, but switch it to Live before launch.' : 'Live', admin_url( 'admin.php?page=wc-settings&tab=site-visibility' ) );
+
 		$review = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Db::table( 'orders' ) . " WHERE status = 'needs_review'" ); // phpcs:ignore WordPress.DB
 		$add( 'review_queue', 'Payments needing review', $review > 0 ? 'warning' : 'ok', $review . ' in queue', admin_url( 'admin.php?page=wvm-payments#/payments/review' ) );
 

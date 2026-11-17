@@ -23,6 +23,8 @@ final class CheckoutCustomiser {
 		add_filter( 'woocommerce_pay_order_button_text', array( $this, 'buttonText' ) );
 		add_filter( 'woocommerce_get_terms_and_conditions_checkbox_text', array( $this, 'termsText' ) );
 		add_filter( 'woocommerce_checkout_show_terms', array( $this, 'showTerms' ) );
+		// WooCommerce "Coming soon" mode must never block a member paying for their membership.
+		add_filter( 'woocommerce_coming_soon_exclude', array( $this, 'excludeFromComingSoon' ) );
 	}
 
 	public function isPluginOrderPay(): bool {
@@ -77,6 +79,14 @@ final class CheckoutCustomiser {
 				)
 			);
 		}
+	}
+
+	public function excludeFromComingSoon( bool $exclude ): bool {
+		if ( $exclude ) {
+			return true;
+		}
+		$path = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_parse_url( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), PHP_URL_PATH ) : '';
+		return $this->isPluginOrderPay() || is_order_received_page() || 1 === preg_match( '#/(pay|enterprise/accept)/[a-f0-9]+/?$#', $path );
 	}
 
 	public function buttonText( string $text ): string {

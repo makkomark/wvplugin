@@ -168,6 +168,26 @@ final class MeController extends Controller {
 		);
 		$this->route(
 			'DELETE',
+			'/me/organisation/invites/(?P<id>\d+)',
+			function ( $r ) {
+				$org = $this->orgAdmin();
+				wvm( OrganisationService::class )->withdrawInvite( $org, $this->id( $r ) );
+				return wvm( OrganisationService::class )->seatList( $org );
+			},
+			$m
+		);
+		$this->route(
+			'POST',
+			'/me/organisation/invites/(?P<id>\d+)/resend',
+			function ( $r ) {
+				$org = $this->orgAdmin();
+				wvm( OrganisationService::class )->resendInvite( $org, $this->id( $r ) );
+				return wvm( OrganisationService::class )->seatList( $org );
+			},
+			$m
+		);
+		$this->route(
+			'DELETE',
 			'/me/organisation/seats/(?P<id>\d+)',
 			function ( $r ) {
 				$org = $this->orgAdmin();
@@ -196,27 +216,35 @@ final class MeController extends Controller {
 		$org      = wvm( OrganisationService::class )->forMember( $id );
 		$currency = $current && ! $current['plan']['is_free'] ? (string) $current['currency'] : $this->currencyFor( (string) $member['country'] );
 		$state    = $this->state( $current );
+		$org_sub  = null;
+		foreach ( $this->subRepo->live( $id ) as $live ) {
+			if ( $live['organisation_id'] ) {
+				$org_sub = $this->subs->present( $live );
+				break;
+			}
+		}
 		return array(
-			'member'          => $member,
-			'subscription'    => $current,
-			'state'           => $state,
-			'entitlements'    => $ent,
-			'level_label'     => LevelResolver::label( (int) $ent['level'] ),
-			'pending_order'   => $pending ? $this->orders->present( $pending ) : null,
-			'organisation'    => $org ? array(
+			'member'           => $member,
+			'subscription'     => $current,
+			'org_subscription' => $org_sub,
+			'state'            => $state,
+			'entitlements'     => $ent,
+			'level_label'      => LevelResolver::label( (int) $ent['level'] ),
+			'pending_order'    => $pending ? $this->orders->present( $pending ) : null,
+			'organisation'     => $org ? array(
 				'id'              => $org['id'],
 				'name'            => $org['name'],
 				'role'            => $org['role'],
 				'programme_title' => $org['programme_title'],
 				'term_end'        => $org['term_end'],
 			) : null,
-			'next_workshop'   => wvm( WorkshopService::class )->nextFor( $id ),
-			'unread'          => wvm( InAppNotifier::class )->unreadCount( $id ),
-			'plans'           => $this->plans->getPublic( $currency ),
-			'currency'        => $currency,
-			'payment_methods' => wvm( PaymentMethodService::class )->forMember( $id ),
-			'impersonating'   => (bool) wvm( \WitsValley\Members\Frontend\Frontend::class )->impersonator(),
-			'nonce'           => wp_create_nonce( 'wp_rest' ),
+			'next_workshop'    => wvm( WorkshopService::class )->nextFor( $id ),
+			'unread'           => wvm( InAppNotifier::class )->unreadCount( $id ),
+			'plans'            => $this->plans->getPublic( $currency ),
+			'currency'         => $currency,
+			'payment_methods'  => wvm( PaymentMethodService::class )->forMember( $id ),
+			'impersonating'    => (bool) wvm( \WitsValley\Members\Frontend\Frontend::class )->impersonator(),
+			'nonce'            => wp_create_nonce( 'wp_rest' ),
 		);
 	}
 

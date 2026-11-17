@@ -279,6 +279,25 @@ final class OrganisationService {
 		);
 	}
 
+	/** Withdraw a pending (not yet accepted) invite. */
+	public function withdrawInvite( int $orgId, int $seatId ): void {
+		$seat = $this->seats->find( $seatId );
+		if ( ! $seat || (int) $seat['organisation_id'] !== $orgId || $seat['revoked_at'] ) {
+			throw DomainError::notFound( 'invite' );
+		}
+		if ( $seat['joined_at'] ) {
+			throw DomainError::conflict( 'This person has already joined — remove their seat instead.' );
+		}
+		$this->seats->update(
+			$seatId,
+			array(
+				'revoked_at'   => Clock::mysql(),
+				'invite_token' => null,
+			)
+		);
+		$this->audit->log( 'organisation.invite_withdrawn', 'organisation', $orgId, array( 'email' => $seat['email'] ), null );
+	}
+
 	public static function acceptUrl( string $token ): string {
 		return home_url( '/enterprise/accept/' . $token . '/' );
 	}

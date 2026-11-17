@@ -328,6 +328,8 @@ export type DashboardState = 'none' | 'free' | 'pending' | 'active' | 'cancellin
 export interface MeOverview {
 	member: Member;
 	subscription: Subscription | null;
+	/** Live enterprise-seat subscription (seat holders may have no personal plan). */
+	org_subscription?: Subscription | null;
 	state: DashboardState;
 	entitlements: Entitlements;
 	level_label: string;
