@@ -39,7 +39,7 @@ final class Receipt {
 
 		return '<!doctype html><html><head><meta charset="utf-8"><title>Receipt ' . esc_html( (string) $order['receipt_number'] ) . '</title><style>
 			body{font-family:DejaVu Sans,Helvetica,Arial,sans-serif;color:#1E1B3A;font-size:12px;margin:40px}
-			h1{font-size:22px;margin:0 0 4px}.muted{color:#7A7699}.brand{color:' . $brand . ';font-weight:800;font-size:20px}
+			h1{font-size:22px;margin:0 0 4px}.muted{color:#7A7699}.brand{font-family:DejaVu Sans,Helvetica,Arial,sans-serif;color:' . $brand . ';font-weight:800;font-size:20px}
 			table{width:100%;border-collapse:collapse;margin-top:24px}th{text-align:left;font-size:11px;text-transform:uppercase;color:#7A7699;border-bottom:2px solid #ECEAF5;padding:8px 0}
 			td{padding:10px 0;border-bottom:1px solid #ECEAF5}.right{text-align:right}.total td{font-weight:700;font-size:14px;border-bottom:0}
 			.grid{width:100%;margin-top:28px}.grid td{border:0;vertical-align:top;padding:0}</style></head><body>

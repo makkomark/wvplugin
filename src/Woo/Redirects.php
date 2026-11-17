@@ -31,6 +31,7 @@ final class Redirects {
 		add_filter( 'wp_nav_menu_objects', array( $this, 'hideMenuItems' ) );
 		add_filter( 'get_pages', array( $this, 'hidePages' ) );
 		add_filter( 'wp_sitemaps_post_types', array( $this, 'hideSitemapTypes' ) );
+		add_filter( 'wp_sitemaps_taxonomies', array( $this, 'hideSitemapTaxonomies' ) );
 		add_filter( 'wp_sitemaps_posts_query_args', array( $this, 'hideSitemapPages' ), 10, 2 );
 		add_filter( 'woocommerce_get_myaccount_page_permalink', array( $this, 'accountPermalink' ) );
 		add_filter( 'woocommerce_return_to_shop_redirect', static fn() => Urls::pricing() );
@@ -155,6 +156,15 @@ final class Redirects {
 	public function hideSitemapTypes( array $types ): array {
 		unset( $types['product'] );
 		return $types;
+	}
+
+	/**
+	 * @param array<string,mixed> $taxonomies
+	 * @return array<string,mixed>
+	 */
+	public function hideSitemapTaxonomies( array $taxonomies ): array {
+		unset( $taxonomies['product_cat'], $taxonomies['product_tag'], $taxonomies['product_brand'] );
+		return $taxonomies;
 	}
 
 	/**
