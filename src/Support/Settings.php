@@ -188,15 +188,17 @@ final class Settings {
 	 * Atomically increment an integer setting and return the value before increment.
 	 */
 	public function increment( string $group, string $key ): int {
-		global $wpdb;
-		$wpdb->query( 'START TRANSACTION' ); // phpcs:ignore WordPress.DB
-		$table = Db::table( 'settings' );
-		$wpdb->get_var( $wpdb->prepare( "SELECT value FROM {$table} WHERE setting_key = %s FOR UPDATE", $group ) ); // phpcs:ignore WordPress.DB
-		unset( $this->cache[ $group ] );
-		$current = (int) $this->get( $group, $key, 1 );
-		$this->set( $group, $key, $current + 1 );
-		$wpdb->query( 'COMMIT' ); // phpcs:ignore WordPress.DB
-		return $current;
+		return Db::transaction(
+			function () use ( $group, $key ): int {
+				global $wpdb;
+				$table = Db::table( 'settings' );
+				$wpdb->get_var( $wpdb->prepare( "SELECT value FROM {$table} WHERE setting_key = %s FOR UPDATE", $group ) ); // phpcs:ignore WordPress.DB
+				unset( $this->cache[ $group ] );
+				$current = (int) $this->get( $group, $key, 1 );
+				$this->set( $group, $key, $current + 1 );
+				return $current;
+			}
+		);
 	}
 
 	/** @param array<string,mixed> $values */

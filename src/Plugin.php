@@ -90,8 +90,9 @@ final class Plugin {
 			return;
 		}
 		$this->booted = true;
-		load_plugin_textdomain( 'wv-members', false, dirname( plugin_basename( WVM_FILE ) ) . '/languages' );
-		Installer::maybeUpgrade();
+		add_action( 'init', static fn() => load_plugin_textdomain( 'wv-members', false, dirname( plugin_basename( WVM_FILE ) ) . '/languages' ), 1 );
+		// Upgrades seed Woo products and pages, so they must wait for WordPress + WooCommerce to be fully initialised.
+		add_action( 'init', array( Installer::class, 'maybeUpgrade' ), 20 );
 		foreach ( self::HOOKED as $service ) {
 			$this->container->get( $service )->register();
 		}

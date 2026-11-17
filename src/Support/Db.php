@@ -23,21 +23,24 @@ final class Db {
 	public static function transaction( callable $fn ): mixed {
 		global $wpdb;
 		static $depth = 0;
+		// Under the WP test suite every test already runs inside a transaction; a nested
+		// START TRANSACTION would implicitly commit it, so use savepoints there instead.
+		$nested = defined( 'WVM_TESTING' );
 		if ( 0 === $depth ) {
-			$wpdb->query( 'START TRANSACTION' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( $nested ? 'SAVEPOINT wvm_tx' : 'START TRANSACTION' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 		++$depth;
 		try {
 			$result = $fn();
 			--$depth;
 			if ( 0 === $depth ) {
-				$wpdb->query( 'COMMIT' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->query( $nested ? 'RELEASE SAVEPOINT wvm_tx' : 'COMMIT' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			}
 			return $result;
 		} catch ( \Throwable $e ) {
 			--$depth;
 			if ( 0 === $depth ) {
-				$wpdb->query( 'ROLLBACK' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->query( $nested ? 'ROLLBACK TO SAVEPOINT wvm_tx' : 'ROLLBACK' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			}
 			throw $e;
 		}
