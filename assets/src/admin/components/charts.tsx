@@ -3,7 +3,9 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode, RefObject } from 'react';
 
 /** Categorical order (validated: adjacent CVD ΔE ≥ 9, normal-vision ≥ 19.6). Labels always accompany colour. */
-export const SERIES = [ '#5b3df5', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#2a78d6' ];
+const brand = ( window.wvmAdmin && window.wvmAdmin.branding ) || { primary: '#0B4C25', accent: '#FFAC04' };
+/** Chart palette: brand primary + accent first, then distinct, colour-blind-friendlier hues. */
+export const SERIES = [ brand.primary, brand.accent, '#2a78d6', '#d4543f', '#0f9f9a', '#8a6fd1' ];
 
 function useWidth< T extends HTMLElement >(): [ RefObject< T >, number ] {
 	const ref = useRef< T >( null );

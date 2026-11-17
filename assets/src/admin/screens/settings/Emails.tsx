@@ -112,11 +112,10 @@ export function EmailsSettings( { route }: { route: Route } ) {
 					<Section title="Branding">
 						<FieldGrid>
 							<div className="wvm-a-field">
-								<span className="wvm-a-label">Brand colour</span>
-								<div className="wvm-a-colorfield">
-									<input type="color" value={ v.brand_color || '#5B3DF5' } onChange={ ( e ) => s.set( { brand_color: e.target.value } ) } aria-label="Brand colour" />
-									<input className="wvm-a-input" value={ v.brand_color } onChange={ ( e ) => s.set( { brand_color: e.target.value } ) } />
-								</div>
+								<span className="wvm-a-label">Brand colours &amp; fonts</span>
+								<p className="wvm-a-help">
+									Emails use the colours set in <a href="#/settings/branding">Settings › Branding</a>.
+								</p>
 							</div>
 							<div className="wvm-a-field">
 								<span className="wvm-a-label">Logo</span>

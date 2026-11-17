@@ -80,7 +80,11 @@ abstract class TestCase extends \WP_UnitTestCase {
 		$this->payWoo( (int) $order['woo_order_id'] );
 		$sub = wvm( SubscriptionRepository::class )->current( (int) $member['id'] );
 		wvm( LevelResolver::class )->flush();
-		return array( 'member' => $member, 'order' => wvm( OrderService::class )->get( (int) $order['id'] ), 'sub' => $sub );
+		return array(
+			'member' => $member,
+			'order'  => wvm( OrderService::class )->get( (int) $order['id'] ),
+			'sub'    => $sub,
+		);
 	}
 
 	/** @return array<string,mixed> */

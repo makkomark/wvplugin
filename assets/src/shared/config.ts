@@ -24,8 +24,12 @@ export interface MemberConfig {
 	countries: Record< string, string >;
 	timezones: string[];
 	logoUrl: string;
+	branding?: Branding;
 	version: string;
 }
+
+/** Brand colours + resolved font stacks (src/Support/Branding.php). */
+export interface Branding { primary: string; accent: string; font: string; heading: string }
 
 export interface AdminPage { slug: string; title: string; route: string; url: string; allowed: boolean }
 
@@ -54,5 +58,6 @@ export interface AdminConfig {
 	postTypes: { name: string; label: string }[];
 	sandbox: boolean;
 	siteName: string;
+	branding?: Branding;
 	version: string;
 }

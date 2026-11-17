@@ -93,13 +93,13 @@
 	z-index: -1;
 	pointer-events: none;
 }
-.wvm-root .wvm-plan--hero:hover { box-shadow: 0 30px 60px -24px rgba(91, 61, 245, 0.75); }
+.wvm-root .wvm-plan--hero:hover { box-shadow: 0 30px 60px -24px rgba(var(--wvm-primary-rgb), 0.75); }
 .wvm-root .wvm-plan--hero.is-focused { box-shadow: 0 0 0 4px var(--wvm-primary-100), var(--wvm-hero-shadow); }
 
 .wvm-root .wvm-plan__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; }
 .wvm-root .wvm-plan__name { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; color: var(--wvm-ink); }
 .wvm-root .wvm-plan--hero .wvm-plan__name { color: #fff; }
-.wvm-root .wvm-plan__badge.wvm-chip--primary { background: var(--wvm-accent); color: #1e2a00; }
+.wvm-root .wvm-plan__badge.wvm-chip--primary { background: var(--wvm-accent); color: var(--wvm-on-accent); }
 .wvm-root .wvm-plan__desc { margin-top: 8px; font-size: var(--wvm-text-sm); color: var(--wvm-muted); line-height: 1.5; }
 .wvm-root .wvm-plan--hero .wvm-plan__desc { color: rgba(255, 255, 255, 0.82); }
 
@@ -150,7 +150,7 @@
 	border-radius: 16px;
 	background: var(--wvm-hero);
 	color: #fff;
-	box-shadow: 0 14px 28px -18px rgba(91, 61, 245, 0.9);
+	box-shadow: 0 14px 28px -18px rgba(var(--wvm-primary-rgb), 0.9);
 }
 .wvm-root .wvm-signup-summary__plan { font-weight: 800; font-size: 17px; letter-spacing: -0.01em; }
 .wvm-root .wvm-signup-summary__meta { font-size: 13px; opacity: 0.8; }

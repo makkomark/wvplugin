@@ -68,6 +68,7 @@ final class Plugin {
 		Menu::class,
 		ContentMetaBox::class,
 		Handlers::class,
+		\WitsValley\Members\Support\Branding::class,
 		\WitsValley\Members\Domain\Member\MemberListeners::class,
 	);
 

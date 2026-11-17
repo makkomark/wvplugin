@@ -260,3 +260,13 @@ html.wvm-scroll-lock body {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* Headings follow Settings › Branding (theme mode resolves to the theme's own heading font). */
+.wvm-root h1,
+.wvm-root h2,
+.wvm-root h3,
+.wvm-root h4,
+.wvm-root h5,
+.wvm-root h6 {
+	font-family: var(--wvm-font-heading, var(--wvm-font));
+}

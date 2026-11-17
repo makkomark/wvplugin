@@ -174,6 +174,7 @@ final class Frontend {
 			'countries'       => function_exists( 'WC' ) && WC()->countries ? WC()->countries->get_countries() : array(),
 			'timezones'       => timezone_identifiers_list(),
 			'logoUrl'         => (string) $this->settings->get( 'emails', 'logo_url', '' ),
+			'branding'        => wvm( \WitsValley\Members\Support\Branding::class )->forApp(),
 			'version'         => WVM_VERSION,
 		);
 	}

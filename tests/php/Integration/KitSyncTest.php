@@ -16,7 +16,7 @@ final class FakeKit extends KitClient {
 	/** @var array<string,array{email:string,tags:list<string>}> */
 	public array $subscribers = array();
 	/** @var array<string,int> */
-	public array $tags = array();
+	public array $tags  = array();
 	public int $created = 0;
 
 	public function configured(): bool {
@@ -25,7 +25,10 @@ final class FakeKit extends KitClient {
 	public function findSubscriberByEmail( string $email, ?int $memberId = null ): ?array {
 		foreach ( $this->subscribers as $id => $s ) {
 			if ( 0 === strcasecmp( $s['email'], $email ) ) {
-				return array( 'id' => $id, 'email_address' => $s['email'] );
+				return array(
+					'id'            => $id,
+					'email_address' => $s['email'],
+				);
 			}
 		}
 		return null;
@@ -33,7 +36,10 @@ final class FakeKit extends KitClient {
 	public function createSubscriber( string $email, string $firstName, string $state = 'active', ?int $memberId = null ): ?array {
 		++$this->created;
 		$id                       = (string) ( 1000 + $this->created );
-		$this->subscribers[ $id ] = array( 'email' => $email, 'tags' => array() );
+		$this->subscribers[ $id ] = array(
+			'email' => $email,
+			'tags'  => array(),
+		);
 		return array( 'id' => $id );
 	}
 	public function updateSubscriber( string $subscriberId, array $fields, ?int $memberId = null ): bool {
@@ -84,7 +90,7 @@ final class KitSyncTest extends TestCase {
 		$this->assertSame( array( 'WV-FREE' ), $this->tagsOf( $mid ) );
 
 		// Someone else added a non-WV tag in Kit: must be preserved.
-		$sid = array_key_first( $this->kit->subscribers );
+		$sid                                      = array_key_first( $this->kit->subscribers );
 		$this->kit->subscribers[ $sid ]['tags'][] = 'Webinar-2025';
 
 		$order = wvm( \WitsValley\Members\Domain\Order\OrderService::class )->createForPlan( $mid, (int) $this->plan( 'basic' )['id'], 'new', 'UGX' );

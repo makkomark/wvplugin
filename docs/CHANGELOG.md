@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 — 2026-11-17
+- WitsValley brand colours everywhere: primary green `#0B4C25` + amber accent `#FFAC04` (member app, pricing, checkout, paywall, admin, emails, receipts, charts).
+- New **Settings › Branding**: brand colours with live preview (all shades, gradients and dark-mode variants derived automatically), font source
+  (theme fonts read from the active block theme, system, Google Fonts, Adobe Fonts kit, custom stylesheet), separate heading font, wp-admin font choice, dark-mode switch.
+- Neutral greys re-tinted to a sage palette that suits the green.
+- WooCommerce cart icons hidden in theme headers (the storefront is hidden).
+
 ## 1.0.0 — 2026-11-17
 Initial build of all phases in the brief:
 - **Phase 0** Foundations: plugin bootstrap, PSR-4, 23 custom tables, roles & capabilities, encrypted settings, Money/Clock/Validation/Pagination helpers,

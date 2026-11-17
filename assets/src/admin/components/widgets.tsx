@@ -22,7 +22,7 @@ export function KpiTile( { label, value, sub, spark, icon, tone = 'primary', to,
 			<div className="wvm-a-kpi__value">{ value }</div>
 			<div className="wvm-a-kpi__foot">
 				{ sub && <span className="wvm-a-kpi__sub">{ sub }</span> }
-				{ spark && spark.length > 1 && <Sparkline values={ spark } color={ tone === 'danger' ? '#e5484d' : tone === 'success' ? '#12b886' : tone === 'warning' ? '#f59f00' : '#5b3df5' } height={ 30 } /> }
+				{ spark && spark.length > 1 && <Sparkline values={ spark } color={ tone === 'danger' ? '#e5484d' : tone === 'success' ? '#12b886' : tone === 'warning' ? '#f59f00' : 'var(--wvm-primary)' } height={ 30 } /> }
 			</div>
 		</>
 	);

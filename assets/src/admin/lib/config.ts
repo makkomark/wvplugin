@@ -27,6 +27,7 @@ export const config: AdminConfig = {
 	actionSchedulerUrl: raw.actionSchedulerUrl || '',
 	gateways: raw.gateways || [],
 	postTypes: raw.postTypes || [],
+	branding: raw.branding || { primary: '#0B4C25', accent: '#FFAC04', font: '', heading: '' },
 	// wp_localize_script stringifies top-level scalars ("1" / "").
 	sandbox: [ true, 1, '1', 'true' ].includes( raw.sandbox as never ),
 	siteName: raw.siteName || 'WitsValley',

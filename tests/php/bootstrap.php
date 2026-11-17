@@ -18,7 +18,7 @@ require_once $tests_dir . '/includes/functions.php';
 
 // Start every run from an empty test database (plugin + WooCommerce tables are not dropped by the WP installer).
 ( static function (): void {
-	$db = new mysqli( getenv( 'WP_TESTS_DB_HOST' ) ?: '127.0.0.1', getenv( 'WP_TESTS_DB_USER' ) ?: 'wp', getenv( 'WP_TESTS_DB_PASS' ) ?: 'wp', getenv( 'WP_TESTS_DB_NAME' ) ?: 'wptest' );
+	$db  = new mysqli( getenv( 'WP_TESTS_DB_HOST' ) ?: '127.0.0.1', getenv( 'WP_TESTS_DB_USER' ) ?: 'wp', getenv( 'WP_TESTS_DB_PASS' ) ?: 'wp', getenv( 'WP_TESTS_DB_NAME' ) ?: 'wptest' );
 	$res = $db->query( "SHOW TABLES LIKE 'wptests\\_%'" );
 	$db->query( 'SET FOREIGN_KEY_CHECKS = 0' );
 	while ( $res && ( $row = $res->fetch_row() ) ) {

@@ -19,7 +19,7 @@ Everything else — subscriptions, renewals, access, emails — is handled by th
    to `wp-content/plugins/wv-members` and run `composer install --no-dev` (the plugin also runs without Composer — receipts then fall back to printable HTML).
 2. Activate **WooCommerce**, then **WitsValley Members**. Activation creates the tables, roles, the four launch plans, 24 email templates,
    default settings, the Kit tag map and three pages: `/dashboard` (`[wvm_dashboard]`), `/membership` (`[wvm_pricing]`) and `/enterprise` (`[wvm_enterprise_form]`).
-3. Open **WitsValley › Settings** to set the business details, currencies, gateways per country, email sender and Kit API key.
+3. Open **WitsValley › Settings** to set the business details, brand colours and fonts (Branding — defaults to WitsValley green `#0B4C25` and amber `#FFAC04`, theme fonts), currencies, gateways per country, email sender and Kit API key.
    Sandbox mode is ON after install so you can test with the built-in Test gateway.
 
 ## What lives where

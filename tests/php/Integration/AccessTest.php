@@ -82,7 +82,7 @@ final class AccessTest extends TestCase {
 	}
 
 	public function test_term_default_level_applies(): void {
-		$cat  = self::factory()->category->create( array( 'name' => 'Premium only' ) );
+		$cat = self::factory()->category->create( array( 'name' => 'Premium only' ) );
 		update_term_meta( $cat, ContentGuard::TERM_LEVEL, 1 );
 		$post = self::factory()->post->create( array( 'post_category' => array( $cat ) ) );
 		wvm( ContentGuard::class )->flush();
@@ -104,6 +104,5 @@ final class AccessTest extends TestCase {
 		$this->assertNull( $media->verify( $token . 'x' ), 'Tampered token rejected.' );
 		$this->assertNull( $media->verify( $media->token( $att, $uid, time() - 10 ) ), 'Expired token rejected.' );
 		$this->assertFalse( $media->userMayAccess( $att, 0 ), 'Anonymous cannot access level-2 media.' );
-
 	}
 }

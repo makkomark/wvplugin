@@ -1,41 +1,56 @@
 /*
  * WitsValley design tokens — shared by the member dashboard, pricing/enterprise widgets and admin app.
- * Visual language: soft lavender canvas, white cards (18px radius, hairline borders, layered soft shadows),
- * vivid violet primary with a radial-gradient "hero" surface, pill status chips, generous 4/8-pt spacing.
+ * Visual language: soft sage canvas, white cards (18px radius, hairline borders, layered soft shadows),
+ * WitsValley green primary + amber accent, a green radial-gradient "hero" surface with an amber glow, pill chips.
  */
 :root,
 .wvm-theme {
-	--wvm-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--wvm-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--wvm-font-heading: var(--wvm-font);
 	--wvm-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-	--wvm-primary: #5b3df5;
-	--wvm-primary-600: #4a2ee0;
-	--wvm-primary-700: #3a1fd1;
-	--wvm-primary-100: #e4ddff;
-	--wvm-primary-50: #f1edff;
-	--wvm-accent: #c6f432;
-	--wvm-ink: #0f0b2e;
-	--wvm-text: #2a2650;
-	--wvm-muted: #6e6a8a;
-	--wvm-subtle: #9a96b5;
-	--wvm-border: #e8e5f3;
-	--wvm-border-strong: #d6d1ea;
-	--wvm-bg: #f6f5fb;
-	--wvm-surface: #ffffff;
-	--wvm-surface-2: #faf9fe;
+	/* Brand (WitsValley green + amber). Overridden at runtime from Settings › Branding. */
+	--wvm-primary: #0b4c25;
+	--wvm-primary-rgb: 11, 76, 37;
+	--wvm-primary-400: #4f7f63;
+	--wvm-primary-600: #09411f;
+	--wvm-primary-700: #08351a;
+	--wvm-primary-900: #062a14;
+	--wvm-primary-200: #94b2a0;
+	--wvm-primary-100: #d4e1d9;
+	--wvm-primary-50: #e9f0ec;
+	--wvm-on-primary: #ffffff;
+	--wvm-accent: #ffac04;
+	--wvm-accent-rgb: 255, 172, 4;
+	--wvm-accent-600: #e09704;
+	--wvm-accent-100: #ffeecd;
+	--wvm-accent-50: #fff7e6;
+	--wvm-on-accent: #0e1f15;
 
-	--wvm-success: #12b886;
-	--wvm-success-bg: #e6f8f1;
-	--wvm-warning: #f59f00;
-	--wvm-warning-bg: #fff4db;
+	/* Neutrals: soft sage-tinted greys that sit well with the green. */
+	--wvm-ink: #0e1f15;
+	--wvm-ink-rgb: 14, 31, 21;
+	--wvm-text: #23362b;
+	--wvm-muted: #5f7468;
+	--wvm-subtle: #93a69a;
+	--wvm-border: #e3e9e4;
+	--wvm-border-strong: #cfd9d2;
+	--wvm-bg: #f5f7f4;
+	--wvm-surface: #ffffff;
+	--wvm-surface-2: #fafbf9;
+
+	--wvm-success: #12a86a;
+	--wvm-success-bg: #e5f6ee;
+	--wvm-warning: #d98a00;
+	--wvm-warning-bg: #fff4dc;
 	--wvm-danger: #e5484d;
 	--wvm-danger-bg: #ffecee;
-	--wvm-info: #3b82f6;
-	--wvm-info-bg: #e8f1ff;
-	--wvm-neutral-bg: #efedf6;
+	--wvm-info: #2f7bd8;
+	--wvm-info-bg: #e8f1fd;
+	--wvm-neutral-bg: #edf1ee;
 
-	--wvm-hero: radial-gradient(120% 140% at 0% 0%, #8b6cff 0%, #5b3df5 45%, #2c1797 100%);
-	--wvm-hero-shadow: 0 24px 48px -24px rgba(91, 61, 245, 0.65);
+	--wvm-hero: radial-gradient(85% 110% at 100% 0%, rgba(255, 172, 4, 0.3) 0%, rgba(255, 172, 4, 0) 55%), radial-gradient(120% 140% at 0% 0%, #3a6f50 0%, #0b4c25 48%, #062a14 100%);
+	--wvm-hero-shadow: 0 24px 48px -24px rgba(11, 76, 37, 0.6);
 
 	--wvm-radius-sm: 10px;
 	--wvm-radius: 14px;
@@ -43,10 +58,10 @@
 	--wvm-radius-xl: 24px;
 	--wvm-radius-pill: 999px;
 
-	--wvm-shadow-sm: 0 1px 2px rgba(15, 11, 46, 0.05);
-	--wvm-shadow: 0 1px 2px rgba(15, 11, 46, 0.05), 0 8px 24px -12px rgba(15, 11, 46, 0.14);
-	--wvm-shadow-lg: 0 2px 4px rgba(15, 11, 46, 0.04), 0 24px 48px -16px rgba(15, 11, 46, 0.22);
-	--wvm-ring: 0 0 0 4px var(--wvm-primary-50);
+	--wvm-shadow-sm: 0 1px 2px rgba(14, 31, 21, 0.05);
+	--wvm-shadow: 0 1px 2px rgba(14, 31, 21, 0.05), 0 8px 24px -12px rgba(14, 31, 21, 0.14);
+	--wvm-shadow-lg: 0 2px 4px rgba(14, 31, 21, 0.04), 0 24px 48px -16px rgba(14, 31, 21, 0.22);
+	--wvm-ring: 0 0 0 4px rgba(11, 76, 37, 0.14);
 
 	--wvm-space-1: 4px;
 	--wvm-space-2: 8px;
@@ -70,22 +85,25 @@
 
 @media (prefers-color-scheme: dark) {
 	.wvm-theme.wvm-theme--auto {
-		--wvm-ink: #f4f2ff;
-		--wvm-text: #dcd8f2;
-		--wvm-muted: #a29dc4;
-		--wvm-subtle: #7b769c;
-		--wvm-border: #2a2548;
-		--wvm-border-strong: #3a3462;
-		--wvm-bg: #0d0a1f;
-		--wvm-surface: #161230;
-		--wvm-surface-2: #1c1739;
-		--wvm-primary-50: #241b57;
-		--wvm-primary-100: #2f2470;
-		--wvm-success-bg: #0d2a22;
+		--wvm-primary: #557d65;
+		--wvm-primary-rgb: 85, 125, 101;
+		--wvm-primary-50: #0b2a17;
+		--wvm-primary-100: #0e331d;
+		--wvm-ink: #f1f7f3;
+		--wvm-ink-rgb: 0, 0, 0;
+		--wvm-text: #dbe7df;
+		--wvm-muted: #9db3a6;
+		--wvm-subtle: #74897c;
+		--wvm-border: #22352b;
+		--wvm-border-strong: #2e4639;
+		--wvm-bg: #0b1410;
+		--wvm-surface: #111d17;
+		--wvm-surface-2: #16241d;
+		--wvm-success-bg: #0d2a1f;
 		--wvm-warning-bg: #2d2208;
 		--wvm-danger-bg: #331417;
 		--wvm-info-bg: #0f1f3a;
-		--wvm-neutral-bg: #221d40;
+		--wvm-neutral-bg: #1b2a22;
 		--wvm-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
 		--wvm-shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.7);
 	}

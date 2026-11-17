@@ -3,7 +3,7 @@
  * Plugin Name:       WitsValley Members
  * Plugin URI:        https://witsvalley.com
  * Description:       Self-running paid membership platform: plans, subscriptions, renewals, access control, Kit (ConvertKit) sync, workshops and enterprise programmes. WooCommerce is used for payment plumbing only.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Requires Plugins:  woocommerce
@@ -19,7 +19,7 @@ declare( strict_types=1 );
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WVM_VERSION', '1.0.0' );
+define( 'WVM_VERSION', '1.0.1' );
 define( 'WVM_DB_VERSION', '1.0.0' );
 define( 'WVM_FILE', __FILE__ );
 define( 'WVM_DIR', plugin_dir_path( __FILE__ ) );

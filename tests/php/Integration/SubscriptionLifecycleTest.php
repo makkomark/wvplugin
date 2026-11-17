@@ -90,9 +90,9 @@ final class SubscriptionLifecycleTest extends TestCase {
 	}
 
 	public function test_prorated_upgrade_and_downgrade_at_renewal(): void {
-		$p   = $this->paidMember( 'basic' );
-		$id  = (int) $p['sub']['id'];
-		$svc = wvm( SubscriptionService::class );
+		$p     = $this->paidMember( 'basic' );
+		$id    = (int) $p['sub']['id'];
+		$svc   = wvm( SubscriptionService::class );
 		$start = Clock::parse( $p['sub']['current_period_start'] );
 		$end   = Clock::parse( $p['sub']['current_period_end'] );
 		$days  = (int) round( ( $end->getTimestamp() - $start->getTimestamp() ) / DAY_IN_SECONDS );

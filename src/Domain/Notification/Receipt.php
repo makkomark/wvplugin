@@ -30,7 +30,8 @@ final class Receipt {
 		$member   = $this->members->get( (int) $order['member_id'] );
 		$payment  = $this->payments->first( array( 'order_id' => $orderId ) );
 		$g        = $this->settings->group( 'general' );
-		$brand    = esc_attr( (string) $this->settings->get( 'emails', 'brand_color', '#5B3DF5' ) );
+		$brand    = esc_attr( wvm( \WitsValley\Members\Support\Branding::class )->primary() );
+		$accent   = esc_attr( wvm( \WitsValley\Members\Support\Branding::class )->accent() );
 		$paid     = Clock::inZone( (string) ( $this->orders->raw( $orderId )['paid_at'] ?? '' ), (string) $member['timezone'], 'j F Y, H:i' );
 		$period   = $order['period_start'] && $order['period_end'] ? esc_html( gmdate( 'j M Y', (int) strtotime( (string) $order['period_start'] ) ) . ' – ' . gmdate( 'j M Y', (int) strtotime( (string) $order['period_end'] ) ) ) : '';
 		$method   = $payment ? esc_html( (string) $payment['gateway'] ) : '—';
@@ -38,10 +39,10 @@ final class Receipt {
 		$refunded = 'refunded' === $order['status'] ? '<p style="color:#B42318;font-weight:700">REFUNDED</p>' : '';
 
 		return '<!doctype html><html><head><meta charset="utf-8"><title>Receipt ' . esc_html( (string) $order['receipt_number'] ) . '</title><style>
-			body{font-family:DejaVu Sans,Helvetica,Arial,sans-serif;color:#1E1B3A;font-size:12px;margin:40px}
-			h1{font-size:22px;margin:0 0 4px}.muted{color:#7A7699}.brand{font-family:DejaVu Sans,Helvetica,Arial,sans-serif;color:' . $brand . ';font-weight:800;font-size:20px}
-			table{width:100%;border-collapse:collapse;margin-top:24px}th{text-align:left;font-size:11px;text-transform:uppercase;color:#7A7699;border-bottom:2px solid #ECEAF5;padding:8px 0}
-			td{padding:10px 0;border-bottom:1px solid #ECEAF5}.right{text-align:right}.total td{font-weight:700;font-size:14px;border-bottom:0}
+			body{font-family:DejaVu Sans,Helvetica,Arial,sans-serif;color:#23362B;font-size:12px;margin:40px}
+			h1{font-size:22px;margin:0 0 4px}.muted{color:#5F7468}.brand{font-family:DejaVu Sans,Helvetica,Arial,sans-serif;color:' . $brand . ';font-weight:800;font-size:20px}
+			table{width:100%;border-collapse:collapse;margin-top:24px}th{text-align:left;font-size:11px;text-transform:uppercase;color:#5F7468;border-bottom:2px solid ' . $accent . ';padding:8px 0}
+			td{padding:10px 0;border-bottom:1px solid #E3E9E4}.right{text-align:right}.total td{font-weight:700;font-size:14px;border-bottom:0}
 			.grid{width:100%;margin-top:28px}.grid td{border:0;vertical-align:top;padding:0}</style></head><body>
 			<table class="grid"><tr><td><div class="brand">' . esc_html( (string) $g['business_name'] ) . '</div><div class="muted">' . esc_html( (string) $g['address'] ) . '</div></td>
 			<td class="right"><h1>Receipt</h1><div class="muted">' . esc_html( (string) $order['receipt_number'] ) . '</div><div class="muted">' . esc_html( $paid ) . '</div></td></tr></table>

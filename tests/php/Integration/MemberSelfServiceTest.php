@@ -34,7 +34,12 @@ final class MemberSelfServiceTest extends TestCase {
 	public function test_org_admin_can_withdraw_pending_invite_and_seat_holder_sees_org_subscription(): void {
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
 		$orgs  = wvm( OrganisationService::class );
-		$org   = $orgs->create( array( 'name' => 'Test Org', 'seats' => 5 ) );
+		$org   = $orgs->create(
+			array(
+				'name'  => 'Test Org',
+				'seats' => 5,
+			)
+		);
 		$admin = $this->member();
 		$orgs->invite( (int) $org['id'], array( $admin['email'] ), 'admin' );
 		$seat = current( array_filter( $orgs->seatList( (int) $org['id'] ), static fn( $s ) => $s['email'] === strtolower( $admin['email'] ) ) );

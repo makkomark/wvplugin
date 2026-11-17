@@ -19,7 +19,18 @@ final class RolesAndAuditTest extends TestCase {
 	public function test_finance_cannot_edit_plans(): void {
 		wp_set_current_user( $this->staff( 'wvm_finance' ) );
 		$this->assertSame( 403, $this->call( 'PATCH', '/plans/' . $this->plan( 'basic' )['id'], array( 'name' => 'Hacked' ) )->get_status() );
-		$this->assertSame( 403, $this->call( 'POST', '/plans', array( 'slug' => 'x', 'name' => 'X', 'level' => 1 ) )->get_status() );
+		$this->assertSame(
+			403,
+			$this->call(
+				'POST',
+				'/plans',
+				array(
+					'slug'  => 'x',
+					'name'  => 'X',
+					'level' => 1,
+				)
+			)->get_status()
+		);
 		$this->assertSame( 200, $this->call( 'GET', '/orders' )->get_status(), 'Finance can see payments.' );
 	}
 
@@ -37,7 +48,17 @@ final class RolesAndAuditTest extends TestCase {
 	public function test_support_cannot_refund(): void {
 		$p = $this->paidMember( 'basic' );
 		wp_set_current_user( $this->staff( 'wvm_support' ) );
-		$this->assertSame( 403, $this->call( 'POST', '/orders/' . $p['order']['id'] . '/refund', array( 'amount_minor' => 1000, 'reason' => 'x' ) )->get_status() );
+		$this->assertSame(
+			403,
+			$this->call(
+				'POST',
+				'/orders/' . $p['order']['id'] . '/refund',
+				array(
+					'amount_minor' => 1000,
+					'reason'       => 'x',
+				)
+			)->get_status()
+		);
 		$this->assertSame( 200, $this->call( 'GET', '/members' )->get_status(), 'Support can view members.' );
 	}
 
@@ -46,7 +67,20 @@ final class RolesAndAuditTest extends TestCase {
 		$this->assertSame( 403, $this->call( 'GET', '/orders' )->get_status() );
 		$this->assertSame( 403, $this->call( 'GET', '/members' )->get_status() );
 		$plan = $this->plan( 'basic' );
-		$res  = $this->call( 'PATCH', '/plans/' . $plan['id'], array( 'benefits' => array( 'New benefit' ), 'name' => 'Renamed', 'prices' => array( array( 'currency' => 'UGX', 'amount_minor' => 1 ) ) ) );
+		$res  = $this->call(
+			'PATCH',
+			'/plans/' . $plan['id'],
+			array(
+				'benefits' => array( 'New benefit' ),
+				'name'     => 'Renamed',
+				'prices'   => array(
+					array(
+						'currency'     => 'UGX',
+						'amount_minor' => 1,
+					),
+				),
+			)
+		);
 		$this->assertSame( 200, $res->get_status() );
 		$data = $res->get_data()['data'];
 		$this->assertSame( array( 'New benefit' ), $data['benefits'] );
@@ -70,11 +104,44 @@ final class RolesAndAuditTest extends TestCase {
 	public function test_admin_actions_write_audit_rows_with_reason(): void {
 		wp_set_current_user( $this->staff( 'administrator' ) );
 		$p = $this->paidMember( 'basic' );
-		$this->call( 'PATCH', '/plans/' . $this->plan( 'premium' )['id'], array( 'prices' => array( array( 'currency' => 'UGX', 'amount_minor' => 55000 ), array( 'currency' => 'USD', 'amount_minor' => 1500 ) ) ) );
-		$this->call( 'POST', '/subscriptions/' . $p['sub']['id'] . '/extend', array( 'days' => 7, 'reason' => 'Support goodwill' ) );
+		$this->call(
+			'PATCH',
+			'/plans/' . $this->plan( 'premium' )['id'],
+			array(
+				'prices' => array(
+					array(
+						'currency'     => 'UGX',
+						'amount_minor' => 55000,
+					),
+					array(
+						'currency'     => 'USD',
+						'amount_minor' => 1500,
+					),
+				),
+			)
+		);
+		$this->call(
+			'POST',
+			'/subscriptions/' . $p['sub']['id'] . '/extend',
+			array(
+				'days'   => 7,
+				'reason' => 'Support goodwill',
+			)
+		);
 		$this->assertSame( 422, $this->call( 'POST', '/subscriptions/' . $p['sub']['id'] . '/suspend', array( 'reason' => '' ) )->get_status() );
 		$m = $this->member();
-		$this->call( 'POST', '/orders/manual', array( 'member_id' => $m['id'], 'plan_id' => $this->plan( 'basic' )['id'], 'amount_minor' => 20000, 'currency' => 'UGX', 'method' => 'Bank transfer', 'reference' => 'BANK-123' ) );
+		$this->call(
+			'POST',
+			'/orders/manual',
+			array(
+				'member_id'    => $m['id'],
+				'plan_id'      => $this->plan( 'basic' )['id'],
+				'amount_minor' => 20000,
+				'currency'     => 'UGX',
+				'method'       => 'Bank transfer',
+				'reference'    => 'BANK-123',
+			)
+		);
 		$this->call( 'PATCH', '/settings/lifecycle', array( 'grace_days' => 10 ) );
 
 		global $wpdb;

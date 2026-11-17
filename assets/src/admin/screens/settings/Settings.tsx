@@ -14,11 +14,13 @@ import { EmailsSettings } from './Emails';
 import { NotificationsLog } from './Notifications';
 import { KitSettings } from './Kit';
 import { ToolsSettings } from './Tools';
+import { BrandingSettings } from './Branding';
 
 const GROUPS: { key: string; label: string; icon: IconName; desc: string }[] = [
 	{ key: 'general', label: 'General', icon: 'building', desc: 'Business details, receipts, pages' },
 	{ key: 'payments', label: 'Payments', icon: 'card', desc: 'Sandbox, currencies, gateways' },
 	{ key: 'lifecycle', label: 'Lifecycle', icon: 'refresh', desc: 'Reminders, grace, expiry' },
+	{ key: 'branding', label: 'Branding', icon: 'sparkles', desc: 'Brand colours & fonts' },
 	{ key: 'emails', label: 'Emails', icon: 'mail', desc: 'Sender, provider, templates' },
 	{ key: 'notifications', label: 'Email log', icon: 'inbox', desc: 'Sent & failed emails' },
 	{ key: 'kit', label: 'Kit', icon: 'tag', desc: 'API key, tag map, sync' },
@@ -49,6 +51,7 @@ export function Settings( { group, route }: { group: string; route: Route } ) {
 					{ g === 'general' && <General /> }
 					{ g === 'payments' && <Payments /> }
 					{ g === 'lifecycle' && <Lifecycle /> }
+					{ g === 'branding' && <BrandingSettings /> }
 					{ g === 'emails' && <EmailsSettings route={ route } /> }
 					{ g === 'notifications' && <NotificationsLog /> }
 					{ g === 'kit' && <KitSettings /> }

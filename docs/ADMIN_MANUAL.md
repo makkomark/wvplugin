@@ -59,7 +59,18 @@ Set a required level on posts and pages (meta box, quick/bulk edit, or **Content
 category. Locked content shows a teaser and a join/upgrade card and is removed from REST, RSS, search and sitemaps. Media files with a level are moved
 to a protected folder and served with 15-minute signed links.
 
+## Branding
+**Settings › Branding** controls the look of everything the plugin shows: member dashboard, pricing and enterprise pages, the payment page,
+the paywall card, the admin screens, emails and PDF receipts.
+- **Colours**: primary (default WitsValley green `#0B4C25`) and accent (default WitsValley amber `#FFAC04`). Every lighter/darker shade,
+  the gradient cards (green with an amber glow) and the dark-mode variants are generated from these two. A live preview shows the result;
+  "WitsValley defaults" restores the brand colours.
+- **Fonts**: *Theme* (default — uses the active theme's body and heading fonts, so the dashboard matches the site), *System* (fastest),
+  *Google Fonts* (type the family names), *Adobe Fonts kit* (kit ID from fonts.adobe.com + the family names in your kit) or *Custom stylesheet*
+  (any HTTPS `@font-face` stylesheet, e.g. self-hosted fonts). Headings can use a different family. wp-admin can match the front end or stay on system fonts.
+- **Dark mode**: follow the visitor's device, or always light.
+
 ## Settings
-General (business details, receipts, pages), Payments (sandbox, currencies, gateways per country, transaction-id meta keys), Lifecycle (reminders,
+General (business details, receipts, pages), Branding (colours, fonts, dark mode), Payments (sandbox, currencies, gateways per country, transaction-id meta keys), Lifecycle (reminders,
 grace, expiry, retries, stale orders, rejoin window; time unit "minute" compresses dunning for staging tests), Emails (sender, provider, templates with
 live preview and test send), Email log, Kit (API key, tag map, reconcile), Tools (export/import configuration, health, backup now).
