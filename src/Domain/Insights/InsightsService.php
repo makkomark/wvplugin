@@ -54,18 +54,18 @@ final class InsightsService {
 				$new     = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$m} WHERE created_at >= %s", $month ) ); // phpcs:ignore WordPress.DB
 				$mrr     = $this->mrr( $currency );
 				return array(
-					'currency'          => $currency,
-					'mrr_minor'         => $mrr['mrr_minor'],
-					'mrr_display'       => $mrr['mrr_display'],
-					'active_paid'       => $active,
-					'active_free'       => $free,
-					'revenue_month_minor' => $revenue,
+					'currency'              => $currency,
+					'mrr_minor'             => $mrr['mrr_minor'],
+					'mrr_display'           => $mrr['mrr_display'],
+					'active_paid'           => $active,
+					'active_free'           => $free,
+					'revenue_month_minor'   => $revenue,
 					'revenue_month_display' => Money::format( $revenue, $currency ),
-					'past_due'          => $past,
-					'needs_review'      => $review,
-					'new_members_month' => $new,
-					'churn_rate'        => $this->churnRate( gmdate( 'Y-m' ) )['rate'],
-					'renewal_success'   => $this->renewalSuccess( gmdate( 'Y-m' ) )['rate'],
+					'past_due'              => $past,
+					'needs_review'          => $review,
+					'new_members_month'     => $new,
+					'churn_rate'            => $this->churnRate( gmdate( 'Y-m' ) )['rate'],
+					'renewal_success'       => $this->renewalSuccess( gmdate( 'Y-m' ) )['rate'],
 				);
 			}
 		);
@@ -103,7 +103,11 @@ final class InsightsService {
 		$s = Db::table( 'subscriptions' );
 		$p = Db::table( 'plans' );
 		return array_map(
-			static fn( $r ) => array( 'plan' => $r['name'], 'slug' => $r['slug'], 'count' => (int) $r['c'] ),
+			static fn( $r ) => array(
+				'plan'  => $r['name'],
+				'slug'  => $r['slug'],
+				'count' => (int) $r['c'],
+			),
 			$wpdb->get_results( "SELECT p.name, p.slug, COUNT(DISTINCT s.member_id) c FROM {$p} p LEFT JOIN {$s} s ON s.plan_id = p.id AND s.status IN ('active','past_due') WHERE p.archived_at IS NULL GROUP BY p.id ORDER BY p.sort_order", ARRAY_A ) ?: array() // phpcs:ignore WordPress.DB
 		);
 	}
@@ -120,14 +124,18 @@ final class InsightsService {
 			$end   = gmdate( 'Y-m-t 23:59:59', strtotime( $start ) );
 			$new   = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$s} s INNER JOIN {$p} p ON p.id = s.plan_id WHERE p.is_free = 0 AND s.started_at BETWEEN %s AND %s", $start, $end ) ); // phpcs:ignore WordPress.DB
 			$churn = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT e.subscription_id) FROM {$e} e INNER JOIN {$s} s ON s.id = e.subscription_id INNER JOIN {$p} p ON p.id = s.plan_id WHERE p.is_free = 0 AND e.to_status IN ('expired','cancelled') AND e.from_status <> 'pending' AND (e.reason IS NULL OR e.reason NOT LIKE %s) AND e.created_at BETWEEN %s AND %s", 'Superseded%', $start, $end ) ); // phpcs:ignore WordPress.DB
-			$out[] = array( 'month' => substr( $start, 0, 7 ), 'new' => $new, 'churned' => $churn );
+			$out[] = array(
+				'month'   => substr( $start, 0, 7 ),
+				'new'     => $new,
+				'churned' => $churn,
+			);
 		}
 		return $out;
 	}
 
 	/** @return array{month:string, rate:float, churned:int, base:int} */
 	public function churnRate( string $month ): array {
-		$row   = null;
+		$row = null;
 		foreach ( $this->newVsChurned( 1 ) as $r ) {
 			$row = $r;
 		}
@@ -173,7 +181,15 @@ final class InsightsService {
 		$py       = Db::table( 'payments' );
 		$currency = $this->currency( $currency );
 		$rows     = $wpdb->get_results( $wpdb->prepare( "SELECT COALESCE(py.gateway,'manual') gateway, SUM(o.amount_minor) total, COUNT(*) n FROM {$o} o LEFT JOIN {$py} py ON py.order_id = o.id WHERE o.status = 'paid' AND o.currency = %s AND o.paid_at BETWEEN %s AND %s GROUP BY py.gateway ORDER BY total DESC", $currency, $from . ' 00:00:00', $to . ' 23:59:59' ), ARRAY_A ); // phpcs:ignore WordPress.DB
-		return array_map( static fn( $r ) => array( 'gateway' => $r['gateway'], 'orders' => (int) $r['n'], 'total_minor' => (int) $r['total'], 'total_display' => Money::format( (int) $r['total'], $currency ) ), $rows ?: array() );
+		return array_map(
+			static fn( $r ) => array(
+				'gateway'       => $r['gateway'],
+				'orders'        => (int) $r['n'],
+				'total_minor'   => (int) $r['total'],
+				'total_display' => Money::format( (int) $r['total'], $currency ),
+			),
+			$rows ?: array()
+		);
 	}
 
 	/** @return list<array<string,mixed>> */
@@ -183,7 +199,15 @@ final class InsightsService {
 		$m        = Db::table( 'members' );
 		$currency = $this->currency( $currency );
 		$rows     = $wpdb->get_results( $wpdb->prepare( "SELECT COALESCE(m.country,'—') country, SUM(o.amount_minor) total, COUNT(*) n FROM {$o} o INNER JOIN {$m} m ON m.id = o.member_id WHERE o.status = 'paid' AND o.currency = %s AND o.paid_at BETWEEN %s AND %s GROUP BY m.country ORDER BY total DESC", $currency, $from . ' 00:00:00', $to . ' 23:59:59' ), ARRAY_A ); // phpcs:ignore WordPress.DB
-		return array_map( static fn( $r ) => array( 'country' => $r['country'], 'orders' => (int) $r['n'], 'total_minor' => (int) $r['total'], 'total_display' => Money::format( (int) $r['total'], $currency ) ), $rows ?: array() );
+		return array_map(
+			static fn( $r ) => array(
+				'country'       => $r['country'],
+				'orders'        => (int) $r['n'],
+				'total_minor'   => (int) $r['total'],
+				'total_display' => Money::format( (int) $r['total'], $currency ),
+			),
+			$rows ?: array()
+		);
 	}
 
 	/** @return list<array<string,mixed>> */
@@ -196,7 +220,11 @@ final class InsightsService {
 			$start = gmdate( 'Y-m-01 00:00:00', strtotime( "-{$i} months", strtotime( gmdate( 'Y-m-15' ) ) ) );
 			$end   = gmdate( 'Y-m-t 23:59:59', strtotime( $start ) );
 			$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(amount_minor),0) FROM {$o} WHERE status = 'paid' AND currency = %s AND paid_at BETWEEN %s AND %s", $currency, $start, $end ) ); // phpcs:ignore WordPress.DB
-			$out[] = array( 'month' => substr( $start, 0, 7 ), 'total_minor' => $total, 'total_display' => Money::format( $total, $currency ) );
+			$out[] = array(
+				'month'         => substr( $start, 0, 7 ),
+				'total_minor'   => $total,
+				'total_display' => Money::format( $total, $currency ),
+			);
 		}
 		return $out;
 	}
@@ -212,7 +240,12 @@ final class InsightsService {
 			$end   = gmdate( 'Y-m-t 23:59:59', strtotime( $start ) );
 			$free  = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT s.member_id) FROM {$s} s INNER JOIN {$p} p ON p.id = s.plan_id WHERE p.is_free = 1 AND s.started_at BETWEEN %s AND %s", $start, $end ) ); // phpcs:ignore WordPress.DB
 			$conv  = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT s.member_id) FROM {$s} s INNER JOIN {$p} p ON p.id = s.plan_id WHERE p.is_free = 1 AND s.started_at BETWEEN %s AND %s AND EXISTS (SELECT 1 FROM {$s} s2 INNER JOIN {$p} p2 ON p2.id = s2.plan_id WHERE s2.member_id = s.member_id AND p2.is_free = 0 AND s2.started_at >= s.started_at)", $start, $end ) ); // phpcs:ignore WordPress.DB
-			$out[] = array( 'month' => substr( $start, 0, 7 ), 'free_signups' => $free, 'converted' => $conv, 'rate' => $free ? round( 100 * $conv / $free, 1 ) : 0.0 );
+			$out[] = array(
+				'month'        => substr( $start, 0, 7 ),
+				'free_signups' => $free,
+				'converted'    => $conv,
+				'rate'         => $free ? round( 100 * $conv / $free, 1 ) : 0.0,
+			);
 		}
 		return $out;
 	}
@@ -222,7 +255,10 @@ final class InsightsService {
 		global $wpdb;
 		$s = Db::table( 'subscriptions' );
 		return array_map(
-			static fn( $r ) => array( 'reason' => $r['cancel_reason'] ?: 'Not given', 'count' => (int) $r['c'] ),
+			static fn( $r ) => array(
+				'reason' => $r['cancel_reason'] ?: 'Not given',
+				'count'  => (int) $r['c'],
+			),
 			$wpdb->get_results( $wpdb->prepare( "SELECT cancel_reason, COUNT(*) c FROM {$s} WHERE cancel_reason IS NOT NULL AND cancel_reason <> 'superseded' AND updated_at BETWEEN %s AND %s GROUP BY cancel_reason ORDER BY c DESC LIMIT 20", $from . ' 00:00:00', $to . ' 23:59:59' ), ARRAY_A ) ?: array() // phpcs:ignore WordPress.DB
 		);
 	}
@@ -234,7 +270,15 @@ final class InsightsService {
 		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT currency, COUNT(*) n, SUM(amount_minor) total FROM {$s} WHERE status = 'active' AND cancel_at_period_end = 0 AND payment_method_id IS NULL AND organisation_id IS NULL AND current_period_end BETWEEN %s AND %s GROUP BY currency", Clock::mysql(), Clock::mysql( Clock::now()->modify( "+{$days} days" ) ) ), ARRAY_A ); // phpcs:ignore WordPress.DB
 		return array(
 			'days'  => $days,
-			'items' => array_map( static fn( $r ) => array( 'currency' => $r['currency'], 'count' => (int) $r['n'], 'total_minor' => (int) $r['total'], 'total_display' => Money::format( (int) $r['total'], (string) $r['currency'] ) ), $rows ?: array() ),
+			'items' => array_map(
+				static fn( $r ) => array(
+					'currency'      => $r['currency'],
+					'count'         => (int) $r['n'],
+					'total_minor'   => (int) $r['total'],
+					'total_display' => Money::format( (int) $r['total'], (string) $r['currency'] ),
+				),
+				$rows ?: array()
+			),
 		);
 	}
 

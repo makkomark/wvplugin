@@ -66,7 +66,10 @@ final class Menu {
 			return;
 		}
 		$asset_file = WVM_DIR . 'build/admin.asset.php';
-		$asset      = file_exists( $asset_file ) ? require $asset_file : array( 'dependencies' => array( 'react', 'react-dom', 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n' ), 'version' => WVM_VERSION );
+		$asset      = file_exists( $asset_file ) ? require $asset_file : array(
+			'dependencies' => array( 'react', 'react-dom', 'wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n' ),
+			'version'      => WVM_VERSION,
+		);
 		wp_enqueue_script( 'wvm-admin', WVM_URL . 'build/admin.js', (array) $asset['dependencies'], (string) $asset['version'], true );
 		wp_enqueue_style( 'wp-components' );
 		if ( file_exists( WVM_DIR . 'build/admin.css' ) ) {
@@ -88,36 +91,44 @@ final class Menu {
 			'wvm-admin',
 			'wvmAdmin',
 			array(
-				'restUrl'       => esc_url_raw( rest_url( WVM_REST_NS . '/' ) ),
-				'restRoot'      => esc_url_raw( rest_url() ),
-				'nonce'         => wp_create_nonce( 'wp_rest' ),
-				'adminUrl'      => admin_url(),
-				'pages'         => $pages,
-				'caps'          => Capabilities::forCurrentUser(),
-				'user'          => array(
-					'id'    => $user->ID,
-					'name'  => $user->display_name,
-					'email' => $user->user_email,
+				'restUrl'            => esc_url_raw( rest_url( WVM_REST_NS . '/' ) ),
+				'restRoot'           => esc_url_raw( rest_url() ),
+				'nonce'              => wp_create_nonce( 'wp_rest' ),
+				'adminUrl'           => admin_url(),
+				'pages'              => $pages,
+				'caps'               => Capabilities::forCurrentUser(),
+				'user'               => array(
+					'id'     => $user->ID,
+					'name'   => $user->display_name,
+					'email'  => $user->user_email,
 					'avatar' => get_avatar_url( $user->ID, array( 'size' => 64 ) ),
 				),
-				'levels'        => LevelResolver::LEVELS,
-				'currencies'    => array_values( (array) $this->settings->get( 'payments', 'currencies_enabled', array( 'UGX', 'USD' ) ) ),
-				'allCurrencies' => Money::known(),
-				'decimals'      => array_combine( Money::known(), array_map( array( Money::class, 'decimals' ), Money::known() ) ),
-				'countries'     => function_exists( 'WC' ) && WC()->countries ? WC()->countries->get_countries() : array(),
-				'timezones'     => timezone_identifiers_list(),
-				'placeholders'  => TemplateDefaults::PLACEHOLDERS,
-				'dashboardUrl'  => Urls::dashboard(),
-				'pricingUrl'    => Urls::pricing(),
-				'enterpriseUrl' => Urls::enterprise(),
-				'wooOrdersUrl'  => admin_url( 'admin.php?page=wc-orders' ),
-				'wooGatewaysUrl' => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
+				'levels'             => LevelResolver::LEVELS,
+				'currencies'         => array_values( (array) $this->settings->get( 'payments', 'currencies_enabled', array( 'UGX', 'USD' ) ) ),
+				'allCurrencies'      => Money::known(),
+				'decimals'           => array_combine( Money::known(), array_map( array( Money::class, 'decimals' ), Money::known() ) ),
+				'countries'          => function_exists( 'WC' ) && WC()->countries ? WC()->countries->get_countries() : array(),
+				'timezones'          => timezone_identifiers_list(),
+				'placeholders'       => TemplateDefaults::PLACEHOLDERS,
+				'dashboardUrl'       => Urls::dashboard(),
+				'pricingUrl'         => Urls::pricing(),
+				'enterpriseUrl'      => Urls::enterprise(),
+				'wooOrdersUrl'       => admin_url( 'admin.php?page=wc-orders' ),
+				'wooGatewaysUrl'     => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
 				'actionSchedulerUrl' => admin_url( 'admin.php?page=wc-status&tab=action-scheduler&s=wvm_' ),
-				'gateways'      => $this->gateways(),
-				'postTypes'     => array_values( array_map( static fn( $t ) => array( 'name' => $t->name, 'label' => $t->labels->singular_name ), get_post_types( array( 'public' => true ), 'objects' ) ) ),
-				'sandbox'       => (bool) $this->settings->get( 'payments', 'sandbox_mode', false ),
-				'siteName'      => (string) $this->settings->get( 'general', 'business_name', 'WitsValley' ),
-				'version'       => WVM_VERSION,
+				'gateways'           => $this->gateways(),
+				'postTypes'          => array_values(
+					array_map(
+						static fn( $t ) => array(
+							'name'  => $t->name,
+							'label' => $t->labels->singular_name,
+						),
+						get_post_types( array( 'public' => true ), 'objects' )
+					)
+				),
+				'sandbox'            => (bool) $this->settings->get( 'payments', 'sandbox_mode', false ),
+				'siteName'           => (string) $this->settings->get( 'general', 'business_name', 'WitsValley' ),
+				'version'            => WVM_VERSION,
 			)
 		);
 	}

@@ -53,7 +53,7 @@ final class SettingsController extends Controller {
 
 	private function group( \WP_REST_Request $r ): string {
 		$g = (string) $r['group'];
-		if ( ! in_array( $g, Settings::groups(), true ) || 'tools' === $g && false ) {
+		if ( ! in_array( $g, Settings::groups(), true ) ) {
 			throw DomainError::notFound( 'settings group' );
 		}
 		return $g;

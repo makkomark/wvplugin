@@ -60,7 +60,15 @@ final class SubscriptionsController extends Controller {
 					throw DomainError::conflict( 'Pay links are for live or lapsed memberships.' );
 				}
 				$order = $this->orders->ensureRenewalOrder( $sub );
-				wvm( Mailer::class )->send( 'pay_link', (int) $sub['member_id'], array( 'pay_link' => $order['pay_link'], 'amount' => $order['amount_display'], 'plan' => $order['plan_name'] ) );
+				wvm( Mailer::class )->send(
+					'pay_link',
+					(int) $sub['member_id'],
+					array(
+						'pay_link' => $order['pay_link'],
+						'amount'   => $order['amount_display'],
+						'plan'     => $order['plan_name'],
+					)
+				);
 				wvm( \WitsValley\Members\Domain\Audit\Audit::class )->log( 'subscription.pay_link_sent', 'subscription', (int) $sub['id'], null, array( 'order_id' => $order['id'] ) );
 				return $order;
 			},

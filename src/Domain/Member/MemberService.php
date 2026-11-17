@@ -18,10 +18,10 @@ use WitsValley\Members\Support\Validation;
 final class MemberService {
 
 	public const DEFAULT_PREFS = array(
-		'renewal_reminders' => true,
+		'renewal_reminders'  => true,
 		'workshop_reminders' => true,
-		'product_updates'   => true,
-		'in_app'            => true,
+		'product_updates'    => true,
+		'in_app'             => true,
 	);
 
 	public function __construct(
@@ -167,7 +167,7 @@ final class MemberService {
 				'notification_prefs' => 'array',
 			)
 		);
-		$row = array();
+		$row    = array();
 		foreach ( array( 'phone', 'country', 'timezone' ) as $key ) {
 			if ( array_key_exists( $key, $data ) ) {
 				$row[ $key ] = $data[ $key ];
@@ -416,7 +416,16 @@ final class MemberService {
 		foreach ( $ids as $id ) {
 			do_action( 'wvm/member/bulk_tag', (int) $id, $tag );
 		}
-		$this->audit->log( 'member.bulk_tag', 'member', null, null, array( 'ids' => $ids, 'tag' => $tag ) );
+		$this->audit->log(
+			'member.bulk_tag',
+			'member',
+			null,
+			null,
+			array(
+				'ids' => $ids,
+				'tag' => $tag,
+			)
+		);
 		return count( $ids );
 	}
 
@@ -529,24 +538,24 @@ final class MemberService {
 	private function presentListRow( array $row ): array {
 		$status = $row['sub_status'] ?? null;
 		return array(
-			'id'                => (int) $row['id'],
-			'public_id'         => (string) $row['public_id'],
-			'user_id'           => (int) $row['user_id'],
-			'name'              => (string) $row['display_name'],
-			'email'             => (string) $row['user_email'],
-			'phone'             => (string) ( $row['phone'] ?? '' ),
-			'country'           => (string) ( $row['country'] ?? '' ),
-			'plan_name'         => (string) ( $row['plan_name'] ?? '—' ),
-			'plan_slug'         => (string) ( $row['plan_slug'] ?? '' ),
-			'subscription_id'   => $row['sub_id'] ? (int) $row['sub_id'] : null,
-			'status'            => $status ?: 'none',
+			'id'                   => (int) $row['id'],
+			'public_id'            => (string) $row['public_id'],
+			'user_id'              => (int) $row['user_id'],
+			'name'                 => (string) $row['display_name'],
+			'email'                => (string) $row['user_email'],
+			'phone'                => (string) ( $row['phone'] ?? '' ),
+			'country'              => (string) ( $row['country'] ?? '' ),
+			'plan_name'            => (string) ( $row['plan_name'] ?? '—' ),
+			'plan_slug'            => (string) ( $row['plan_slug'] ?? '' ),
+			'subscription_id'      => $row['sub_id'] ? (int) $row['sub_id'] : null,
+			'status'               => $status ?: 'none',
 			'cancel_at_period_end' => (bool) ( $row['sub_cancel'] ?? false ),
-			'period_end'        => Clock::iso( $row['sub_period_end'] ?? null ),
-			'currency'          => $row['sub_currency'] ?? null,
-			'amount_minor'      => isset( $row['sub_amount'] ) ? (int) $row['sub_amount'] : null,
-			'marketing_consent' => (bool) $row['marketing_consent'],
-			'kit_sync_error'    => $row['kit_sync_error'] ?? null,
-			'created_at'        => Clock::iso( $row['created_at'] ),
+			'period_end'           => Clock::iso( $row['sub_period_end'] ?? null ),
+			'currency'             => $row['sub_currency'] ?? null,
+			'amount_minor'         => isset( $row['sub_amount'] ) ? (int) $row['sub_amount'] : null,
+			'marketing_consent'    => (bool) $row['marketing_consent'],
+			'kit_sync_error'       => $row['kit_sync_error'] ?? null,
+			'created_at'           => Clock::iso( $row['created_at'] ),
 		);
 	}
 

@@ -62,10 +62,10 @@ final class AuditService {
 	 * @return array{items:list<array<string,mixed>>, meta:array<string,int>}
 	 */
 	public function forMember( int $memberId, Pagination $p ): array {
-		$s    = Db::table( 'subscriptions' );
-		$o    = Db::table( 'orders' );
-		$cond = array( "((entity_type = 'member' AND entity_id = %d) OR (entity_type = 'subscription' AND entity_id IN (SELECT id FROM {$s} WHERE member_id = %d)) OR (entity_type = 'order' AND entity_id IN (SELECT id FROM {$o} WHERE member_id = %d)))" );
-		$res  = $this->repo->paginate( $cond, array( $memberId, $memberId, $memberId ), $p );
+		$s            = Db::table( 'subscriptions' );
+		$o            = Db::table( 'orders' );
+		$cond         = array( "((entity_type = 'member' AND entity_id = %d) OR (entity_type = 'subscription' AND entity_id IN (SELECT id FROM {$s} WHERE member_id = %d)) OR (entity_type = 'order' AND entity_id IN (SELECT id FROM {$o} WHERE member_id = %d)))" );
+		$res          = $this->repo->paginate( $cond, array( $memberId, $memberId, $memberId ), $p );
 		$res['items'] = array_map( array( $this, 'present' ), $res['items'] );
 		return $res;
 	}

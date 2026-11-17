@@ -45,7 +45,17 @@ $label = $wvo ? $wvo['type_label'] : '';
 				<h2><?php echo esc_html( $plan ? $plan['name'] : ( $wvo ? $wvo['description'] : '' ) ); ?></h2>
 				<p class="wvm-pay__amount"><?php echo esc_html( $wvo ? $wvo['amount_display'] : wp_strip_all_tags( $order->get_formatted_order_total() ) ); ?>
 					<?php if ( $plan && in_array( $plan['interval'], array( 'monthly', 'quarterly', 'annual' ), true ) ) : ?>
-						<small>/ <?php echo esc_html( array( 'monthly' => __( 'month', 'wv-members' ), 'quarterly' => __( 'quarter', 'wv-members' ), 'annual' => __( 'year', 'wv-members' ) )[ $plan['interval'] ] ); ?></small>
+						<small>/ 
+						<?php
+						echo esc_html(
+							array(
+								'monthly'   => __( 'month', 'wv-members' ),
+								'quarterly' => __( 'quarter', 'wv-members' ),
+								'annual'    => __( 'year', 'wv-members' ),
+							)[ $plan['interval'] ]
+						);
+						?>
+									</small>
 					<?php endif; ?>
 				</p>
 				<?php if ( $plan && $plan['benefits'] ) : ?>
@@ -64,7 +74,7 @@ $label = $wvo ? $wvo['type_label'] : '';
 			<?php do_action( 'woocommerce_pay_order_before_payment' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks ?>
 			<div id="payment">
 				<?php if ( $order->needs_payment() ) : ?>
-					<ul class="wc_payment_methods payment_methods methods" aria-label="<?php esc_attr_e( 'Payment methods', 'woocommerce' ); ?>">
+					<ul class="wc_payment_methods payment_methods methods" aria-label="<?php esc_attr_e( 'Payment methods', 'wv-members' ); ?>">
 						<?php
 						if ( ! empty( $available_gateways ) ) {
 							foreach ( $available_gateways as $gateway ) {

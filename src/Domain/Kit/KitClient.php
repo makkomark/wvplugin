@@ -67,7 +67,7 @@ class KitClient {
 
 	/** @return list<string> Tag names on a subscriber. */
 	public function subscriberTags( string $subscriberId, ?int $memberId = null ): array {
-		$res  = $this->request( 'GET', '/subscribers/' . rawurlencode( $subscriberId ) . '/tags?per_page=1000' );
+		$res = $this->request( 'GET', '/subscribers/' . rawurlencode( $subscriberId ) . '/tags?per_page=1000' );
 		$this->logCall( $memberId, 'lookup', null, $res );
 		$tags = is_array( $res['body'] ) ? (array) ( $res['body']['tags'] ?? array() ) : array();
 		return array_values( array_map( static fn( $t ) => (string) $t['name'], $tags ) );

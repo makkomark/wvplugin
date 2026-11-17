@@ -58,7 +58,15 @@ final class MembersController extends Controller {
 		$this->route( 'POST', '/members/(?P<id>\d+)/kit-resync', fn( $r ) => wvm( KitSync::class )->syncMember( $this->id( $r ) ), array( 'any' => array( 'wvm_edit_members', 'wvm_manage_settings' ) ) );
 		$this->route( 'POST', '/members/(?P<id>\d+)/impersonate', fn( $r ) => array( 'url' => $this->members->impersonate( $this->id( $r ) ) ), 'wvm_impersonate' );
 		$this->route( 'POST', '/members/(?P<id>\d+)/anonymise', fn( $r ) => $this->anonymise( $r ), 'wvm_manage_settings' );
-		$this->route( 'POST', '/members/(?P<id>\d+)/data-export', fn( $r ) => array( 'request_id' => $this->members->requestDataExport( $this->id( $r ) ), 'url' => admin_url( 'export-personal-data.php' ) ), $edit );
+		$this->route(
+			'POST',
+			'/members/(?P<id>\d+)/data-export',
+			fn( $r ) => array(
+				'request_id' => $this->members->requestDataExport( $this->id( $r ) ),
+				'url'        => admin_url( 'export-personal-data.php' ),
+			),
+			$edit
+		);
 	}
 
 	/** @return array<string,mixed> */
@@ -69,27 +77,40 @@ final class MembersController extends Controller {
 		$o       = Db::table( 'orders' );
 		$paid    = $wpdb->get_results( $wpdb->prepare( "SELECT currency, SUM(amount_minor) total, COUNT(*) n FROM {$o} WHERE member_id = %d AND status = 'paid' GROUP BY currency", $id ), ARRAY_A ); // phpcs:ignore WordPress.DB
 		$ent     = wvm( LevelResolver::class )->entitlements( (int) $member['user_id'] );
-		$pending = wvm( OrderRepository::class )->first( array( 'member_id' => $id, 'status' => 'pending' ) );
+		$pending = wvm( OrderRepository::class )->first(
+			array(
+				'member_id' => $id,
+				'status'    => 'pending',
+			)
+		);
 		return array(
-			'member'       => $member,
-			'subscription' => $current,
-			'entitlements' => $ent,
-			'organisation' => wvm( OrganisationService::class )->forMember( $id ),
-			'pending_order' => $pending ? $this->orders->present( $pending ) : null,
+			'member'          => $member,
+			'subscription'    => $current,
+			'entitlements'    => $ent,
+			'organisation'    => wvm( OrganisationService::class )->forMember( $id ),
+			'pending_order'   => $pending ? $this->orders->present( $pending ) : null,
 			'payment_methods' => wvm( PaymentMethodService::class )->forMember( $id ),
-			'notes'        => $this->members->notes( $id ),
-			'stats'        => array(
-				'lifetime_value' => array_map( static fn( $r ) => array( 'currency' => $r['currency'], 'total_minor' => (int) $r['total'], 'display' => Money::format( (int) $r['total'], (string) $r['currency'] ), 'orders' => (int) $r['n'] ), $paid ?: array() ),
+			'notes'           => $this->members->notes( $id ),
+			'stats'           => array(
+				'lifetime_value' => array_map(
+					static fn( $r ) => array(
+						'currency'    => $r['currency'],
+						'total_minor' => (int) $r['total'],
+						'display'     => Money::format( (int) $r['total'], (string) $r['currency'] ),
+						'orders'      => (int) $r['n'],
+					),
+					$paid ?: array()
+				),
 				'member_since'   => $member['created_at'],
 				'subscriptions'  => count( $this->subs->forMember( $id ) ),
 			),
-			'kit'          => array(
+			'kit'             => array(
 				'subscriber_id' => $member['kit_subscriber_id'],
 				'last_synced'   => $member['kit_last_synced_at'],
 				'error'         => $member['kit_sync_error'],
 				'expected'      => wvm( KitSync::class )->stateFor( $id ),
 			),
-			'wp_user_url'  => admin_url( 'user-edit.php?user_id=' . (int) $member['user_id'] ),
+			'wp_user_url'     => admin_url( 'user-edit.php?user_id=' . (int) $member['user_id'] ),
 		);
 	}
 
@@ -138,7 +159,17 @@ final class MembersController extends Controller {
 					++$count;
 				}
 			}
-			wvm( \WitsValley\Members\Domain\Audit\Audit::class )->log( 'member.bulk_email', 'member', null, null, array( 'ids' => $ids, 'template' => $value, 'queued' => $count ) );
+			wvm( \WitsValley\Members\Domain\Audit\Audit::class )->log(
+				'member.bulk_email',
+				'member',
+				null,
+				null,
+				array(
+					'ids'      => $ids,
+					'template' => $value,
+					'queued'   => $count,
+				)
+			);
 			return array( 'queued' => $count );
 		}
 		throw DomainError::validation( array( 'action' => 'Unknown bulk action.' ) );
@@ -167,7 +198,15 @@ final class MembersController extends Controller {
 			}
 			$order = $this->orders->createForPlan( $id, $plan_id, 'new', strtoupper( (string) ( $b['currency'] ?? 'UGX' ) ) );
 		}
-		$this->mailer->send( 'pay_link', $id, array( 'pay_link' => $order['pay_link'], 'amount' => $order['amount_display'], 'plan' => $order['plan_name'] ) );
+		$this->mailer->send(
+			'pay_link',
+			$id,
+			array(
+				'pay_link' => $order['pay_link'],
+				'amount'   => $order['amount_display'],
+				'plan'     => $order['plan_name'],
+			)
+		);
 		wvm( \WitsValley\Members\Domain\Audit\Audit::class )->log( 'member.pay_link_sent', 'member', $id, null, array( 'order_id' => $order['id'] ) );
 		return $order;
 	}

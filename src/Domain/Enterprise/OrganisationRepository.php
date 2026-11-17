@@ -9,5 +9,8 @@ final class OrganisationRepository extends Repository {
 
 	protected string $table = 'organisations';
 
-	protected array $casts = array( 'seats' => 'int', 'level' => 'int' );
+	protected array $casts = array(
+		'seats' => 'int',
+		'level' => 'int',
+	);
 }

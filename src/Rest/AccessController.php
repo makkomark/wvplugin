@@ -23,7 +23,7 @@ final class AccessController extends Controller {
 			'PATCH',
 			'/access/settings',
 			function ( $r ) {
-				$b     = array_intersect_key( $this->body( $r ), array_flip( array( 'default_level', 'teaser_paragraphs', 'paywall_message', 'mode', 'post_types' ) ) );
+				$b = array_intersect_key( $this->body( $r ), array_flip( array( 'default_level', 'teaser_paragraphs', 'paywall_message', 'mode', 'post_types' ) ) );
 				if ( isset( $b['mode'] ) && ! in_array( $b['mode'], array( 'teaser', 'redirect', 'login' ), true ) ) {
 					unset( $b['mode'] );
 				}

@@ -59,13 +59,13 @@ final class Capabilities {
 				$caps[ self::PLANS_FULL ] = true;
 			}
 			if ( 'wvm_content' === $role ) {
-				$caps['edit_posts']             = true;
-				$caps['edit_others_posts']      = true;
-				$caps['edit_published_posts']   = true;
-				$caps['edit_pages']             = true;
-				$caps['edit_others_pages']      = true;
-				$caps['edit_published_pages']   = true;
-				$caps['manage_categories']      = true;
+				$caps['edit_posts']           = true;
+				$caps['edit_others_posts']    = true;
+				$caps['edit_published_posts'] = true;
+				$caps['edit_pages']           = true;
+				$caps['edit_others_pages']    = true;
+				$caps['edit_published_pages'] = true;
+				$caps['manage_categories']    = true;
 			}
 			remove_role( $role );
 			add_role( $role, $label, $caps );

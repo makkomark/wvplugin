@@ -18,6 +18,11 @@ final class PaymentMethodRepository extends Repository {
 
 	/** @return array<string,mixed>|null */
 	public function defaultFor( int $memberId ): ?array {
-		return $this->first( array( 'member_id' => $memberId, 'is_default' => 1 ) ) ?? $this->first( array( 'member_id' => $memberId ) );
+		return $this->first(
+			array(
+				'member_id'  => $memberId,
+				'is_default' => 1,
+			)
+		) ?? $this->first( array( 'member_id' => $memberId ) );
 	}
 }

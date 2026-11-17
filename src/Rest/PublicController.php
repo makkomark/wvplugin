@@ -133,7 +133,10 @@ final class PublicController extends Controller {
 		}
 		wp_set_current_user( $user->ID );
 		return array(
-			'user'     => array( 'id' => $user->ID, 'name' => $user->display_name ),
+			'user'     => array(
+				'id'   => $user->ID,
+				'name' => $user->display_name,
+			),
 			'nonce'    => wp_create_nonce( 'wp_rest' ),
 			'redirect' => Urls::dashboard(),
 		);
@@ -172,7 +175,10 @@ final class PublicController extends Controller {
 		}
 		unset( $b['website'], $b['_nonce'] );
 		$app = wvm( ApplicationService::class )->submit( $b, self::ip() );
-		return array( 'submitted' => true, 'id' => $app['id'] );
+		return array(
+			'submitted' => true,
+			'id'        => $app['id'],
+		);
 	}
 
 	/** @return array{country:string, currency:string, source:string} */
@@ -245,7 +251,10 @@ final class PublicController extends Controller {
 		}
 		if ( is_user_logged_in() ) {
 			$org = wvm( OrganisationService::class )->accept( $token, get_current_user_id() );
-			return array( 'organisation' => $org, 'redirect' => Urls::dashboard( 'programme' ) );
+			return array(
+				'organisation' => $org,
+				'redirect'     => Urls::dashboard( 'programme' ),
+			);
 		}
 		if ( email_exists( (string) $seat['email'] ) ) {
 			throw new DomainError( 'You already have an account — log in to accept.', 'wvm_login_required', 409 );

@@ -35,7 +35,7 @@ final class ApplicationService {
 		if ( $count >= self::RATE_LIMIT ) {
 			throw new DomainError( 'Too many applications from your network. Please try again later.', 'wvm_rate_limited', 429 );
 		}
-		$data = Validation::validate(
+		$data           = Validation::validate(
 			$dto,
 			array(
 				'org_name'         => 'required|maxlen:200',
@@ -58,7 +58,14 @@ final class ApplicationService {
 		$app = $this->get( $id );
 		$this->audit->log( 'application.submitted', 'application', $id, null, $app );
 		$first = explode( ' ', (string) $data['contact_name'] )[0];
-		wvm( Mailer::class )->send( 'enterprise_ack', (string) $data['email'], array( 'first_name' => $first, 'org_name' => $data['org_name'] ) );
+		wvm( Mailer::class )->send(
+			'enterprise_ack',
+			(string) $data['email'],
+			array(
+				'first_name' => $first,
+				'org_name'   => $data['org_name'],
+			)
+		);
 		wvm( Notifier::class )->admin( 'New Enterprise application', sprintf( "%s (%s) applied for %s participants.\n\nReview: %s", $data['org_name'], $data['email'], $data['participants'] ?? '?', admin_url( 'admin.php?page=wvm-enterprise#/enterprise/applications' ) ) );
 		return $app;
 	}
@@ -79,8 +86,8 @@ final class ApplicationService {
 			$cond[] = 'status = %s';
 			$args[] = (string) $f['status'];
 		}
-		$res          = $this->repo->paginate( $cond, $args, $p );
-		$res['items'] = array_map( array( $this, 'present' ), $res['items'] );
+		$res           = $this->repo->paginate( $cond, $args, $p );
+		$res['items']  = array_map( array( $this, 'present' ), $res['items'] );
 		$res['counts'] = $this->counts();
 		return $res;
 	}
@@ -124,10 +131,10 @@ final class ApplicationService {
 		}
 		$dto = array_merge(
 			array(
-				'name'          => $app['org_name'],
-				'seats'         => $app['participants'] ?: 10,
-				'contact_email' => $app['email'],
-				'contact_name'  => $app['contact_name'],
+				'name'            => $app['org_name'],
+				'seats'           => $app['participants'] ?: 10,
+				'contact_email'   => $app['email'],
+				'contact_name'    => $app['contact_name'],
 				'programme_title' => $app['programme_type'],
 			),
 			$orgDto

@@ -67,7 +67,10 @@ final class MeController extends Controller {
 			function () {
 				$this->rateLimit( 'export', 3, DAY_IN_SECONDS );
 				$id = $this->members->requestDataExport( (int) $this->me()['id'] );
-				return array( 'requested' => true, 'request_id' => $id );
+				return array(
+					'requested'  => true,
+					'request_id' => $id,
+				);
 			},
 			$m
 		);
@@ -77,7 +80,10 @@ final class MeController extends Controller {
 			function () {
 				$this->rateLimit( 'delete', 3, DAY_IN_SECONDS );
 				$id = $this->members->requestDeletion( (int) $this->me()['id'] );
-				return array( 'requested' => true, 'request_id' => $id );
+				return array(
+					'requested'  => true,
+					'request_id' => $id,
+				);
 			},
 			$m
 		);
@@ -181,7 +187,12 @@ final class MeController extends Controller {
 		$id       = (int) $member['id'];
 		$current  = $this->subs->currentFor( $id );
 		$ent      = wvm( LevelResolver::class )->entitlements( get_current_user_id() );
-		$pending  = wvm( OrderRepository::class )->first( array( 'member_id' => $id, 'status' => array( 'pending', 'failed' ) ) );
+		$pending  = wvm( OrderRepository::class )->first(
+			array(
+				'member_id' => $id,
+				'status'    => array( 'pending', 'failed' ),
+			)
+		);
 		$org      = wvm( OrganisationService::class )->forMember( $id );
 		$currency = $current && ! $current['plan']['is_free'] ? (string) $current['currency'] : $this->currencyFor( (string) $member['country'] );
 		$state    = $this->state( $current );
@@ -273,7 +284,7 @@ final class MeController extends Controller {
 
 	/** @param array<string,mixed> $plan */
 	private function assertJoinable( array $plan ): void {
-		if ( $plan['archived_at'] || 'public' !== $plan['visibility'] && 'invite' !== $plan['visibility'] ) {
+		if ( $plan['archived_at'] || ( 'public' !== $plan['visibility'] && 'invite' !== $plan['visibility'] ) ) {
 			throw DomainError::conflict( 'This plan is not available.' );
 		}
 		if ( $plan['is_quoted'] ) {
@@ -288,7 +299,10 @@ final class MeController extends Controller {
 		$this->assertJoinable( $plan );
 		$sub = $this->subRepo->current( (int) $member['id'] );
 		if ( $plan['is_free'] ) {
-			return array( 'subscription' => $this->subs->startFree( (int) $member['id'] ), 'redirect' => Urls::dashboard() );
+			return array(
+				'subscription' => $this->subs->startFree( (int) $member['id'] ),
+				'redirect'     => Urls::dashboard(),
+			);
 		}
 		if ( $sub && StateMachine::grantsAccess( (string) $sub['status'] ) && ! $this->plans->get( (int) $sub['plan_id'] )['is_free'] ) {
 			$res = $this->subs->changePlan( $sub, $planId, 'immediate', true, 'Member upgrade' );
@@ -296,16 +310,31 @@ final class MeController extends Controller {
 		}
 		if ( $sub && in_array( $sub['status'], array( 'suspended', 'expired' ), true ) && (int) $sub['plan_id'] === $planId && $this->subs->withinRejoinWindow( $sub ) ) {
 			$order = $this->orders->ensureRenewalOrder( $sub );
-			return array( 'order' => $order, 'checkout_url' => $order['checkout_url'], 'redirect' => $order['checkout_url'] );
+			return array(
+				'order'        => $order,
+				'checkout_url' => $order['checkout_url'],
+				'redirect'     => $order['checkout_url'],
+			);
 		}
-		$existing = wvm( OrderRepository::class )->first( array( 'member_id' => (int) $member['id'], 'plan_id' => $planId, 'type' => 'new', 'status' => 'pending' ) );
+		$existing = wvm( OrderRepository::class )->first(
+			array(
+				'member_id' => (int) $member['id'],
+				'plan_id'   => $planId,
+				'type'      => 'new',
+				'status'    => 'pending',
+			)
+		);
 		$cur      = strtoupper( $currency ?: $this->currencyFor( (string) $member['country'] ) );
 		if ( $existing && $existing['currency'] === $cur ) {
 			$order = $this->orders->present( $existing );
 		} else {
 			$order = $this->orders->createForPlan( (int) $member['id'], $planId, 'new', $cur );
 		}
-		return array( 'order' => $order, 'checkout_url' => $order['checkout_url'], 'redirect' => $order['checkout_url'] );
+		return array(
+			'order'        => $order,
+			'checkout_url' => $order['checkout_url'],
+			'redirect'     => $order['checkout_url'],
+		);
 	}
 
 	/** @return array<string,mixed> */
@@ -332,7 +361,11 @@ final class MeController extends Controller {
 		} else {
 			$order = $this->orders->ensureRenewalOrder( $sub );
 		}
-		return array( 'order' => $order, 'checkout_url' => $order['checkout_url'], 'redirect' => $order['checkout_url'] );
+		return array(
+			'order'        => $order,
+			'checkout_url' => $order['checkout_url'],
+			'redirect'     => $order['checkout_url'],
+		);
 	}
 
 	/** @return array{items:list<array<string,mixed>>, meta:array<string,int>} */

@@ -23,7 +23,12 @@ final class PlanPriceRepository extends Repository {
 	}
 
 	public function price( int $planId, string $currency ): ?int {
-		$row = $this->first( array( 'plan_id' => $planId, 'currency' => strtoupper( $currency ) ) );
+		$row = $this->first(
+			array(
+				'plan_id'  => $planId,
+				'currency' => strtoupper( $currency ),
+			)
+		);
 		return $row ? (int) $row['amount_minor'] : null;
 	}
 
@@ -46,6 +51,12 @@ final class PlanPriceRepository extends Repository {
 
 	public function remove( int $planId, string $currency ): void {
 		global $wpdb;
-		$wpdb->delete( Db::table( 'plan_prices' ), array( 'plan_id' => $planId, 'currency' => strtoupper( $currency ) ) ); // phpcs:ignore WordPress.DB
+		$wpdb->delete(
+			Db::table( 'plan_prices' ),
+			array(
+				'plan_id'  => $planId,
+				'currency' => strtoupper( $currency ),
+			)
+		); // phpcs:ignore WordPress.DB
 	}
 }

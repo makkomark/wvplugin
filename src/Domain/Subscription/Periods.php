@@ -32,9 +32,9 @@ final class Periods {
 
 	/** Month arithmetic that clamps to month end (Jan 31 + 1 month = Feb 28/29). */
 	public static function addMonths( DateTimeImmutable $start, int $months ): DateTimeImmutable {
-		$day    = (int) $start->format( 'j' );
-		$first  = $start->modify( 'first day of this month' )->modify( '+' . $months . ' months' );
-		$last   = (int) $first->format( 't' );
+		$day   = (int) $start->format( 'j' );
+		$first = $start->modify( 'first day of this month' )->modify( '+' . $months . ' months' );
+		$last  = (int) $first->format( 't' );
 		return $first->setDate( (int) $first->format( 'Y' ), (int) $first->format( 'n' ), min( $day, $last ) );
 	}
 

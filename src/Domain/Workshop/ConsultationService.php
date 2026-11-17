@@ -37,7 +37,12 @@ final class ConsultationService {
 		if ( $this->levels->levelFor( (int) $member['user_id'] ) < self::MIN_LEVEL ) {
 			throw DomainError::forbidden( 'Consultations are included with Premium. Upgrade to request one.' );
 		}
-		$open = $this->repo->count( array( 'member_id' => $memberId, 'status' => 'new' ) );
+		$open = $this->repo->count(
+			array(
+				'member_id' => $memberId,
+				'status'    => 'new',
+			)
+		);
 		if ( $open >= 3 ) {
 			throw DomainError::conflict( 'You already have open requests — we will be in touch soon.' );
 		}
@@ -58,7 +63,7 @@ final class ConsultationService {
 				'status'          => 'new',
 			)
 		);
-		$out = $this->get( $id );
+		$out  = $this->get( $id );
 		$this->audit->log( 'consultation.requested', 'consultation', $id, null, $out );
 		wvm( Notifier::class )->admin( 'New consultation request', sprintf( "%s requested a consultation: %s\n\n%s", $out['member_name'], $out['topic'], admin_url( 'admin.php?page=wvm-workshops#/consultations' ) ) );
 		return $out;
@@ -116,7 +121,7 @@ final class ConsultationService {
 				'admin_notes'  => 'text',
 			)
 		);
-		$row = array();
+		$row    = array();
 		foreach ( array( 'status', 'meeting_url', 'admin_notes' ) as $k ) {
 			if ( array_key_exists( $k, $data ) ) {
 				$row[ $k ] = $data[ $k ];
@@ -150,12 +155,25 @@ final class ConsultationService {
 
 	/** @return array<string,mixed> */
 	public function schedule( int $id, string $datetime, string $url ): array {
-		return $this->update( $id, array( 'status' => 'scheduled', 'scheduled_at' => $datetime, 'meeting_url' => $url ) );
+		return $this->update(
+			$id,
+			array(
+				'status'       => 'scheduled',
+				'scheduled_at' => $datetime,
+				'meeting_url'  => $url,
+			)
+		);
 	}
 
 	/** @return array<string,mixed> */
 	public function decline( int $id, string $note ): array {
-		return $this->update( $id, array( 'status' => 'declined', 'admin_notes' => $note ) );
+		return $this->update(
+			$id,
+			array(
+				'status'      => 'declined',
+				'admin_notes' => $note,
+			)
+		);
 	}
 
 	/** @return array<string,mixed> */
@@ -171,19 +189,19 @@ final class ConsultationService {
 		$m    = $this->members->find( (int) $r['member_id'] );
 		$user = $m ? get_userdata( (int) $m['user_id'] ) : null;
 		return array(
-			'id'              => (int) $r['id'],
-			'member_id'       => (int) $r['member_id'],
+			'id'               => (int) $r['id'],
+			'member_id'        => (int) $r['member_id'],
 			'member_public_id' => $m['public_id'] ?? '',
-			'member_name'     => $user ? $user->display_name : '—',
-			'member_email'    => $user ? $user->user_email : '',
-			'topic'           => (string) $r['topic'],
-			'preferred_dates' => (string) $r['preferred_dates'],
-			'notes'           => (string) $r['notes'],
-			'status'          => (string) $r['status'],
-			'scheduled_at'    => Clock::iso( $r['scheduled_at'] ),
-			'meeting_url'     => $r['meeting_url'],
-			'admin_notes'     => $r['admin_notes'],
-			'created_at'      => Clock::iso( $r['created_at'] ),
+			'member_name'      => $user ? $user->display_name : '—',
+			'member_email'     => $user ? $user->user_email : '',
+			'topic'            => (string) $r['topic'],
+			'preferred_dates'  => (string) $r['preferred_dates'],
+			'notes'            => (string) $r['notes'],
+			'status'           => (string) $r['status'],
+			'scheduled_at'     => Clock::iso( $r['scheduled_at'] ),
+			'meeting_url'      => $r['meeting_url'],
+			'admin_notes'      => $r['admin_notes'],
+			'created_at'       => Clock::iso( $r['created_at'] ),
 		);
 	}
 }

@@ -36,6 +36,11 @@ final class SubscriptionRepository extends Repository {
 
 	/** @return list<array<string,mixed>> Active/past_due subscriptions for a member (personal + org). */
 	public function live( int $memberId ): array {
-		return $this->where( array( 'member_id' => $memberId, 'status' => array( 'active', 'past_due' ) ) );
+		return $this->where(
+			array(
+				'member_id' => $memberId,
+				'status'    => array( 'active', 'past_due' ),
+			)
+		);
 	}
 }

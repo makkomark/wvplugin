@@ -29,6 +29,12 @@ final class OrderRepository extends Repository {
 
 	/** @return array<string,mixed>|null A pending order of $type for a subscription. */
 	public function pendingFor( int $subscriptionId, array $types ): ?array {
-		return $this->first( array( 'subscription_id' => $subscriptionId, 'status' => 'pending', 'type' => $types ) );
+		return $this->first(
+			array(
+				'subscription_id' => $subscriptionId,
+				'status'          => 'pending',
+				'type'            => $types,
+			)
+		);
 	}
 }

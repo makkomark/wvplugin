@@ -52,14 +52,14 @@ final class Settings {
 				'time_unit'              => 'day',
 			),
 			'emails'    => array(
-				'from_name'     => 'WitsValley',
-				'from_email'    => '',
-				'driver'        => 'wp_mail',
-				'provider_key'  => '',
-				'bcc_admin_on'  => array(),
-				'admin_alerts'  => '',
-				'brand_color'   => '#5B3DF5',
-				'logo_url'      => '',
+				'from_name'    => 'WitsValley',
+				'from_email'   => '',
+				'driver'       => 'wp_mail',
+				'provider_key' => '',
+				'bcc_admin_on' => array(),
+				'admin_alerts' => '',
+				'brand_color'  => '#5B3DF5',
+				'logo_url'     => '',
 			),
 			'kit'       => array(
 				'api_key'                    => '',
@@ -157,10 +157,10 @@ final class Settings {
 		if ( ! array_key_exists( $group, self::defaults() ) ) {
 			throw DomainError::notFound( 'settings group' );
 		}
-		$before   = $this->group( $group );
-		$allowed  = array_keys( self::defaults()[ $group ] );
-		$secrets  = self::SECRETS[ $group ] ?? array();
-		$next     = $before;
+		$before  = $this->group( $group );
+		$allowed = array_keys( self::defaults()[ $group ] );
+		$secrets = self::SECRETS[ $group ] ?? array();
+		$next    = $before;
 		foreach ( $patch as $key => $value ) {
 			if ( ! in_array( $key, $allowed, true ) ) {
 				continue;

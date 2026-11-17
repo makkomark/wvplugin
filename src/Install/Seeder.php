@@ -87,8 +87,14 @@ final class Seeder {
 				'kit_tag'     => 'WV-BASIC',
 				'benefits'    => array( 'All Basic lessons by email', 'Video lessons (members-only links)', 'Monthly live workshop', 'Member dashboard & receipts' ),
 				'prices'      => array(
-					array( 'currency' => 'UGX', 'amount_minor' => 20000 ),
-					array( 'currency' => 'USD', 'amount_minor' => 600 ),
+					array(
+						'currency'     => 'UGX',
+						'amount_minor' => 20000,
+					),
+					array(
+						'currency'     => 'USD',
+						'amount_minor' => 600,
+					),
 				),
 			),
 			array(
@@ -101,8 +107,14 @@ final class Seeder {
 				'highlight'   => true,
 				'benefits'    => array( 'Everything in Basic', 'Premium deep-dive programmes', 'All live workshops + recordings', 'Request 1:1 consultations', 'Priority support' ),
 				'prices'      => array(
-					array( 'currency' => 'UGX', 'amount_minor' => 50000 ),
-					array( 'currency' => 'USD', 'amount_minor' => 1500 ),
+					array(
+						'currency'     => 'UGX',
+						'amount_minor' => 50000,
+					),
+					array(
+						'currency'     => 'USD',
+						'amount_minor' => 1500,
+					),
 				),
 			),
 			array(
@@ -152,7 +164,12 @@ final class Seeder {
 			$existing = get_page_by_path( $slug );
 			if ( $existing && 'publish' === $existing->post_status ) {
 				if ( ! has_shortcode( (string) $existing->post_content, trim( $shortcode, '[]' ) ) ) {
-					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => $existing->post_content . "\n\n<!-- wp:shortcode -->\n" . $shortcode . "\n<!-- /wp:shortcode -->" ) );
+					wp_update_post(
+						array(
+							'ID'           => $existing->ID,
+							'post_content' => $existing->post_content . "\n\n<!-- wp:shortcode -->\n" . $shortcode . "\n<!-- /wp:shortcode -->",
+						)
+					);
 				}
 				$settings->set( 'general', $key, (int) $existing->ID );
 				continue;

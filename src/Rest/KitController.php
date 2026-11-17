@@ -29,12 +29,38 @@ final class KitController extends Controller {
 				if ( ! $account ) {
 					throw new DomainError( 'Kit rejected the API key or could not be reached.', 'wvm_kit_unreachable', 502 );
 				}
-				return array( 'connected' => true, 'account' => $account );
+				return array(
+					'connected' => true,
+					'account'   => $account,
+				);
 			},
 			$cap
 		);
-		$this->route( 'GET', '/kit/tags', fn() => $this->client->configured() ? array_map( static fn( $name, $id ) => array( 'id' => $id, 'name' => $name, 'owned' => TagMap::isOwned( (string) $name ) ), array_keys( $this->client->listTags( true ) ), $this->client->listTags() ) : array(), $cap );
-		$this->route( 'GET', '/kit/tag-map', fn() => array( 'map' => $this->map->map(), 'defaults' => TagMap::defaults(), 'plan_tags' => $this->map->planTags(), 'states' => TagMap::STATES ), $cap );
+		$this->route(
+			'GET',
+			'/kit/tags',
+			fn() => $this->client->configured() ? array_map(
+				static fn( $name, $id ) => array(
+					'id'    => $id,
+					'name'  => $name,
+					'owned' => TagMap::isOwned( (string) $name ),
+				),
+				array_keys( $this->client->listTags( true ) ),
+				$this->client->listTags()
+			) : array(),
+			$cap
+		);
+		$this->route(
+			'GET',
+			'/kit/tag-map',
+			fn() => array(
+				'map'       => $this->map->map(),
+				'defaults'  => TagMap::defaults(),
+				'plan_tags' => $this->map->planTags(),
+				'states'    => TagMap::STATES,
+			),
+			$cap
+		);
 		$this->route(
 			'PUT',
 			'/kit/tag-map',

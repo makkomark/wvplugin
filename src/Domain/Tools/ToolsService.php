@@ -70,7 +70,11 @@ final class ToolsService {
 		if ( ( $data['format'] ?? '' ) !== 'wv-members-config' ) {
 			throw DomainError::validation( array( 'file' => 'This is not a WitsValley Members export file.' ) );
 		}
-		$counts = array( 'settings' => 0, 'plans' => 0, 'templates' => 0 );
+		$counts = array(
+			'settings'  => 0,
+			'plans'     => 0,
+			'templates' => 0,
+		);
 		foreach ( (array) ( $data['settings'] ?? array() ) as $group => $values ) {
 			if ( in_array( $group, Settings::groups(), true ) && is_array( $values ) ) {
 				foreach ( Settings::SECRETS[ $group ] ?? array() as $secret ) {
@@ -85,7 +89,10 @@ final class ToolsService {
 			$existing = $this->plans->findBy( 'slug', (string) ( $p['slug'] ?? '' ) );
 			$prices   = array();
 			foreach ( (array) ( $p['prices'] ?? array() ) as $cur => $amt ) {
-				$prices[] = array( 'currency' => $cur, 'amount_minor' => (int) $amt );
+				$prices[] = array(
+					'currency'     => $cur,
+					'amount_minor' => (int) $amt,
+				);
 			}
 			$dto = array(
 				'slug'           => $p['slug'] ?? '',
@@ -153,7 +160,7 @@ final class ToolsService {
 		$add( 'schema', 'Database tables', $missing ? 'error' : 'ok', $missing ? 'Missing: ' . implode( ', ', $missing ) : count( Schema::tables() ) . ' tables present (v' . get_option( 'wvm_db_version' ) . ')' );
 
 		$last_hook = $wpdb->get_var( 'SELECT MAX(created_at) FROM ' . Db::table( 'hook_inbox' ) ); // phpcs:ignore WordPress.DB
-		$pending   = (int) $wpdb->get_var( "SELECT COUNT(*) FROM " . Db::table( 'orders' ) . " WHERE status = 'pending' AND woo_order_id IS NOT NULL" ); // phpcs:ignore WordPress.DB
+		$pending   = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Db::table( 'orders' ) . " WHERE status = 'pending' AND woo_order_id IS NOT NULL" ); // phpcs:ignore WordPress.DB
 		$silent    = $last_hook ? ( time() - (int) strtotime( $last_hook . ' UTC' ) ) / HOUR_IN_SECONDS : null;
 		$add( 'webhooks', 'Payment events', ( null !== $silent && $silent > 48 && $pending > 0 ) ? 'warning' : 'ok', $last_hook ? sprintf( 'Last event %s ago', human_time_diff( (int) strtotime( $last_hook . ' UTC' ) ) ) : 'No payment events yet' );
 
@@ -164,10 +171,10 @@ final class ToolsService {
 		$sandbox = (bool) $this->settings->get( 'payments', 'sandbox_mode', false );
 		$add( 'sandbox', 'Payment mode', $sandbox ? 'warning' : 'ok', $sandbox ? 'Sandbox mode is ON — real payments are not processed.' : 'Live', admin_url( 'admin.php?page=wvm-settings#/settings/payments' ) );
 
-		$review = (int) $wpdb->get_var( "SELECT COUNT(*) FROM " . Db::table( 'orders' ) . " WHERE status = 'needs_review'" ); // phpcs:ignore WordPress.DB
+		$review = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . Db::table( 'orders' ) . " WHERE status = 'needs_review'" ); // phpcs:ignore WordPress.DB
 		$add( 'review_queue', 'Payments needing review', $review > 0 ? 'warning' : 'ok', $review . ' in queue', admin_url( 'admin.php?page=wvm-payments#/payments/review' ) );
 
-		$mail_failed = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM " . Db::table( 'notifications' ) . " WHERE status = 'failed' AND created_at >= %s", Clock::mysql( Clock::now()->modify( '-1 day' ) ) ) ); // phpcs:ignore WordPress.DB
+		$mail_failed = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . Db::table( 'notifications' ) . " WHERE status = 'failed' AND created_at >= %s", Clock::mysql( Clock::now()->modify( '-1 day' ) ) ) ); // phpcs:ignore WordPress.DB
 		$add( 'email', 'Email delivery (24h)', $mail_failed > 0 ? 'warning' : 'ok', $mail_failed . ' failed', admin_url( 'admin.php?page=wvm-settings#/settings/notifications' ) );
 
 		$key = defined( 'WVM_ENCRYPTION_KEY' );
@@ -177,7 +184,11 @@ final class ToolsService {
 		$add( 'backup', 'Daily backup', $last_backup && strtotime( (string) $last_backup . ' UTC' ) > time() - 2 * DAY_IN_SECONDS ? 'ok' : 'warning', $last_backup ? 'Last backup ' . human_time_diff( (int) strtotime( (string) $last_backup . ' UTC' ) ) . ' ago' : 'No backup yet' );
 
 		$pages = array();
-		foreach ( array( 'dashboard_page_id' => 'Dashboard', 'pricing_page_id' => 'Membership', 'enterprise_page_id' => 'Enterprise' ) as $k => $label ) {
+		foreach ( array(
+			'dashboard_page_id'  => 'Dashboard',
+			'pricing_page_id'    => 'Membership',
+			'enterprise_page_id' => 'Enterprise',
+		) as $k => $label ) {
 			$id = (int) $this->settings->get( 'general', $k, 0 );
 			if ( ! $id || 'publish' !== get_post_status( $id ) ) {
 				$pages[] = $label;
@@ -248,7 +259,17 @@ final class ToolsService {
 		}
 		$s3 = $this->uploadS3( $file );
 		$this->settings->set( 'tools', 'last_backup_at', Clock::mysql() );
-		$this->audit->log( 'tools.backup', 'settings', null, null, array( 'file' => basename( $file ), 'bytes' => filesize( $file ), 's3' => $s3 ) );
+		$this->audit->log(
+			'tools.backup',
+			'settings',
+			null,
+			null,
+			array(
+				'file'  => basename( $file ),
+				'bytes' => filesize( $file ),
+				's3'    => $s3,
+			)
+		);
 		return array(
 			'file'  => basename( $file ),
 			'bytes' => (int) filesize( $file ),

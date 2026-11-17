@@ -78,8 +78,8 @@ final class Redirects {
 	private function thankYou( int $wooId ): void {
 		$order = $wooId ? $this->orders->byWoo( $wooId ) : null;
 		if ( ! $order ) {
-			$wc   = $wooId ? wc_get_order( $wooId ) : null;
-			$meta = $wc ? (int) $wc->get_meta( OrderService::META ) : 0;
+			$wc    = $wooId ? wc_get_order( $wooId ) : null;
+			$meta  = $wc ? (int) $wc->get_meta( OrderService::META ) : 0;
 			$order = $meta ? $this->orders->find( $meta ) : null;
 		}
 		if ( ! $order ) {

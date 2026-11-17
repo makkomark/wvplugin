@@ -27,7 +27,7 @@ final class Container {
 			/** @var T */
 			return $this->instances[ $id ];
 		}
-		$object = isset( $this->factories[ $id ] ) ? ( $this->factories[ $id ] )( $this ) : $this->build( $id );
+		$object                 = isset( $this->factories[ $id ] ) ? ( $this->factories[ $id ] )( $this ) : $this->build( $id );
 		$this->instances[ $id ] = $object;
 		/** @var T $object */
 		return $object;

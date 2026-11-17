@@ -33,17 +33,26 @@ final class AutoCharger {
 	public function charge( array $sub, array $order ): array {
 		$method = $sub['payment_method_id'] ? $this->methods->find( (int) $sub['payment_method_id'] ) : null;
 		if ( ! $method ) {
-			return array( 'ok' => false, 'message' => 'No saved payment method.' );
+			return array(
+				'ok'      => false,
+				'message' => 'No saved payment method.',
+			);
 		}
 		$adapter = $this->adapters()[ (string) $method['gateway'] ] ?? null;
 		$wc      = wc_get_order( (int) $order['woo_order_id'] );
 		if ( ! $adapter || ! $wc ) {
-			return array( 'ok' => false, 'message' => 'Gateway does not support automatic charging.' );
+			return array(
+				'ok'      => false,
+				'message' => 'Gateway does not support automatic charging.',
+			);
 		}
 		try {
 			return $adapter->charge( $wc, (string) $method['token'] );
 		} catch ( \Throwable $e ) {
-			return array( 'ok' => false, 'message' => $e->getMessage() );
+			return array(
+				'ok'      => false,
+				'message' => $e->getMessage(),
+			);
 		}
 	}
 }

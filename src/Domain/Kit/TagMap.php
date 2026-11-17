@@ -24,12 +24,30 @@ final class TagMap {
 	/** @return array<string,array{add:list<string>,remove:list<string>}> */
 	public static function defaults(): array {
 		return array(
-			'free'      => array( 'add' => array( 'WV-FREE' ), 'remove' => array() ),
-			'active'    => array( 'add' => array( '{plan_tag}' ), 'remove' => array( 'WV-FREE', 'WV-EXPIRED', 'WV-CANCELLED', 'WV-PAST-DUE', '{other_plan_tags}' ) ),
-			'past_due'  => array( 'add' => array( '{plan_tag}', 'WV-PAST-DUE' ), 'remove' => array() ),
-			'suspended' => array( 'add' => array( 'WV-EXPIRED' ), 'remove' => array( '{plan_tags}', 'WV-PAST-DUE' ) ),
-			'expired'   => array( 'add' => array( 'WV-EXPIRED' ), 'remove' => array( '{plan_tags}', 'WV-PAST-DUE' ) ),
-			'cancelled' => array( 'add' => array( 'WV-CANCELLED' ), 'remove' => array( '{plan_tags}', 'WV-PAST-DUE' ) ),
+			'free'      => array(
+				'add'    => array( 'WV-FREE' ),
+				'remove' => array(),
+			),
+			'active'    => array(
+				'add'    => array( '{plan_tag}' ),
+				'remove' => array( 'WV-FREE', 'WV-EXPIRED', 'WV-CANCELLED', 'WV-PAST-DUE', '{other_plan_tags}' ),
+			),
+			'past_due'  => array(
+				'add'    => array( '{plan_tag}', 'WV-PAST-DUE' ),
+				'remove' => array(),
+			),
+			'suspended' => array(
+				'add'    => array( 'WV-EXPIRED' ),
+				'remove' => array( '{plan_tags}', 'WV-PAST-DUE' ),
+			),
+			'expired'   => array(
+				'add'    => array( 'WV-EXPIRED' ),
+				'remove' => array( '{plan_tags}', 'WV-PAST-DUE' ),
+			),
+			'cancelled' => array(
+				'add'    => array( 'WV-CANCELLED' ),
+				'remove' => array( '{plan_tags}', 'WV-PAST-DUE' ),
+			),
 		);
 	}
 
@@ -66,9 +84,12 @@ final class TagMap {
 	 * @return array{add:list<string>,remove:list<string>}
 	 */
 	public function resolve( string $state, ?string $planTag, array $extraAdd = array() ): array {
-		$rule      = $this->map()[ $state ] ?? array( 'add' => array(), 'remove' => array() );
-		$planTags  = $this->planTags();
-		$expand    = function ( array $list ) use ( $planTag, $planTags ): array {
+		$rule     = $this->map()[ $state ] ?? array(
+			'add'    => array(),
+			'remove' => array(),
+		);
+		$planTags = $this->planTags();
+		$expand   = function ( array $list ) use ( $planTag, $planTags ): array {
 			$out = array();
 			foreach ( $list as $tag ) {
 				if ( '{plan_tag}' === $tag ) {
@@ -85,9 +106,12 @@ final class TagMap {
 			}
 			return array_values( array_unique( array_filter( $out, array( self::class, 'isOwned' ) ) ) );
 		};
-		$add    = array_values( array_unique( array_merge( $expand( $rule['add'] ), array_filter( $extraAdd, array( self::class, 'isOwned' ) ) ) ) );
-		$remove = array_values( array_diff( $expand( $rule['remove'] ), $add ) );
-		return array( 'add' => $add, 'remove' => $remove );
+		$add      = array_values( array_unique( array_merge( $expand( $rule['add'] ), array_filter( $extraAdd, array( self::class, 'isOwned' ) ) ) ) );
+		$remove   = array_values( array_diff( $expand( $rule['remove'] ), $add ) );
+		return array(
+			'add'    => $add,
+			'remove' => $remove,
+		);
 	}
 
 	/**

@@ -17,10 +17,29 @@ final class Schema {
 	/** @return list<string> Table names without prefix. */
 	public static function tables(): array {
 		return array(
-			'plans', 'plan_prices', 'members', 'member_notes', 'subscriptions', 'subscription_events', 'orders',
-			'payments', 'payment_methods', 'workshops', 'workshop_registrations', 'consultation_requests',
-			'applications', 'organisations', 'organisation_members', 'organisation_content', 'email_templates',
-			'notifications', 'in_app_notifications', 'kit_sync_log', 'audit_log', 'settings', 'hook_inbox',
+			'plans',
+			'plan_prices',
+			'members',
+			'member_notes',
+			'subscriptions',
+			'subscription_events',
+			'orders',
+			'payments',
+			'payment_methods',
+			'workshops',
+			'workshop_registrations',
+			'consultation_requests',
+			'applications',
+			'organisations',
+			'organisation_members',
+			'organisation_content',
+			'email_templates',
+			'notifications',
+			'in_app_notifications',
+			'kit_sync_log',
+			'audit_log',
+			'settings',
+			'hook_inbox',
 		);
 	}
 

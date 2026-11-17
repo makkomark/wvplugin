@@ -44,7 +44,7 @@ final class AccessService {
 				'compare' => 'EXISTS',
 			);
 		}
-		$q = new \WP_Query(
+		$q     = new \WP_Query(
 			array(
 				'post_type'      => $types,
 				'post_status'    => array( 'publish', 'draft', 'private', 'future', 'inherit' ),
@@ -153,15 +153,15 @@ final class AccessService {
 					continue;
 				}
 				foreach ( $terms as $term ) {
-					$lvl                    = get_term_meta( $term->term_id, ContentGuard::TERM_LEVEL, true );
+					$lvl                   = get_term_meta( $term->term_id, ContentGuard::TERM_LEVEL, true );
 					$out[ $term->term_id ] = array(
-						'id'          => (int) $term->term_id,
-						'name'        => $term->name,
-						'taxonomy'    => $tax->name,
+						'id'             => (int) $term->term_id,
+						'name'           => $term->name,
+						'taxonomy'       => $tax->name,
 						'taxonomy_label' => $tax->labels->singular_name,
-						'count'       => (int) $term->count,
-						'level'       => '' === $lvl ? 0 : (int) $lvl,
-						'level_label' => LevelResolver::label( '' === $lvl ? 0 : (int) $lvl ),
+						'count'          => (int) $term->count,
+						'level'          => '' === $lvl ? 0 : (int) $lvl,
+						'level_label'    => LevelResolver::label( '' === $lvl ? 0 : (int) $lvl ),
 					);
 				}
 			}

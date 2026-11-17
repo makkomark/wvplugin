@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<ruleset name="WitsValley Members">
+	<description>WordPress coding standards for wv-members.</description>
+	<file>wv-members.php</file>
+	<file>uninstall.php</file>
+	<file>src</file>
+	<file>templates</file>
+	<arg name="extensions" value="php"/>
+	<arg value="sp"/>
+	<arg name="colors"/>
+	<config name="minimum_wp_version" value="6.4"/>
+	<config name="testVersion" value="8.1-"/>
+
+	<rule ref="WordPress-Extra">
+		<!-- PSR-4 class files and camelCase methods/properties (WitsValley convention, see README). -->
+		<exclude name="WordPress.Files.FileName"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+		<exclude name="WordPress.NamingConventions.ValidHookName.UseUnderscores"/>
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found"/>
+		<exclude name="Universal.Operators.DisallowShortTernary"/>
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="Squiz.Commenting"/>
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+		<exclude name="WordPress.DB.DirectDatabaseQuery"/>
+		<exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared"/>
+		<exclude name="WordPress.PHP.YodaConditions"/>
+		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.json_encode_json_encode"/>
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+		<exclude name="Universal.Files.SeparateFunctionsFromOO"/>
+		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+	</rule>
+	<rule ref="WordPress-Docs">
+		<exclude name="Squiz.Commenting"/>
+		<exclude name="Generic.Commenting"/>
+	</rule>
+	<rule ref="PHPCompatibilityWP"/>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array"><element value="wv-members"/></property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array" value="wvm_access,wvm_manage_settings,wvm_manage_plans,wvm_manage_plans_full,wvm_view_members,wvm_edit_members,wvm_view_payments,wvm_manage_payments,wvm_manage_workshops,wvm_manage_enterprise,wvm_view_insights,wvm_manage_content_access,wvm_impersonate,wvm_view_audit,pay_for_order"/>
+		</properties>
+	</rule>
+	<!-- Exception messages are returned as JSON by the REST layer, never echoed as HTML. -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>
+	</rule>
+	<!-- CSV/backup/receipt streams use php://temp and local files on purpose. -->
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_fopen"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.file_system_operations_fclose"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.rename_rename"/>
+	</rule>
+	<rule ref="WordPress.Security.NonceVerification"/>
+	<rule ref="WordPress.DB.PreparedSQL"/>
+</ruleset>

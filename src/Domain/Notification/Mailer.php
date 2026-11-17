@@ -74,7 +74,13 @@ final class Mailer {
 		}
 		$template = $this->templates->byKey( (string) $n['template_key'] );
 		if ( ! $template ) {
-			$this->notifications->update( $notificationId, array( 'status' => 'failed', 'error' => 'Template missing' ) );
+			$this->notifications->update(
+				$notificationId,
+				array(
+					'status' => 'failed',
+					'error'  => 'Template missing',
+				)
+			);
 			return;
 		}
 		$vars     = is_array( $n['payload'] ) ? $n['payload'] : array();
@@ -232,11 +238,20 @@ final class Mailer {
 			}
 			$body = array(
 				'personalizations' => array( $personal ),
-				'from'             => array( 'email' => $from_email, 'name' => $from_name ),
+				'from'             => array(
+					'email' => $from_email,
+					'name'  => $from_name,
+				),
 				'subject'          => $msg['subject'],
 				'content'          => array(
-					array( 'type' => 'text/plain', 'value' => $msg['text'] ),
-					array( 'type' => 'text/html', 'value' => $msg['html'] ),
+					array(
+						'type'  => 'text/plain',
+						'value' => $msg['text'],
+					),
+					array(
+						'type'  => 'text/html',
+						'value' => $msg['html'],
+					),
 				),
 				'categories'       => array( $templateKey ),
 			);
@@ -254,7 +269,7 @@ final class Mailer {
 		if ( $bcc ) {
 			$headers[] = 'Bcc: ' . $bcc;
 		}
-		$alt = static function ( $phpmailer ) use ( $msg ): void {
+		$alt     = static function ( $phpmailer ) use ( $msg ): void {
 			$phpmailer->AltBody = $msg['text']; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		};
 		$error   = null;
@@ -305,7 +320,12 @@ final class Mailer {
 				}
 			}
 		}
-		$pending = $orders->first( array( 'member_id' => $memberId, 'status' => 'pending' ) );
+		$pending = $orders->first(
+			array(
+				'member_id' => $memberId,
+				'status'    => 'pending',
+			)
+		);
 		return $pending ? wvm( OrderService::class )->payLinkUrl( $pending ) : null;
 	}
 

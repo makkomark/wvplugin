@@ -69,7 +69,7 @@ final class OrderListener {
 				) : null,
 			)
 		);
-		$result = 'ignored';
+		$result  = 'ignored';
 		try {
 			$result = Audit::asSystem( fn() => $this->dispatch( $event, $wooId ) );
 		} catch ( \Throwable $e ) {
@@ -89,8 +89,8 @@ final class OrderListener {
 	private function dispatch( string $event, int $wooId ): string {
 		$order = $this->orders->byWoo( $wooId );
 		if ( ! $order ) {
-			$wc   = wc_get_order( $wooId );
-			$meta = $wc ? (int) $wc->get_meta( OrderService::META ) : 0;
+			$wc    = wc_get_order( $wooId );
+			$meta  = $wc ? (int) $wc->get_meta( OrderService::META ) : 0;
 			$order = $meta ? $this->orders->find( $meta ) : null;
 			if ( ! $order ) {
 				return 'ignored';
@@ -261,7 +261,13 @@ final class OrderListener {
 			if ( (int) $exists['order_id'] !== (int) $order['id'] ) {
 				throw new DomainError( 'duplicate provider reference ' . $ref );
 			}
-			$this->payments->update( (int) $exists['id'], array( 'status' => 'confirmed', 'confirmed_at' => Clock::mysql() ) );
+			$this->payments->update(
+				(int) $exists['id'],
+				array(
+					'status'       => 'confirmed',
+					'confirmed_at' => Clock::mysql(),
+				)
+			);
 			return;
 		}
 		$meta = array();

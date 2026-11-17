@@ -70,7 +70,7 @@ final class OrderService {
 		}
 		$member = $this->members->get( $memberId );
 
-		$id = Db::transaction(
+		$id    = Db::transaction(
 			function () use ( $memberId, $planId, $type, $currency, $amount, $periodStart, $periodEnd, $subscriptionId, $description, $orgId, $plan ): int {
 				if ( 'new' === $type && ! $subscriptionId ) {
 					$subscriptionId = wvm( SubscriptionService::class )->createPending( $memberId, $planId, $currency, (int) $amount, $orgId );
@@ -122,7 +122,7 @@ final class OrderService {
 				'description'     => mb_substr( $description, 0, 255 ),
 			)
 		);
-		$wc_id = $this->createWooOrder( $id, $member, null, $currency, $amountMinor, $description );
+		$wc_id    = $this->createWooOrder( $id, $member, null, $currency, $amountMinor, $description );
 		$this->orders->update( $id, array( 'woo_order_id' => $wc_id ) );
 		$order = $this->get( $id );
 		$this->audit->log( 'order.invoice_created', 'order', $id, null, $order );
@@ -260,15 +260,15 @@ final class OrderService {
 		$order             = $this->get( $id );
 		$order['payments'] = array_map(
 			static fn( array $p ): array => array(
-				'id'           => (int) $p['id'],
-				'gateway'      => $p['gateway'],
-				'provider_ref' => $p['provider_ref'],
-				'amount_minor' => (int) $p['amount_minor'],
+				'id'             => (int) $p['id'],
+				'gateway'        => $p['gateway'],
+				'provider_ref'   => $p['provider_ref'],
+				'amount_minor'   => (int) $p['amount_minor'],
 				'amount_display' => Money::format( (int) $p['amount_minor'], (string) $p['currency'] ),
-				'currency'     => $p['currency'],
-				'status'       => $p['status'],
-				'confirmed_at' => Clock::iso( $p['confirmed_at'] ),
-				'created_at'   => Clock::iso( $p['created_at'] ),
+				'currency'       => $p['currency'],
+				'status'         => $p['status'],
+				'confirmed_at'   => Clock::iso( $p['confirmed_at'] ),
+				'created_at'     => Clock::iso( $p['created_at'] ),
 			),
 			$this->payments->where( array( 'order_id' => $id ) )
 		);
@@ -292,7 +292,13 @@ final class OrderService {
 			throw DomainError::conflict( 'Only pending or failed orders can be cancelled.' );
 		}
 		$before = $this->present( $order );
-		$this->orders->update( $id, array( 'status' => 'cancelled', 'review_reason' => $reason ? mb_substr( $reason, 0, 255 ) : null ) );
+		$this->orders->update(
+			$id,
+			array(
+				'status'        => 'cancelled',
+				'review_reason' => $reason ? mb_substr( $reason, 0, 255 ) : null,
+			)
+		);
 		if ( $order['woo_order_id'] ) {
 			$wc = wc_get_order( (int) $order['woo_order_id'] );
 			if ( $wc && ! $wc->has_status( array( 'cancelled', 'completed', 'processing', 'refunded' ) ) ) {
@@ -311,7 +317,13 @@ final class OrderService {
 		if ( 'pending' !== $order['status'] ) {
 			return $this->present( $order );
 		}
-		$this->orders->update( $id, array( 'status' => 'failed', 'review_reason' => $reason ) );
+		$this->orders->update(
+			$id,
+			array(
+				'status'        => 'failed',
+				'review_reason' => $reason,
+			)
+		);
 		$after = $this->get( $id );
 		$this->audit->log( 'order.failed', 'order', $id, $this->present( $order ), $after, $reason );
 		return $after;
@@ -439,7 +451,15 @@ final class OrderService {
 		$wc->payment_complete( sanitize_text_field( $reference ) );
 		$after = $this->get( (int) $order['id'] );
 		$this->audit->log( 'order.manual_recorded', 'order', (int) $order['id'], null, $after, sprintf( '%s ref %s', $method, $reference ) );
-		wvm( Notifier::class )->member( $memberId, 'admin_manual_payment', array( 'amount' => $after['amount_display'], 'reference' => $reference, 'plan' => $after['plan_name'] ) );
+		wvm( Notifier::class )->member(
+			$memberId,
+			'admin_manual_payment',
+			array(
+				'amount'    => $after['amount_display'],
+				'reference' => $reference,
+				'plan'      => $after['plan_name'],
+			)
+		);
 		return $after;
 	}
 
@@ -484,7 +504,14 @@ final class OrderService {
 		}
 		$after = $this->get( $id );
 		$this->audit->log( 'order.refunded', 'order', $id, $before, $after + array( 'refund_minor' => $amountMinor ), $reason );
-		wvm( Notifier::class )->member( (int) $order['member_id'], 'admin_refund', array( 'amount' => Money::format( $amountMinor, (string) $order['currency'] ), 'reason' => $reason ) );
+		wvm( Notifier::class )->member(
+			(int) $order['member_id'],
+			'admin_refund',
+			array(
+				'amount' => Money::format( $amountMinor, (string) $order['currency'] ),
+				'reason' => $reason,
+			)
+		);
 		return $after;
 	}
 
@@ -614,8 +641,8 @@ final class OrderService {
 	 * @return array<string,mixed>
 	 */
 	public function present( array $row, bool $withMember = true ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity
-		$plan     = $row['plan_id'] ? $this->plans->get( (int) $row['plan_id'] ) : null;
-		$member   = null;
+		$plan   = $row['plan_id'] ? $this->plans->get( (int) $row['plan_id'] ) : null;
+		$member = null;
 		if ( $withMember ) {
 			try {
 				$m      = $this->members->get( (int) $row['member_id'] );
@@ -634,9 +661,9 @@ final class OrderService {
 			$wc              = wc_get_order( (int) $row['woo_order_id'] );
 			$payment_gateway = $wc ? ( $wc->get_payment_method() ?: null ) : null;
 		}
-		$token     = $row['pay_link_token'] ?? null;
-		$is_open   = in_array( $row['status'], array( 'pending', 'failed' ), true );
-		$checkout  = null;
+		$token    = $row['pay_link_token'] ?? null;
+		$is_open  = in_array( $row['status'], array( 'pending', 'failed' ), true );
+		$checkout = null;
 		if ( $is_open && $row['woo_order_id'] && function_exists( 'wc_get_order' ) ) {
 			$wc       = wc_get_order( (int) $row['woo_order_id'] );
 			$checkout = $wc ? $wc->get_checkout_payment_url() : null;

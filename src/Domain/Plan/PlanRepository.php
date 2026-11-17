@@ -27,6 +27,12 @@ final class PlanRepository extends Repository {
 
 	/** @return array<string,mixed>|null */
 	public function free(): ?array {
-		return $this->first( array( 'is_free' => 1, 'archived_at' => null ), 'id ASC' );
+		return $this->first(
+			array(
+				'is_free'     => 1,
+				'archived_at' => null,
+			),
+			'id ASC'
+		);
 	}
 }

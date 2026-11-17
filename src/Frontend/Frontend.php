@@ -128,7 +128,10 @@ final class Frontend {
 
 	public function enqueueApp(): void {
 		$asset_file = WVM_DIR . 'build/member.asset.php';
-		$asset      = file_exists( $asset_file ) ? require $asset_file : array( 'dependencies' => array( 'react', 'react-dom', 'wp-element' ), 'version' => WVM_VERSION );
+		$asset      = file_exists( $asset_file ) ? require $asset_file : array(
+			'dependencies' => array( 'react', 'react-dom', 'wp-element' ),
+			'version'      => WVM_VERSION,
+		);
 		wp_enqueue_script( 'wvm-member', WVM_URL . 'build/member.js', (array) $asset['dependencies'], (string) $asset['version'], true );
 		if ( file_exists( WVM_DIR . 'build/member.css' ) ) {
 			wp_enqueue_style( 'wvm-member', WVM_URL . 'build/member.css', array(), (string) $asset['version'] );
@@ -142,35 +145,35 @@ final class Frontend {
 		$payments = $this->settings->group( 'payments' );
 		$general  = $this->settings->group( 'general' );
 		return array(
-			'restUrl'          => esc_url_raw( rest_url( WVM_REST_NS . '/' ) ),
-			'nonce'            => wp_create_nonce( 'wp_rest' ),
-			'isLoggedIn'       => is_user_logged_in(),
-			'user'             => $user->ID ? array(
-				'id'    => $user->ID,
-				'name'  => $user->display_name,
-				'email' => $user->user_email,
+			'restUrl'         => esc_url_raw( rest_url( WVM_REST_NS . '/' ) ),
+			'nonce'           => wp_create_nonce( 'wp_rest' ),
+			'isLoggedIn'      => is_user_logged_in(),
+			'user'            => $user->ID ? array(
+				'id'      => $user->ID,
+				'name'    => $user->display_name,
+				'email'   => $user->user_email,
 				'isStaff' => current_user_can( 'wvm_access' ) || current_user_can( 'manage_options' ),
 			) : null,
-			'siteName'         => (string) $general['business_name'],
-			'homeUrl'          => home_url( '/' ),
-			'dashboardUrl'     => Urls::dashboard(),
-			'pricingUrl'       => Urls::pricing(),
-			'enterpriseUrl'    => Urls::enterprise(),
-			'loginUrl'         => wp_login_url( Urls::dashboard() ),
-			'logoutUrl'        => wp_logout_url( home_url( '/' ) ),
-			'lostPasswordUrl'  => wp_lostpassword_url( Urls::dashboard() ),
-			'adminUrl'         => current_user_can( 'wvm_access' ) || current_user_can( 'manage_options' ) ? admin_url( 'admin.php?page=wvm' ) : null,
-			'termsUrl'         => (string) $general['terms_url'],
-			'privacyUrl'       => (string) ( $general['privacy_url'] ?: get_privacy_policy_url() ),
-			'supportEmail'     => (string) ( $general['support_email'] ?: get_option( 'admin_email' ) ),
-			'currencies'       => array_values( (array) $payments['currencies_enabled'] ),
-			'defaultCurrency'  => (array) $payments['default_currency_by_country'],
-			'sandbox'          => (bool) $payments['sandbox_mode'],
-			'analytics'        => (bool) $general['analytics'],
-			'countries'        => function_exists( 'WC' ) && WC()->countries ? WC()->countries->get_countries() : array(),
-			'timezones'        => timezone_identifiers_list(),
-			'logoUrl'          => (string) $this->settings->get( 'emails', 'logo_url', '' ),
-			'version'          => WVM_VERSION,
+			'siteName'        => (string) $general['business_name'],
+			'homeUrl'         => home_url( '/' ),
+			'dashboardUrl'    => Urls::dashboard(),
+			'pricingUrl'      => Urls::pricing(),
+			'enterpriseUrl'   => Urls::enterprise(),
+			'loginUrl'        => wp_login_url( Urls::dashboard() ),
+			'logoutUrl'       => wp_logout_url( home_url( '/' ) ),
+			'lostPasswordUrl' => wp_lostpassword_url( Urls::dashboard() ),
+			'adminUrl'        => current_user_can( 'wvm_access' ) || current_user_can( 'manage_options' ) ? admin_url( 'admin.php?page=wvm' ) : null,
+			'termsUrl'        => (string) $general['terms_url'],
+			'privacyUrl'      => (string) ( $general['privacy_url'] ?: get_privacy_policy_url() ),
+			'supportEmail'    => (string) ( $general['support_email'] ?: get_option( 'admin_email' ) ),
+			'currencies'      => array_values( (array) $payments['currencies_enabled'] ),
+			'defaultCurrency' => (array) $payments['default_currency_by_country'],
+			'sandbox'         => (bool) $payments['sandbox_mode'],
+			'analytics'       => (bool) $general['analytics'],
+			'countries'       => function_exists( 'WC' ) && WC()->countries ? WC()->countries->get_countries() : array(),
+			'timezones'       => timezone_identifiers_list(),
+			'logoUrl'         => (string) $this->settings->get( 'emails', 'logo_url', '' ),
+			'version'         => WVM_VERSION,
 		);
 	}
 
@@ -292,14 +295,27 @@ final class Frontend {
 
 	public static function describeDevice( string $ua ): string {
 		$browser = 'Browser';
-		foreach ( array( 'Edg' => 'Edge', 'OPR' => 'Opera', 'Chrome' => 'Chrome', 'Firefox' => 'Firefox', 'Safari' => 'Safari' ) as $needle => $name ) {
+		foreach ( array(
+			'Edg'     => 'Edge',
+			'OPR'     => 'Opera',
+			'Chrome'  => 'Chrome',
+			'Firefox' => 'Firefox',
+			'Safari'  => 'Safari',
+		) as $needle => $name ) {
 			if ( str_contains( $ua, $needle ) ) {
 				$browser = $name;
 				break;
 			}
 		}
 		$os = 'Unknown OS';
-		foreach ( array( 'Android' => 'Android', 'iPhone' => 'iPhone', 'iPad' => 'iPad', 'Windows' => 'Windows', 'Mac OS' => 'macOS', 'Linux' => 'Linux' ) as $needle => $name ) {
+		foreach ( array(
+			'Android' => 'Android',
+			'iPhone'  => 'iPhone',
+			'iPad'    => 'iPad',
+			'Windows' => 'Windows',
+			'Mac OS'  => 'macOS',
+			'Linux'   => 'Linux',
+		) as $needle => $name ) {
 			if ( str_contains( $ua, $needle ) ) {
 				$os = $name;
 				break;

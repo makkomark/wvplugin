@@ -45,11 +45,11 @@ final class LevelResolver {
 		);
 		if ( $userId > 0 ) {
 			global $wpdb;
-			$m  = Db::table( 'members' );
-			$s  = Db::table( 'subscriptions' );
-			$p  = Db::table( 'plans' );
-			$o  = Db::table( 'organisations' );
-			$om = Db::table( 'organisation_members' );
+			$m         = Db::table( 'members' );
+			$s         = Db::table( 'subscriptions' );
+			$p         = Db::table( 'plans' );
+			$o         = Db::table( 'organisations' );
+			$om        = Db::table( 'organisation_members' );
 			$member_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$m} WHERE user_id = %d", $userId ) ); // phpcs:ignore WordPress.DB
 			if ( $member_id ) {
 				$out['member_id'] = $member_id;
@@ -72,7 +72,7 @@ final class LevelResolver {
 			}
 			$out['grants'] = array_values( array_unique( $out['plan_slugs'] ) );
 		}
-		$out['level'] = (int) apply_filters( 'wvm_user_level', $out['level'], $userId );
+		$out['level']           = (int) apply_filters( 'wvm_user_level', $out['level'], $userId );
 		$this->cache[ $userId ] = $out;
 		return $out;
 	}

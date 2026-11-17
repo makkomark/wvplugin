@@ -100,10 +100,12 @@ final class ContentGuard {
 		}
 		$rule = $this->ruleFor( $postId );
 		if ( ! $rule['level'] && ! $rule['plans'] && ! $rule['orgs'] ) {
-			return $this->decisions[ $key ] = true;
+			$this->decisions[ $key ] = true;
+			return $this->decisions[ $key ];
 		}
 		if ( $userId && ( user_can( $userId, 'edit_post', $postId ) || user_can( $userId, 'wvm_manage_content_access' ) ) ) {
-			return $this->decisions[ $key ] = true;
+			$this->decisions[ $key ] = true;
+			return $this->decisions[ $key ];
 		}
 		$ent     = $this->levels->entitlements( $userId );
 		$allowed = $ent['level'] >= $rule['level'];
@@ -113,8 +115,9 @@ final class ContentGuard {
 		if ( $allowed && $rule['orgs'] ) {
 			$allowed = (bool) array_intersect( $rule['orgs'], $ent['org_ids'] );
 		}
-		$allowed = (bool) apply_filters( 'wvm_can_view', $allowed, $postId, $userId, $rule );
-		return $this->decisions[ $key ] = $allowed;
+		$allowed                 = (bool) apply_filters( 'wvm_can_view', $allowed, $postId, $userId, $rule );
+		$this->decisions[ $key ] = $allowed;
+		return $this->decisions[ $key ];
 	}
 
 	public function flush(): void {
@@ -260,13 +263,13 @@ final class ContentGuard {
 	 */
 	public function hiddenPostIds( int $userId ): array {
 		global $wpdb;
-		$level   = $this->levels->levelFor( $userId );
-		$ids     = array();
+		$level    = $this->levels->levelFor( $userId );
+		$ids      = array();
 		$explicit = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND CAST(meta_value AS UNSIGNED) > %d", self::META_LEVEL, $level ) ); // phpcs:ignore WordPress.DB
-		$ids     = array_merge( $ids, array_map( 'intval', $explicit ) );
-		$terms   = $wpdb->get_col( $wpdb->prepare( "SELECT term_id FROM {$wpdb->termmeta} WHERE meta_key = %s AND CAST(meta_value AS UNSIGNED) > %d", self::TERM_LEVEL, $level ) ); // phpcs:ignore WordPress.DB
+		$ids      = array_merge( $ids, array_map( 'intval', $explicit ) );
+		$terms    = $wpdb->get_col( $wpdb->prepare( "SELECT term_id FROM {$wpdb->termmeta} WHERE meta_key = %s AND CAST(meta_value AS UNSIGNED) > %d", self::TERM_LEVEL, $level ) ); // phpcs:ignore WordPress.DB
 		if ( $terms ) {
-			$tt       = $wpdb->get_col( "SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE term_id IN (" . implode( ',', array_map( 'intval', $terms ) ) . ')' ); // phpcs:ignore WordPress.DB
+			$tt = $wpdb->get_col( "SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE term_id IN (" . implode( ',', array_map( 'intval', $terms ) ) . ')' ); // phpcs:ignore WordPress.DB
 			if ( $tt ) {
 				$by_term = $wpdb->get_col( $wpdb->prepare( "SELECT tr.object_id FROM {$wpdb->term_relationships} tr WHERE tr.term_taxonomy_id IN (" . implode( ',', array_map( 'intval', $tt ) ) . ") AND NOT EXISTS (SELECT 1 FROM {$wpdb->postmeta} pm WHERE pm.post_id = tr.object_id AND pm.meta_key = %s AND CAST(pm.meta_value AS UNSIGNED) <= %d)", self::META_LEVEL, $level ) ); // phpcs:ignore WordPress.DB
 				$ids     = array_merge( $ids, array_map( 'intval', $by_term ) );
@@ -276,9 +279,9 @@ final class ContentGuard {
 		if ( $default > $level ) {
 			$types = $this->postTypes();
 			if ( $types ) {
-				$in       = "'" . implode( "','", array_map( 'esc_sql', $types ) ) . "'";
-				$by_def   = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p WHERE p.post_type IN ({$in}) AND p.post_status = 'publish' AND NOT EXISTS (SELECT 1 FROM {$wpdb->postmeta} pm WHERE pm.post_id = p.ID AND pm.meta_key = %s AND CAST(pm.meta_value AS UNSIGNED) <= %d)", self::META_LEVEL, $level ) ); // phpcs:ignore WordPress.DB
-				$ids      = array_merge( $ids, array_map( 'intval', $by_def ) );
+				$in     = "'" . implode( "','", array_map( 'esc_sql', $types ) ) . "'";
+				$by_def = $wpdb->get_col( $wpdb->prepare( "SELECT p.ID FROM {$wpdb->posts} p WHERE p.post_type IN ({$in}) AND p.post_status = 'publish' AND NOT EXISTS (SELECT 1 FROM {$wpdb->postmeta} pm WHERE pm.post_id = p.ID AND pm.meta_key = %s AND CAST(pm.meta_value AS UNSIGNED) <= %d)", self::META_LEVEL, $level ) ); // phpcs:ignore WordPress.DB
+				$ids    = array_merge( $ids, array_map( 'intval', $by_def ) );
 			}
 		}
 		$planned = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value <> '' AND meta_value <> 'a:0:{}'", self::META_PLANS ) ); // phpcs:ignore WordPress.DB
@@ -317,13 +320,13 @@ final class ContentGuard {
 	}
 
 	public function paywall( int $postId ): string {
-		$rule     = $this->ruleFor( $postId );
-		$message  = (string) $this->settings->get( 'access', 'paywall_message', '' );
-		$level    = LevelResolver::label( max( 1, $rule['level'] ) );
-		$logged   = is_user_logged_in();
-		$cta_url  = $logged ? Urls::dashboard() : add_query_arg( 'from', rawurlencode( (string) get_permalink( $postId ) ), Urls::pricing() );
-		$cta      = $logged ? __( 'Upgrade membership', 'wv-members' ) : __( 'See membership plans', 'wv-members' );
-		$login    = $logged ? '' : '<a class="wvm-paywall__login" href="' . esc_url( wp_login_url( (string) get_permalink( $postId ) ) ) . '">' . esc_html__( 'Already a member? Log in', 'wv-members' ) . '</a>';
+		$rule    = $this->ruleFor( $postId );
+		$message = (string) $this->settings->get( 'access', 'paywall_message', '' );
+		$level   = LevelResolver::label( max( 1, $rule['level'] ) );
+		$logged  = is_user_logged_in();
+		$cta_url = $logged ? Urls::dashboard() : add_query_arg( 'from', rawurlencode( (string) get_permalink( $postId ) ), Urls::pricing() );
+		$cta     = $logged ? __( 'Upgrade membership', 'wv-members' ) : __( 'See membership plans', 'wv-members' );
+		$login   = $logged ? '' : '<a class="wvm-paywall__login" href="' . esc_url( wp_login_url( (string) get_permalink( $postId ) ) ) . '">' . esc_html__( 'Already a member? Log in', 'wv-members' ) . '</a>';
 		return '<div class="wvm-paywall" role="region" aria-label="' . esc_attr__( 'Members-only content', 'wv-members' ) . '">'
 			. '<div class="wvm-paywall__badge">' . esc_html( sprintf( /* translators: %s level name */ __( '%s members', 'wv-members' ), $level ) ) . '</div>'
 			. '<h3 class="wvm-paywall__title">' . esc_html__( 'Keep reading with WitsValley', 'wv-members' ) . '</h3>'

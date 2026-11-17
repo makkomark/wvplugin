@@ -47,7 +47,12 @@ final class InAppNotifier {
 	}
 
 	public function unreadCount( int $memberId ): int {
-		return $this->repo->count( array( 'member_id' => $memberId, 'read_at' => null ) );
+		return $this->repo->count(
+			array(
+				'member_id' => $memberId,
+				'read_at'   => null,
+			)
+		);
 	}
 
 	public function markRead( int $memberId, int $id ): void {

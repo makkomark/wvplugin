@@ -47,7 +47,10 @@ final class OrdersController extends Controller {
 			'/orders/(?P<id>\d+)/replay',
 			function ( $r ) {
 				$result = wvm( OrderListener::class )->replay( $this->id( $r ) );
-				return array( 'result' => $result, 'order' => $this->orders->detail( $this->id( $r ) ) );
+				return array(
+					'result' => $result,
+					'order'  => $this->orders->detail( $this->id( $r ) ),
+				);
 			},
 			$manage
 		);
@@ -76,7 +79,15 @@ final class OrdersController extends Controller {
 			$order = $this->orders->ensureRenewalOrder( $sub );
 		}
 		if ( ! empty( $b['send_email'] ) ) {
-			wvm( \WitsValley\Members\Domain\Notification\Mailer::class )->send( 'pay_link', $member, array( 'pay_link' => $order['pay_link'], 'amount' => $order['amount_display'], 'plan' => $order['plan_name'] ) );
+			wvm( \WitsValley\Members\Domain\Notification\Mailer::class )->send(
+				'pay_link',
+				$member,
+				array(
+					'pay_link' => $order['pay_link'],
+					'amount'   => $order['amount_display'],
+					'plan'     => $order['plan_name'],
+				)
+			);
 		}
 		return $order;
 	}

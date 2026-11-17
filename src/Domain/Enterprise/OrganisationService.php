@@ -55,8 +55,17 @@ final class OrganisationService {
 	 * @return array<string,mixed>
 	 */
 	public function create( array $dto ): array {
-		$data = Validation::validate( $dto, array_merge( self::RULES, array( 'name' => 'required|maxlen:200', 'seats' => 'required|int|min:1|max:100000' ) ) );
-		$row  = $this->normalise( $data );
+		$data              = Validation::validate(
+			$dto,
+			array_merge(
+				self::RULES,
+				array(
+					'name'  => 'required|maxlen:200',
+					'seats' => 'required|int|min:1|max:100000',
+				)
+			)
+		);
+		$row               = $this->normalise( $data );
 		$row['status']     = 'active';
 		$row['level']      = $row['level'] ?? 3;
 		$row['term_start'] = $row['term_start'] ?? gmdate( 'Y-m-d' );
@@ -77,10 +86,10 @@ final class OrganisationService {
 
 	/** @return array<string,mixed> Detail incl. seats, content, subscriptions. */
 	public function detail( int $id ): array {
-		$org            = $this->get( $id );
+		$org               = $this->get( $id );
 		$org['seats_list'] = $this->seatList( $id );
-		$org['content']  = $this->contentList( $id );
-		$org['orders']   = wvm( OrderService::class )->list( array( 'organisation' => $id ), new Pagination( 1, 50 ) )['items'];
+		$org['content']    = $this->contentList( $id );
+		$org['orders']     = wvm( OrderService::class )->list( array( 'organisation' => $id ), new Pagination( 1, 50 ) )['items'];
 		return $org;
 	}
 
@@ -180,7 +189,12 @@ final class OrganisationService {
 				$skipped[ $email ] = 'invalid email';
 				continue;
 			}
-			$existing = $this->seats->first( array( 'organisation_id' => $orgId, 'email' => $email ) );
+			$existing = $this->seats->first(
+				array(
+					'organisation_id' => $orgId,
+					'email'           => $email,
+				)
+			);
 			if ( $existing && ! $existing['revoked_at'] ) {
 				$skipped[ $email ] = $existing['joined_at'] ? 'already a member' : 'already invited';
 				continue;
@@ -218,8 +232,21 @@ final class OrganisationService {
 			$this->sendInvite( $seat_id );
 			$invited[] = $email;
 		}
-		$this->audit->log( 'organisation.invited', 'organisation', $orgId, null, array( 'invited' => $invited, 'skipped' => $skipped, 'role' => $role ) );
-		return array( 'invited' => $invited, 'skipped' => $skipped );
+		$this->audit->log(
+			'organisation.invited',
+			'organisation',
+			$orgId,
+			null,
+			array(
+				'invited' => $invited,
+				'skipped' => $skipped,
+				'role'    => $role,
+			)
+		);
+		return array(
+			'invited' => $invited,
+			'skipped' => $skipped,
+		);
 	}
 
 	public function resendInvite( int $orgId, int $seatId ): void {
@@ -227,7 +254,13 @@ final class OrganisationService {
 		if ( (int) $seat['organisation_id'] !== $orgId || $seat['joined_at'] || $seat['revoked_at'] ) {
 			throw DomainError::conflict( 'This invite cannot be resent.' );
 		}
-		$this->seats->update( $seatId, array( 'invite_token' => Encryption::token( 20 ), 'invited_at' => Clock::mysql() ) );
+		$this->seats->update(
+			$seatId,
+			array(
+				'invite_token' => Encryption::token( 20 ),
+				'invited_at'   => Clock::mysql(),
+			)
+		);
 		$this->sendInvite( $seatId );
 		$this->audit->log( 'organisation.invite_resent', 'organisation', $orgId, null, array( 'email' => $seat['email'] ) );
 	}
@@ -277,7 +310,13 @@ final class OrganisationService {
 		if ( $seat['joined_at'] && (int) $seat['member_id'] === (int) $member['id'] ) {
 			return $org;
 		}
-		$other = $this->seats->first( array( 'organisation_id' => (int) $org['id'], 'member_id' => (int) $member['id'], 'revoked_at' => null ) );
+		$other = $this->seats->first(
+			array(
+				'organisation_id' => (int) $org['id'],
+				'member_id'       => (int) $member['id'],
+				'revoked_at'      => null,
+			)
+		);
 		if ( $other && (int) $other['id'] !== (int) $seat['id'] && $other['joined_at'] ) {
 			throw DomainError::conflict( 'You already hold a seat in this programme.' );
 		}
@@ -297,12 +336,27 @@ final class OrganisationService {
 			$this->orgs->update( (int) $org['id'], array( 'contact_member_id' => (int) $member['id'] ) );
 		}
 		wvm( LevelResolver::class )->flush();
-		$this->audit->log( 'organisation.seat_joined', 'organisation', (int) $org['id'], null, array( 'member_id' => (int) $member['id'], 'email' => $seat['email'] ) );
+		$this->audit->log(
+			'organisation.seat_joined',
+			'organisation',
+			(int) $org['id'],
+			null,
+			array(
+				'member_id' => (int) $member['id'],
+				'email'     => $seat['email'],
+			)
+		);
 		return $this->get( (int) $org['id'] );
 	}
 
 	public function revoke( int $orgId, int $memberId, string $reason = 'Seat revoked' ): void {
-		$seat = $this->seats->first( array( 'organisation_id' => $orgId, 'member_id' => $memberId, 'revoked_at' => null ) );
+		$seat = $this->seats->first(
+			array(
+				'organisation_id' => $orgId,
+				'member_id'       => $memberId,
+				'revoked_at'      => null,
+			)
+		);
 		if ( ! $seat ) {
 			// Allow revoking a pending invite by seat id.
 			$seat = $this->seats->find( $memberId );
@@ -310,7 +364,13 @@ final class OrganisationService {
 				throw DomainError::notFound( 'seat' );
 			}
 		}
-		$this->seats->update( (int) $seat['id'], array( 'revoked_at' => Clock::mysql(), 'invite_token' => null ) );
+		$this->seats->update(
+			(int) $seat['id'],
+			array(
+				'revoked_at'   => Clock::mysql(),
+				'invite_token' => null,
+			)
+		);
 		if ( $seat['subscription_id'] ) {
 			$sub = $this->subs->find( (int) $seat['subscription_id'] );
 			if ( $sub && in_array( $sub['status'], array( 'active', 'past_due', 'suspended', 'pending' ), true ) ) {
@@ -318,7 +378,17 @@ final class OrganisationService {
 			}
 		}
 		wvm( LevelResolver::class )->flush();
-		$this->audit->log( 'organisation.seat_revoked', 'organisation', $orgId, array( 'email' => $seat['email'], 'member_id' => $seat['member_id'] ), null, $reason );
+		$this->audit->log(
+			'organisation.seat_revoked',
+			'organisation',
+			$orgId,
+			array(
+				'email'     => $seat['email'],
+				'member_id' => $seat['member_id'],
+			),
+			null,
+			$reason
+		);
 	}
 
 	/**
@@ -335,7 +405,12 @@ final class OrganisationService {
 		$wpdb->delete( $t, array( 'organisation_id' => $orgId ) ); // phpcs:ignore WordPress.DB
 		foreach ( array_unique( array_map( 'intval', $postIds ) ) as $pid ) {
 			if ( $pid > 0 && get_post( $pid ) ) {
-				$this->content->insert( array( 'organisation_id' => $orgId, 'post_id' => $pid ) );
+				$this->content->insert(
+					array(
+						'organisation_id' => $orgId,
+						'post_id'         => $pid,
+					)
+				);
 			}
 		}
 		$after = $this->contentList( $orgId );
@@ -345,7 +420,13 @@ final class OrganisationService {
 
 	public function removeContent( int $orgId, int $postId ): void {
 		global $wpdb;
-		$wpdb->delete( Db::table( 'organisation_content' ), array( 'organisation_id' => $orgId, 'post_id' => $postId ) ); // phpcs:ignore WordPress.DB
+		$wpdb->delete(
+			Db::table( 'organisation_content' ),
+			array(
+				'organisation_id' => $orgId,
+				'post_id'         => $postId,
+			)
+		); // phpcs:ignore WordPress.DB
 		$this->audit->log( 'organisation.content_removed', 'organisation', $orgId, array( 'post_id' => $postId ), null );
 	}
 
@@ -390,16 +471,16 @@ final class OrganisationService {
 				$m    = $s['member_id'] ? $this->members->find( (int) $s['member_id'] ) : null;
 				$user = $m ? get_userdata( (int) $m['user_id'] ) : null;
 				return array(
-					'id'          => (int) $s['id'],
-					'member_id'   => $s['member_id'] ? (int) $s['member_id'] : null,
-					'public_id'   => $m['public_id'] ?? null,
-					'name'        => $user ? $user->display_name : null,
-					'email'       => $s['email'],
-					'role'        => $s['role'],
-					'status'      => $s['revoked_at'] ? 'revoked' : ( $s['joined_at'] ? 'joined' : 'invited' ),
-					'invited_at'  => Clock::iso( $s['invited_at'] ),
-					'joined_at'   => Clock::iso( $s['joined_at'] ),
-					'revoked_at'  => Clock::iso( $s['revoked_at'] ),
+					'id'         => (int) $s['id'],
+					'member_id'  => $s['member_id'] ? (int) $s['member_id'] : null,
+					'public_id'  => $m['public_id'] ?? null,
+					'name'       => $user ? $user->display_name : null,
+					'email'      => $s['email'],
+					'role'       => $s['role'],
+					'status'     => $s['revoked_at'] ? 'revoked' : ( $s['joined_at'] ? 'joined' : 'invited' ),
+					'invited_at' => Clock::iso( $s['invited_at'] ),
+					'joined_at'  => Clock::iso( $s['joined_at'] ),
+					'revoked_at' => Clock::iso( $s['revoked_at'] ),
 				);
 			},
 			$this->seats->where( array( 'organisation_id' => $orgId ), 'id ASC' )
@@ -436,7 +517,13 @@ final class OrganisationService {
 	 * @return array<string,mixed>|null
 	 */
 	public function forMember( int $memberId ): ?array {
-		$seat = $this->seats->first( array( 'member_id' => $memberId, 'revoked_at' => null ), 'id DESC' );
+		$seat = $this->seats->first(
+			array(
+				'member_id'  => $memberId,
+				'revoked_at' => null,
+			),
+			'id DESC'
+		);
 		if ( ! $seat || ! $seat['joined_at'] ) {
 			return null;
 		}
@@ -449,7 +536,13 @@ final class OrganisationService {
 
 	/** @return array<string,mixed> */
 	public function seatFor( int $orgId, int $memberId ): ?array {
-		return $this->seats->first( array( 'organisation_id' => $orgId, 'member_id' => $memberId, 'revoked_at' => null ) );
+		return $this->seats->first(
+			array(
+				'organisation_id' => $orgId,
+				'member_id'       => $memberId,
+				'revoked_at'      => null,
+			)
+		);
 	}
 
 	private function seatsTaken( int $orgId ): int {
@@ -477,7 +570,15 @@ final class OrganisationService {
 					}
 					$service->expire( $sub, $reason );
 				} elseif ( 'active' === $status && in_array( $sub['status'], array( 'suspended', 'expired' ), true ) ) {
-					$service->transition( $sub, 'active', $reason, array( 'suspended_at' => null, 'expires_at' => null ) );
+					$service->transition(
+						$sub,
+						'active',
+						$reason,
+						array(
+							'suspended_at' => null,
+							'expires_at'   => null,
+						)
+					);
 				}
 			} catch ( \Throwable $e ) {
 				continue;
@@ -494,7 +595,12 @@ final class OrganisationService {
 		if ( ! $org['term_end'] ) {
 			return;
 		}
-		foreach ( $this->subs->where( array( 'organisation_id' => $orgId, 'status' => array( 'active', 'past_due', 'suspended' ) ) ) as $sub ) {
+		foreach ( $this->subs->where(
+			array(
+				'organisation_id' => $orgId,
+				'status'          => array( 'active', 'past_due', 'suspended' ),
+			)
+		) as $sub ) {
 			$this->subs->update( (int) $sub['id'], array( 'current_period_end' => $org['term_end'] . ' 23:59:59' ) );
 		}
 	}

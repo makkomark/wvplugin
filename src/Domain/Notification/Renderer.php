@@ -26,7 +26,7 @@ final class Renderer {
 			fn( $m ) => $this->button( html_entity_decode( $m[1] ), $m[2] ),
 			$body
 		);
-		$text = $template['body_text'] ? $this->replace( (string) $template['body_text'], $vars, false ) : TemplateDefaults::toText( $this->replace( (string) $template['body_html'], $vars, false ) );
+		$text    = $template['body_text'] ? $this->replace( (string) $template['body_text'], $vars, false ) : TemplateDefaults::toText( $this->replace( (string) $template['body_html'], $vars, false ) );
 		return array(
 			'subject' => wp_specialchars_decode( $subject ),
 			'html'    => $this->layout( $body, $preview ),

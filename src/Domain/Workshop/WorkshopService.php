@@ -88,7 +88,17 @@ final class WorkshopService {
 	 * @return array<string,mixed>
 	 */
 	public function create( array $dto ): array {
-		$data = Validation::validate( $dto, array_merge( self::RULES, array( 'title' => 'required|maxlen:200', 'starts_at' => 'required|date', 'ends_at' => 'required|date' ) ) );
+		$data = Validation::validate(
+			$dto,
+			array_merge(
+				self::RULES,
+				array(
+					'title'     => 'required|maxlen:200',
+					'starts_at' => 'required|date',
+					'ends_at'   => 'required|date',
+				)
+			)
+		);
 		$row  = $this->normalise( $data );
 		$this->assertTimes( $row );
 		$row['status'] = 'draft';
@@ -162,7 +172,10 @@ final class WorkshopService {
 		}
 		$this->workshops->delete( $id );
 		$this->audit->log( 'workshop.deleted', 'workshop', $id, $this->present( $w ), null );
-		return array( 'deleted' => true, 'id' => $id );
+		return array(
+			'deleted' => true,
+			'id'      => $id,
+		);
 	}
 
 	/** @return array<string,mixed> */
@@ -172,7 +185,13 @@ final class WorkshopService {
 			throw DomainError::validation( array( 'url' => 'Enter a valid URL.' ) );
 		}
 		$before = $this->get( $id );
-		$this->workshops->update( $id, array( 'recording_url' => $url, 'status' => 'ended' ) );
+		$this->workshops->update(
+			$id,
+			array(
+				'recording_url' => $url,
+				'status'        => 'ended',
+			)
+		);
 		$after = $this->get( $id );
 		$this->audit->log( 'workshop.recording_attached', 'workshop', $id, $before, $after );
 		return $after;
@@ -187,20 +206,35 @@ final class WorkshopService {
 		if ( ! $this->eligible( $w, $memberId ) ) {
 			throw DomainError::forbidden( 'Your plan does not include this workshop. Upgrade to join.' );
 		}
-		if ( $this->registrations->first( array( 'workshop_id' => $id, 'member_id' => $memberId ) ) ) {
+		if ( $this->registrations->first(
+			array(
+				'workshop_id' => $id,
+				'member_id'   => $memberId,
+			)
+		) ) {
 			return $this->presentForMember( $w, $memberId );
 		}
 		if ( $w['capacity'] && $this->registrations->count( array( 'workshop_id' => $id ) ) >= (int) $w['capacity'] ) {
 			throw DomainError::conflict( 'This workshop is full.' );
 		}
-		$this->registrations->insert( array( 'workshop_id' => $id, 'member_id' => $memberId ) );
+		$this->registrations->insert(
+			array(
+				'workshop_id' => $id,
+				'member_id'   => $memberId,
+			)
+		);
 		$this->audit->log( 'workshop.registered', 'workshop', $id, null, array( 'member_id' => $memberId ) );
 		return $this->presentForMember( $this->workshops->find( $id ), $memberId );
 	}
 
 	/** @return array<string,mixed> */
 	public function unregister( int $id, int $memberId ): array {
-		$reg = $this->registrations->first( array( 'workshop_id' => $id, 'member_id' => $memberId ) );
+		$reg = $this->registrations->first(
+			array(
+				'workshop_id' => $id,
+				'member_id'   => $memberId,
+			)
+		);
 		if ( $reg ) {
 			$this->registrations->delete( (int) $reg['id'] );
 			$this->audit->log( 'workshop.unregistered', 'workshop', $id, array( 'member_id' => $memberId ), null );
@@ -256,9 +290,9 @@ final class WorkshopService {
 	 */
 	public function forMember( int $memberId, string $when = 'upcoming' ): array {
 		global $wpdb;
-		$t   = $this->workshops->tableName();
-		$now = Clock::mysql( Clock::now()->modify( '-1 hour' ) );
-		$sql = 'past' === $when
+		$t      = $this->workshops->tableName();
+		$now    = Clock::mysql( Clock::now()->modify( '-1 hour' ) );
+		$sql    = 'past' === $when
 			? $wpdb->prepare( "SELECT * FROM {$t} WHERE status IN ('scheduled','live','ended') AND ends_at < %s ORDER BY starts_at DESC LIMIT 50", $now ) // phpcs:ignore WordPress.DB
 			: $wpdb->prepare( "SELECT * FROM {$t} WHERE status IN ('scheduled','live') AND ends_at >= %s ORDER BY starts_at ASC LIMIT 50", $now ); // phpcs:ignore WordPress.DB
 		$rows   = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB
@@ -328,7 +362,16 @@ final class WorkshopService {
 				++$count;
 			}
 		}
-		$this->audit->log( 'workshop.notified', 'workshop', $id, null, array( 'template' => $templateKey, 'recipients' => $count ) );
+		$this->audit->log(
+			'workshop.notified',
+			'workshop',
+			$id,
+			null,
+			array(
+				'template'   => $templateKey,
+				'recipients' => $count,
+			)
+		);
 		return $count;
 	}
 
@@ -353,7 +396,10 @@ final class WorkshopService {
 			as_unschedule_all_actions( Scheduler::WORKSHOP_REMINDER, array( $id, 'workshop_1h' ), Scheduler::GROUP );
 		}
 		$start = (int) Clock::timestamp( $w['starts_at'] );
-		foreach ( array( 'workshop_24h' => DAY_IN_SECONDS, 'workshop_1h' => HOUR_IN_SECONDS ) as $key => $offset ) {
+		foreach ( array(
+			'workshop_24h' => DAY_IN_SECONDS,
+			'workshop_1h'  => HOUR_IN_SECONDS,
+		) as $key => $offset ) {
 			if ( $start - $offset > time() ) {
 				$this->scheduler->at( $start - $offset, Scheduler::WORKSHOP_REMINDER, array( $id, $key ) );
 			}
@@ -416,21 +462,21 @@ final class WorkshopService {
 	 */
 	public function present( array $w, bool $withRegistrations = false ): array {
 		$out = array(
-			'id'                 => (int) $w['id'],
-			'title'              => (string) $w['title'],
-			'description'        => (string) $w['description'],
-			'starts_at'          => Clock::iso( $w['starts_at'] ),
-			'ends_at'            => Clock::iso( $w['ends_at'] ),
-			'host'               => (string) $w['host'],
-			'required_level'     => (int) $w['required_level'],
+			'id'                   => (int) $w['id'],
+			'title'                => (string) $w['title'],
+			'description'          => (string) $w['description'],
+			'starts_at'            => Clock::iso( $w['starts_at'] ),
+			'ends_at'              => Clock::iso( $w['ends_at'] ),
+			'host'                 => (string) $w['host'],
+			'required_level'       => (int) $w['required_level'],
 			'required_level_label' => LevelResolver::label( (int) $w['required_level'] ),
-			'organisation_id'    => $w['organisation_id'] ? (int) $w['organisation_id'] : null,
-			'join_url'           => $w['join_url'],
-			'recording_url'      => $w['recording_url'],
-			'capacity'           => $w['capacity'] ? (int) $w['capacity'] : null,
-			'status'             => (string) $w['status'],
-			'registration_count' => $this->registrations->count( array( 'workshop_id' => (int) $w['id'] ) ),
-			'created_at'         => Clock::iso( $w['created_at'] ),
+			'organisation_id'      => $w['organisation_id'] ? (int) $w['organisation_id'] : null,
+			'join_url'             => $w['join_url'],
+			'recording_url'        => $w['recording_url'],
+			'capacity'             => $w['capacity'] ? (int) $w['capacity'] : null,
+			'status'               => (string) $w['status'],
+			'registration_count'   => $this->registrations->count( array( 'workshop_id' => (int) $w['id'] ) ),
+			'created_at'           => Clock::iso( $w['created_at'] ),
 		);
 		if ( $withRegistrations ) {
 			$out['registrations'] = array_map(
@@ -463,7 +509,12 @@ final class WorkshopService {
 		$out   = $this->present( $w );
 		unset( $out['join_url'] );
 		$out['eligible']      = $elig;
-		$out['registered']    = (bool) $this->registrations->first( array( 'workshop_id' => (int) $w['id'], 'member_id' => $memberId ) );
+		$out['registered']    = (bool) $this->registrations->first(
+			array(
+				'workshop_id' => (int) $w['id'],
+				'member_id'   => $memberId,
+			)
+		);
 		$out['can_join_now']  = $elig && 'cancelled' !== $w['status'] && $now >= $start - self::JOIN_WINDOW && $now <= $end + HOUR_IN_SECONDS;
 		$out['join_opens_at'] = gmdate( 'Y-m-d\TH:i:s\Z', $start - self::JOIN_WINDOW );
 		$out['is_full']       = $w['capacity'] && $out['registration_count'] >= (int) $w['capacity'];

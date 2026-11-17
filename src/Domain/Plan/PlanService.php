@@ -76,7 +76,17 @@ final class PlanService {
 	 * @return array<string,mixed>
 	 */
 	public function create( array $dto ): array {
-		$data = Validation::validate( $dto, array_merge( self::RULES, array( 'slug' => 'required|slug', 'name' => 'required|maxlen:100', 'level' => 'required|int|min:0|max:9' ) ) );
+		$data = Validation::validate(
+			$dto,
+			array_merge(
+				self::RULES,
+				array(
+					'slug'  => 'required|slug',
+					'name'  => 'required|maxlen:100',
+					'level' => 'required|int|min:0|max:9',
+				)
+			)
+		);
 		if ( $this->plans->findBy( 'slug', $data['slug'] ) ) {
 			throw DomainError::validation( array( 'slug' => 'A plan with this slug already exists.' ) );
 		}
@@ -84,7 +94,7 @@ final class PlanService {
 		if ( $is_free && $this->plans->free() ) {
 			throw DomainError::validation( array( 'is_free' => 'There can only be one free plan.' ) );
 		}
-		$id = Db::transaction(
+		$id   = Db::transaction(
 			function () use ( $data, $is_free ): int {
 				$id = $this->plans->insert(
 					array(
@@ -217,7 +227,13 @@ final class PlanService {
 		if ( $before['is_free'] ) {
 			throw DomainError::validation( array( 'currency' => 'The free plan has no prices.' ) );
 		}
-		$this->writePrice( $planId, array( 'currency' => $currency, 'amount_minor' => $amountMinor ) );
+		$this->writePrice(
+			$planId,
+			array(
+				'currency'     => $currency,
+				'amount_minor' => $amountMinor,
+			)
+		);
 		$after = $this->get( $planId );
 		$this->audit->log( 'plan.price_set', 'plan', $planId, array( 'prices' => $before['prices'] ), array( 'prices' => $after['prices'] ) );
 		$this->sync( $planId );
@@ -282,28 +298,28 @@ final class PlanService {
 	public function present( array $row ): array {
 		$prices = $this->prices->forPlan( (int) $row['id'] );
 		return array(
-			'id'               => (int) $row['id'],
-			'slug'             => (string) $row['slug'],
-			'name'             => (string) $row['name'],
-			'description'      => (string) ( $row['description'] ?? '' ),
-			'level'            => (int) $row['level'],
-			'interval'         => (string) $row['interval_unit'],
-			'interval_count'   => (int) $row['interval_count'],
-			'trial_days'       => (int) $row['trial_days'],
-			'kit_tag'          => (string) ( $row['kit_tag'] ?? '' ),
-			'visibility'       => (string) $row['visibility'],
-			'benefits'         => is_array( $row['benefits'] ) ? $row['benefits'] : array(),
-			'sort_order'       => (int) $row['sort_order'],
-			'woo_product_id'   => $row['woo_product_id'] ? (int) $row['woo_product_id'] : null,
-			'woo_product_url'  => $row['woo_product_id'] ? admin_url( 'post.php?post=' . (int) $row['woo_product_id'] . '&action=edit' ) : null,
-			'is_free'          => (bool) $row['is_free'],
-			'is_quoted'        => (bool) $row['is_quoted'],
-			'highlight'        => (bool) $row['highlight'],
-			'archived_at'      => Clock::iso( $row['archived_at'] ?? null ),
-			'prices'           => $prices,
-			'prices_display'   => array_map( static fn( $amt, $cur ) => Money::format( (int) $amt, (string) $cur ), $prices, array_keys( $prices ) ),
-			'created_at'       => Clock::iso( $row['created_at'] ?? null ),
-			'updated_at'       => Clock::iso( $row['updated_at'] ?? null ),
+			'id'              => (int) $row['id'],
+			'slug'            => (string) $row['slug'],
+			'name'            => (string) $row['name'],
+			'description'     => (string) ( $row['description'] ?? '' ),
+			'level'           => (int) $row['level'],
+			'interval'        => (string) $row['interval_unit'],
+			'interval_count'  => (int) $row['interval_count'],
+			'trial_days'      => (int) $row['trial_days'],
+			'kit_tag'         => (string) ( $row['kit_tag'] ?? '' ),
+			'visibility'      => (string) $row['visibility'],
+			'benefits'        => is_array( $row['benefits'] ) ? $row['benefits'] : array(),
+			'sort_order'      => (int) $row['sort_order'],
+			'woo_product_id'  => $row['woo_product_id'] ? (int) $row['woo_product_id'] : null,
+			'woo_product_url' => $row['woo_product_id'] ? admin_url( 'post.php?post=' . (int) $row['woo_product_id'] . '&action=edit' ) : null,
+			'is_free'         => (bool) $row['is_free'],
+			'is_quoted'       => (bool) $row['is_quoted'],
+			'highlight'       => (bool) $row['highlight'],
+			'archived_at'     => Clock::iso( $row['archived_at'] ?? null ),
+			'prices'          => $prices,
+			'prices_display'  => array_map( static fn( $amt, $cur ) => Money::format( (int) $amt, (string) $cur ), $prices, array_keys( $prices ) ),
+			'created_at'      => Clock::iso( $row['created_at'] ?? null ),
+			'updated_at'      => Clock::iso( $row['updated_at'] ?? null ),
 		);
 	}
 

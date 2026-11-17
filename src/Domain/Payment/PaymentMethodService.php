@@ -54,7 +54,17 @@ final class PaymentMethodService {
 		if ( $is_first ) {
 			$this->attachToSubscriptions( $memberId, $id );
 		}
-		$this->audit->log( 'payment_method.added', 'member', $memberId, null, array( 'payment_method_id' => $id, 'gateway' => $gateway, 'label' => $label ) );
+		$this->audit->log(
+			'payment_method.added',
+			'member',
+			$memberId,
+			null,
+			array(
+				'payment_method_id' => $id,
+				'gateway'           => $gateway,
+				'label'             => $label,
+			)
+		);
 		return $id;
 	}
 
@@ -82,7 +92,12 @@ final class PaymentMethodService {
 		if ( $m['woo_token_id'] ) {
 			\WC_Payment_Tokens::delete( (int) $m['woo_token_id'] );
 		}
-		foreach ( $this->subs->where( array( 'member_id' => $memberId, 'payment_method_id' => $id ) ) as $sub ) {
+		foreach ( $this->subs->where(
+			array(
+				'member_id'         => $memberId,
+				'payment_method_id' => $id,
+			)
+		) as $sub ) {
 			$this->subs->update( (int) $sub['id'], array( 'payment_method_id' => null ) );
 		}
 		if ( $m['is_default'] ) {
@@ -91,7 +106,16 @@ final class PaymentMethodService {
 				$this->setDefault( $memberId, (int) $next['id'] );
 			}
 		}
-		$this->audit->log( 'payment_method.removed', 'member', $memberId, array( 'payment_method_id' => $id, 'label' => $m['label'] ), null );
+		$this->audit->log(
+			'payment_method.removed',
+			'member',
+			$memberId,
+			array(
+				'payment_method_id' => $id,
+				'label'             => $m['label'],
+			),
+			null
+		);
 	}
 
 	public function setDefault( int $memberId, int $id ): void {
@@ -107,7 +131,13 @@ final class PaymentMethodService {
 	}
 
 	private function attachToSubscriptions( int $memberId, int $methodId ): void {
-		foreach ( $this->subs->where( array( 'member_id' => $memberId, 'status' => array( 'active', 'past_due' ), 'organisation_id' => null ) ) as $sub ) {
+		foreach ( $this->subs->where(
+			array(
+				'member_id'       => $memberId,
+				'status'          => array( 'active', 'past_due' ),
+				'organisation_id' => null,
+			)
+		) as $sub ) {
 			$this->subs->update( (int) $sub['id'], array( 'payment_method_id' => $methodId ) );
 		}
 	}

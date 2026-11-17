@@ -71,7 +71,12 @@ final class KitSync {
 			}
 		}
 		$extra = array();
-		$seats = $this->subs->where( array( 'member_id' => $memberId, 'status' => array( 'active', 'past_due' ) ) );
+		$seats = $this->subs->where(
+			array(
+				'member_id' => $memberId,
+				'status'    => array( 'active', 'past_due' ),
+			)
+		);
 		foreach ( $seats as $seat ) {
 			if ( $seat['organisation_id'] ) {
 				$plan = $this->plans->get( (int) $seat['plan_id'] );
@@ -127,7 +132,13 @@ final class KitSync {
 						throw new \RuntimeException( 'Could not create Kit subscriber.' );
 					}
 				} else {
-					$this->members->update( $memberId, array( 'kit_sync_error' => null, 'kit_last_synced_at' => Clock::mysql() ) );
+					$this->members->update(
+						$memberId,
+						array(
+							'kit_sync_error'     => null,
+							'kit_last_synced_at' => Clock::mysql(),
+						)
+					);
 					return array( 'status' => 'no_subscriber' );
 				}
 			}
@@ -232,13 +243,13 @@ final class KitSync {
 		global $wpdb;
 		$m = Db::table( 'members' );
 		return array(
-			'configured'        => $this->client->configured(),
-			'connected'         => $connected,
-			'account_name'      => $account['account']['name'] ?? ( $account['name'] ?? null ),
-			'last_reconcile_at' => Clock::iso( $this->settings->get( 'kit', 'last_reconcile_at' ) ),
-			'error_count_24h'   => $this->errorCount(),
+			'configured'          => $this->client->configured(),
+			'connected'           => $connected,
+			'account_name'        => $account['account']['name'] ?? ( $account['name'] ?? null ),
+			'last_reconcile_at'   => Clock::iso( $this->settings->get( 'kit', 'last_reconcile_at' ) ),
+			'error_count_24h'     => $this->errorCount(),
 			'members_with_errors' => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_sync_error IS NOT NULL" ), // phpcs:ignore WordPress.DB
-			'synced_members'    => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_subscriber_id IS NOT NULL" ), // phpcs:ignore WordPress.DB
+			'synced_members'      => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_subscriber_id IS NOT NULL" ), // phpcs:ignore WordPress.DB
 		);
 	}
 

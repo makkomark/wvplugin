@@ -83,7 +83,7 @@ final class Scheduler {
 		if ( ! function_exists( 'as_get_scheduled_actions' ) ) {
 			return;
 		}
-		$ids = as_get_scheduled_actions(
+		$ids   = as_get_scheduled_actions(
 			array(
 				'hook'     => $hook,
 				'group'    => self::GROUP,

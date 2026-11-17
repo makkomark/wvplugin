@@ -28,8 +28,8 @@ final class Dunning {
 		if ( ! $sub || 'active' !== $sub['status'] || $sub['cancel_at_period_end'] ) {
 			return;
 		}
-		$order    = $this->orders->ensureRenewalOrder( $sub );
-		$key      = 3 >= $days ? 'renewal_3d' : 'renewal_7d';
+		$order     = $this->orders->ensureRenewalOrder( $sub );
+		$key       = 3 >= $days ? 'renewal_3d' : 'renewal_7d';
 		$presented = $this->service->get( $subId );
 		wvm( Notifier::class )->member(
 			(int) $sub['member_id'],
@@ -77,7 +77,14 @@ final class Dunning {
 			return;
 		}
 		$after = $this->service->markPastDue( $sub );
-		wvm( Notifier::class )->member( (int) $sub['member_id'], 'renewal_due_manual', $this->service->payload( $after ) + array( 'pay_link' => $order['pay_link'], 'amount' => $order['amount_display'] ) );
+		wvm( Notifier::class )->member(
+			(int) $sub['member_id'],
+			'renewal_due_manual',
+			$this->service->payload( $after ) + array(
+				'pay_link' => $order['pay_link'],
+				'amount'   => $order['amount_display'],
+			)
+		);
 	}
 
 	public function retryAutocharge( int $subId, int $attempt ): void {

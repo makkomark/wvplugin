@@ -219,7 +219,7 @@ final class SubscriptionService {
 				'description'     => 'Admin grant: ' . $reason,
 			)
 		);
-		$sub = $this->start( $memberId, $planId, $this->orders->find( $order_id ), $id, 'Admin grant: ' . $reason, null, $end ?? ( $plan['is_free'] ? null : Periods::next( Clock::now(), $plan ) ) );
+		$sub      = $this->start( $memberId, $planId, $this->orders->find( $order_id ), $id, 'Admin grant: ' . $reason, null, $end ?? ( $plan['is_free'] ? null : Periods::next( Clock::now(), $plan ) ) );
 		$this->audit->log( 'subscription.granted', 'subscription', $id, null, $sub, $reason );
 		return $sub;
 	}
@@ -239,10 +239,10 @@ final class SubscriptionService {
 		if ( in_array( $sub['status'], array( 'suspended', 'expired' ), true ) ) {
 			return $this->restore( $sub, $order );
 		}
-		$plan_id = (int) ( $sub['pending_plan_id'] ?: $order['plan_id'] ?: $sub['plan_id'] );
-		$plan    = $this->plans->get( $plan_id );
+		$plan_id         = (int) ( $sub['pending_plan_id'] ?: $order['plan_id'] ?: $sub['plan_id'] );
+		$plan            = $this->plans->get( $plan_id );
 		[ $start, $end ] = $this->anchoredPeriod( $sub, $plan, $order );
-		$fields  = array(
+		$fields          = array(
 			'plan_id'              => $plan_id,
 			'pending_plan_id'      => null,
 			'current_period_start' => Clock::mysql( $start ),
@@ -252,7 +252,7 @@ final class SubscriptionService {
 			'currency'             => $order['currency'],
 			'autocharge_attempts'  => 0,
 		);
-		$was = (string) $sub['status'];
+		$was             = (string) $sub['status'];
 		if ( 'active' === $was ) {
 			$before = $this->present( $sub );
 			$this->subs->update( (int) $sub['id'], $fields );
@@ -775,7 +775,13 @@ final class SubscriptionService {
 		if ( $orgId ) {
 			return;
 		}
-		foreach ( $this->subs->where( array( 'member_id' => $memberId, 'organisation_id' => null, 'status' => array( 'active', 'past_due', 'suspended', 'expired' ) ) ) as $other ) {
+		foreach ( $this->subs->where(
+			array(
+				'member_id'       => $memberId,
+				'organisation_id' => null,
+				'status'          => array( 'active', 'past_due', 'suspended', 'expired' ),
+			)
+		) as $other ) {
 			if ( (int) $other['id'] === $keepId ) {
 				continue;
 			}
@@ -847,10 +853,10 @@ final class SubscriptionService {
 		$tz      = (string) ( $member['timezone'] ?? 'Africa/Kampala' );
 		$end     = Clock::parse( $row['current_period_end'] );
 		return array(
-			'id'                     => (int) $row['id'],
-			'member_id'              => (int) $row['member_id'],
-			'plan_id'                => (int) $row['plan_id'],
-			'plan'                   => array(
+			'id'                       => (int) $row['id'],
+			'member_id'                => (int) $row['member_id'],
+			'plan_id'                  => (int) $row['plan_id'],
+			'plan'                     => array(
 				'id'       => $plan['id'],
 				'slug'     => $plan['slug'],
 				'name'     => $plan['name'],
@@ -859,36 +865,36 @@ final class SubscriptionService {
 				'is_free'  => $plan['is_free'],
 				'benefits' => $plan['benefits'],
 			),
-			'pending_plan'           => $pending ? array(
+			'pending_plan'             => $pending ? array(
 				'id'   => $pending['id'],
 				'name' => $pending['name'],
 			) : null,
-			'organisation_id'        => $row['organisation_id'] ? (int) $row['organisation_id'] : null,
-			'status'                 => (string) $row['status'],
-			'currency'               => (string) $row['currency'],
-			'amount_minor'           => (int) $row['amount_minor'],
-			'amount_display'         => Money::format( (int) $row['amount_minor'], (string) $row['currency'] ),
-			'started_at'             => Clock::iso( $row['started_at'] ),
-			'current_period_start'   => Clock::iso( $row['current_period_start'] ),
-			'current_period_end'     => Clock::iso( $row['current_period_end'] ),
-			'current_period_end_raw' => $row['current_period_end'],
-			'period_end_display'     => Clock::inZone( $row['current_period_end'], $tz ),
-			'days_left'              => $end ? max( 0, (int) ceil( ( $end->getTimestamp() - Clock::now()->getTimestamp() ) / DAY_IN_SECONDS ) ) : null,
-			'grace_ends_at'          => Clock::iso( $row['grace_ends_at'] ),
-			'grace_ends_at_raw'      => $row['grace_ends_at'],
-			'grace_ends_display'     => Clock::inZone( $row['grace_ends_at'], $tz ),
-			'suspended_at'           => Clock::iso( $row['suspended_at'] ),
-			'expires_at'             => Clock::iso( $row['expires_at'] ),
-			'expires_at_raw'         => $row['expires_at'],
-			'cancel_at_period_end'   => (bool) $row['cancel_at_period_end'],
-			'cancelled_at'           => Clock::iso( $row['cancelled_at'] ),
-			'cancel_reason'          => $row['cancel_reason'],
-			'payment_method_id'      => $row['payment_method_id'] ? (int) $row['payment_method_id'] : null,
-			'autocharge_attempts'    => (int) $row['autocharge_attempts'],
+			'organisation_id'          => $row['organisation_id'] ? (int) $row['organisation_id'] : null,
+			'status'                   => (string) $row['status'],
+			'currency'                 => (string) $row['currency'],
+			'amount_minor'             => (int) $row['amount_minor'],
+			'amount_display'           => Money::format( (int) $row['amount_minor'], (string) $row['currency'] ),
+			'started_at'               => Clock::iso( $row['started_at'] ),
+			'current_period_start'     => Clock::iso( $row['current_period_start'] ),
+			'current_period_end'       => Clock::iso( $row['current_period_end'] ),
+			'current_period_end_raw'   => $row['current_period_end'],
+			'period_end_display'       => Clock::inZone( $row['current_period_end'], $tz ),
+			'days_left'                => $end ? max( 0, (int) ceil( ( $end->getTimestamp() - Clock::now()->getTimestamp() ) / DAY_IN_SECONDS ) ) : null,
+			'grace_ends_at'            => Clock::iso( $row['grace_ends_at'] ),
+			'grace_ends_at_raw'        => $row['grace_ends_at'],
+			'grace_ends_display'       => Clock::inZone( $row['grace_ends_at'], $tz ),
+			'suspended_at'             => Clock::iso( $row['suspended_at'] ),
+			'expires_at'               => Clock::iso( $row['expires_at'] ),
+			'expires_at_raw'           => $row['expires_at'],
+			'cancel_at_period_end'     => (bool) $row['cancel_at_period_end'],
+			'cancelled_at'             => Clock::iso( $row['cancelled_at'] ),
+			'cancel_reason'            => $row['cancel_reason'],
+			'payment_method_id'        => $row['payment_method_id'] ? (int) $row['payment_method_id'] : null,
+			'autocharge_attempts'      => (int) $row['autocharge_attempts'],
 			'previous_subscription_id' => $row['previous_subscription_id'] ? (int) $row['previous_subscription_id'] : null,
-			'can_rejoin'             => 'expired' === $row['status'] ? $this->withinRejoinWindow( $row ) : false,
-			'created_at'             => Clock::iso( $row['created_at'] ),
-			'updated_at'             => Clock::iso( $row['updated_at'] ),
+			'can_rejoin'               => 'expired' === $row['status'] ? $this->withinRejoinWindow( $row ) : false,
+			'created_at'               => Clock::iso( $row['created_at'] ),
+			'updated_at'               => Clock::iso( $row['updated_at'] ),
 		);
 	}
 }

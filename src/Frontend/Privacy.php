@@ -46,21 +46,50 @@ final class Privacy {
 			$member = wvm( MemberService::class )->byUser( (int) $user->ID );
 			if ( $member ) {
 				$fields = array();
-				foreach ( array( 'public_id' => 'Member ID', 'phone' => 'Phone', 'country' => 'Country', 'timezone' => 'Timezone', 'created_at' => 'Joined' ) as $k => $label ) {
-					$fields[] = array( 'name' => $label, 'value' => (string) $member[ $k ] );
+				foreach ( array(
+					'public_id'  => 'Member ID',
+					'phone'      => 'Phone',
+					'country'    => 'Country',
+					'timezone'   => 'Timezone',
+					'created_at' => 'Joined',
+				) as $k => $label ) {
+					$fields[] = array(
+						'name'  => $label,
+						'value' => (string) $member[ $k ],
+					);
 				}
-				$fields[] = array( 'name' => 'Marketing consent', 'value' => $member['marketing_consent'] ? 'Yes (' . $member['marketing_consent_at'] . ')' : 'No' );
-				$data[]   = array( 'group_id' => 'wvm-member', 'group_label' => 'WitsValley membership', 'item_id' => 'member-' . $member['id'], 'data' => $fields );
+				$fields[] = array(
+					'name'  => 'Marketing consent',
+					'value' => $member['marketing_consent'] ? 'Yes (' . $member['marketing_consent_at'] . ')' : 'No',
+				);
+				$data[]   = array(
+					'group_id'    => 'wvm-member',
+					'group_label' => 'WitsValley membership',
+					'item_id'     => 'member-' . $member['id'],
+					'data'        => $fields,
+				);
 				foreach ( wvm( SubscriptionService::class )->forMember( (int) $member['id'] ) as $sub ) {
 					$data[] = array(
 						'group_id'    => 'wvm-subscriptions',
 						'group_label' => 'WitsValley subscriptions',
 						'item_id'     => 'sub-' . $sub['id'],
 						'data'        => array(
-							array( 'name' => 'Plan', 'value' => $sub['plan']['name'] ),
-							array( 'name' => 'Status', 'value' => $sub['status'] ),
-							array( 'name' => 'Started', 'value' => (string) $sub['started_at'] ),
-							array( 'name' => 'Period end', 'value' => (string) $sub['current_period_end'] ),
+							array(
+								'name'  => 'Plan',
+								'value' => $sub['plan']['name'],
+							),
+							array(
+								'name'  => 'Status',
+								'value' => $sub['status'],
+							),
+							array(
+								'name'  => 'Started',
+								'value' => (string) $sub['started_at'],
+							),
+							array(
+								'name'  => 'Period end',
+								'value' => (string) $sub['current_period_end'],
+							),
 						),
 					);
 				}
@@ -70,17 +99,35 @@ final class Privacy {
 						'group_label' => 'WitsValley payments',
 						'item_id'     => 'order-' . $order['id'],
 						'data'        => array(
-							array( 'name' => 'Description', 'value' => $order['description'] ),
-							array( 'name' => 'Amount', 'value' => $order['amount_display'] ),
-							array( 'name' => 'Status', 'value' => $order['status'] ),
-							array( 'name' => 'Receipt', 'value' => (string) $order['receipt_number'] ),
-							array( 'name' => 'Date', 'value' => (string) $order['created_at'] ),
+							array(
+								'name'  => 'Description',
+								'value' => $order['description'],
+							),
+							array(
+								'name'  => 'Amount',
+								'value' => $order['amount_display'],
+							),
+							array(
+								'name'  => 'Status',
+								'value' => $order['status'],
+							),
+							array(
+								'name'  => 'Receipt',
+								'value' => (string) $order['receipt_number'],
+							),
+							array(
+								'name'  => 'Date',
+								'value' => (string) $order['created_at'],
+							),
 						),
 					);
 				}
 			}
 		}
-		return array( 'data' => $data, 'done' => true );
+		return array(
+			'data' => $data,
+			'done' => true,
+		);
 	}
 
 	/** @return array<string,mixed> */
@@ -91,10 +138,20 @@ final class Privacy {
 			$member = wvm( MemberService::class )->byUser( (int) $user->ID );
 			if ( $member && ! $member['anonymised_at'] ) {
 				wvm( MemberService::class )->anonymise( (int) $member['id'], 'Privacy erasure request' );
-				return array( 'items_removed' => true, 'items_retained' => true, 'messages' => array( 'Personal data pseudonymised; payment records retained for accounting.' ), 'done' => true );
+				return array(
+					'items_removed'  => true,
+					'items_retained' => true,
+					'messages'       => array( 'Personal data pseudonymised; payment records retained for accounting.' ),
+					'done'           => true,
+				);
 			}
 		}
-		return array( 'items_removed' => false, 'items_retained' => false, 'messages' => array(), 'done' => true );
+		return array(
+			'items_removed'  => false,
+			'items_retained' => false,
+			'messages'       => array(),
+			'done'           => true,
+		);
 	}
 
 	public function policy(): void {
