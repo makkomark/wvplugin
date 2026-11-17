@@ -304,7 +304,7 @@ final class OrganisationService {
 	}
 
 	public static function acceptUrl( string $token ): string {
-		return home_url( '/enterprise/accept/' . $token . '/' );
+		return \WitsValley\Members\Domain\Notification\Urls::inviteLink( $token );
 	}
 
 	/** @return array<string,mixed>|null Seat row for a token. */

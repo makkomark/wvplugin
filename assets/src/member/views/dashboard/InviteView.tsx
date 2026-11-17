@@ -31,7 +31,7 @@ function dashboardWith( q: string ): string {
 
 /** Full-page navigation to the programme tab (reloads even if only the hash changes). */
 export function goToProgramme() {
-	const target = config.dashboardUrl.replace( /\/?$/, '/' ) + '#/programme';
+	const target = ( config.dashboardUrl.includes( '?' ) ? config.dashboardUrl : config.dashboardUrl.replace( /\/?$/, '/' ) ) + '#/programme';
 	const here = window.location.origin + window.location.pathname + window.location.search;
 	if ( target.startsWith( here ) && window.location.search === '' ) {
 		window.location.hash = '#/programme';

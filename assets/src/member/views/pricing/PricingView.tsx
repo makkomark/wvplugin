@@ -104,7 +104,7 @@ export function PricingView( { preselect }: { preselect?: string } ) {
 		}
 		// Members with a live paid plan change plans from the dashboard (preview, proration, downgrades).
 		if ( live && sub && ! sub.plan.is_free ) {
-			go( config.dashboardUrl.replace( /\/?$/, '/' ) + '#/billing' );
+			go( ( config.dashboardUrl.includes( '?' ) ? config.dashboardUrl : config.dashboardUrl.replace( /\/?$/, '/' ) ) + '#/billing' );
 			return;
 		}
 		setBusyPlan( p.id );

@@ -516,7 +516,7 @@ final class OrderService {
 	}
 
 	public function payLinkUrl( array $order ): string {
-		return home_url( '/pay/' . $order['pay_link_token'] . '/' );
+		return \WitsValley\Members\Domain\Notification\Urls::payLink( (string) $order['pay_link_token'] );
 	}
 
 	/**
@@ -697,7 +697,7 @@ final class OrderService {
 			'period_end'      => Clock::iso( $row['period_end'] ),
 			'receipt_number'  => $row['receipt_number'] ?? null,
 			'receipt_url'     => 'paid' === $row['status'] || 'refunded' === $row['status'] ? rest_url( WVM_REST_NS . '/me/orders/' . (int) $row['id'] . '/receipt.pdf' ) : null,
-			'pay_link'        => $is_open && $token ? home_url( '/pay/' . $token . '/' ) : null,
+			'pay_link'        => $is_open && $token ? \WitsValley\Members\Domain\Notification\Urls::payLink( (string) $token ) : null,
 			'pay_link_token'  => $is_open ? $token : null,
 			'checkout_url'    => $checkout,
 			'review_reason'   => $row['review_reason'] ?? null,

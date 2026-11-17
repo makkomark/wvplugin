@@ -337,7 +337,7 @@ final class Mailer {
 			'amount'            => 'UGX 50,000',
 			'renewal_date'      => wp_date( 'j M Y', time() + 7 * DAY_IN_SECONDS ),
 			'grace_end_date'    => wp_date( 'j M Y', time() + 14 * DAY_IN_SECONDS ),
-			'pay_link'          => home_url( '/pay/sample-token/' ),
+			'pay_link'          => Urls::payLink( '0123456789abcdef0123456789abcdef' ),
 			'dashboard_url'     => Urls::dashboard(),
 			'member_id'         => MemberService::publicId( 123 ),
 			'receipt_number'    => 'WV-R-1001',
@@ -354,7 +354,7 @@ final class Mailer {
 			'device'            => 'Chrome on Android',
 			'ip'                => '102.85.0.1',
 			'org_name'          => 'Acme Uganda Ltd',
-			'accept_url'        => home_url( '/enterprise/accept/sample/' ),
+			'accept_url'        => Urls::inviteLink( 'sample' ),
 			'business_name'     => (string) $this->settings->get( 'general', 'business_name', 'WitsValley' ),
 			'support_email'     => (string) $this->settings->get( 'general', 'support_email', '' ) ?: (string) get_option( 'admin_email' ),
 		);
