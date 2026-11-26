@@ -27,8 +27,22 @@ final class PlanCopyTest extends TestCase {
 		$repo  = wvm( PlanRepository::class );
 		$basic = $repo->findBy( 'slug', 'basic' );
 		$prem  = $repo->findBy( 'slug', 'premium' );
-		$repo->update( (int) $basic['id'], array( 'tagline' => '', 'description' => 'Core lessons and monthly live sessions.', 'benefits' => array( 'Old' ) ) );
-		$repo->update( (int) $prem['id'], array( 'tagline' => '', 'description' => 'Our own premium wording.', 'benefits' => array( 'Custom' ) ) );
+		$repo->update(
+			(int) $basic['id'],
+			array(
+				'tagline'     => '',
+				'description' => 'Core lessons and monthly live sessions.',
+				'benefits'    => array( 'Old' ),
+			)
+		);
+		$repo->update(
+			(int) $prem['id'],
+			array(
+				'tagline'     => '',
+				'description' => 'Our own premium wording.',
+				'benefits'    => array( 'Custom' ),
+			)
+		);
 
 		Migrations::planCopy2026();
 
@@ -45,7 +59,14 @@ final class PlanCopyTest extends TestCase {
 		$plan = $this->plan( 'basic' );
 		$req  = new \WP_REST_Request( 'PATCH', '/wv-members/v1/plans/' . $plan['id'] );
 		$req->set_header( 'Content-Type', 'application/json' );
-		$req->set_body( wp_json_encode( array( 'tagline' => 'New tagline', 'name' => 'Renamed' ) ) );
+		$req->set_body(
+			wp_json_encode(
+				array(
+					'tagline' => 'New tagline',
+					'name'    => 'Renamed',
+				)
+			)
+		);
 		$data = rest_do_request( $req )->get_data()['data'];
 		$this->assertSame( 'New tagline', $data['tagline'] );
 		$this->assertSame( 'Basic', $data['name'] );

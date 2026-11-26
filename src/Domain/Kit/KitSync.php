@@ -137,7 +137,7 @@ final class KitSync {
 				$found = $this->client->findSubscriberByEmail( (string) $user->user_email, $memberId );
 				if ( $found ) {
 					$sid = (string) $found['id'];
-				} elseif ( $member['marketing_consent'] || ( $state['paid'] && $this->settings->get( 'kit', 'create_subscribers_on_paid', true ) ) ) {
+				} elseif ( $this->shouldCreate( $member, $state ) ) {
 					$created = $this->client->createSubscriber( (string) $user->user_email, (string) ( $user->first_name ?: $user->display_name ), 'active', $memberId );
 					$sid     = $created ? (string) $created['id'] : null;
 					if ( ! $sid ) {
@@ -156,7 +156,7 @@ final class KitSync {
 			}
 			$current  = $this->client->subscriberTags( $sid, $memberId );
 			$rule     = $this->map->resolve( $state['state'], $state['plan_tag'], $state['extra'] );
-			$expected = TagMap::apply( $current, $rule );
+			$expected = $this->withMarketingTag( TagMap::apply( $current, $rule ), (bool) $member['marketing_consent'] );
 			$owned    = array_values( array_filter( $current, array( TagMap::class, 'isOwned' ) ) );
 			$to_add   = array_values( array_diff( $expected, $owned ) );
 			$to_rm    = array_values( array_diff( $owned, $expected ) );
@@ -202,6 +202,52 @@ final class KitSync {
 				'error'  => $e->getMessage(),
 			);
 		}
+	}
+
+	/**
+	 * Whether to create a Kit subscriber for a member Kit doesn't know yet.
+	 *
+	 * Never for someone Kit reported as unsubscribed/bounced (creating would re-subscribe them).
+	 * Free members get the weekly newsletter, paid members need Kit for their content, and
+	 * marketing consent always qualifies.
+	 *
+	 * @param array<string,mixed>                                                 $member
+	 * @param array{state:string, plan_tag:?string, extra:list<string>, paid:bool} $state
+	 */
+	public function shouldCreate( array $member, array $state ): bool {
+		if ( ! empty( $member['kit_unsubscribed_at'] ) ) {
+			return false;
+		}
+		if ( $member['marketing_consent'] ) {
+			return true;
+		}
+		if ( $state['paid'] ) {
+			return (bool) $this->settings->get( 'kit', 'create_subscribers_on_paid', true );
+		}
+		return (bool) $this->settings->get( 'kit', 'create_subscribers_on_free', true );
+	}
+
+	/** The marketing tag (default WV-MARKETING) follows marketing consent; other tags are untouched. */
+	public function marketingTag(): ?string {
+		$tag = strtoupper( trim( (string) $this->settings->get( 'kit', 'marketing_tag', 'WV-MARKETING' ) ) );
+		return '' !== $tag && TagMap::isOwned( $tag ) ? $tag : null;
+	}
+
+	/**
+	 * @param list<string> $expected
+	 * @return list<string>
+	 */
+	private function withMarketingTag( array $expected, bool $consent ): array {
+		$tag = $this->marketingTag();
+		if ( ! $tag ) {
+			return $expected;
+		}
+		$expected = array_values( array_diff( $expected, array( $tag ) ) );
+		if ( $consent ) {
+			$expected[] = $tag;
+		}
+		sort( $expected );
+		return $expected;
 	}
 
 	/** Add an arbitrary (WV-*) tag — used by bulk actions. */
@@ -270,13 +316,17 @@ final class KitSync {
 		global $wpdb;
 		$m = Db::table( 'members' );
 		return array(
-			'configured'          => $this->client->configured(),
-			'connected'           => $connected,
-			'account_name'        => $account['account']['name'] ?? ( $account['name'] ?? null ),
-			'last_reconcile_at'   => Clock::iso( $this->settings->get( 'kit', 'last_reconcile_at' ) ),
-			'error_count_24h'     => $this->errorCount(),
-			'members_with_errors' => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_sync_error IS NOT NULL" ), // phpcs:ignore WordPress.DB
-			'synced_members'      => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_subscriber_id IS NOT NULL" ), // phpcs:ignore WordPress.DB
+			'configured'            => $this->client->configured(),
+			'connected'             => $connected,
+			'account_name'          => $account['account']['name'] ?? ( $account['name'] ?? null ),
+			'last_reconcile_at'     => Clock::iso( $this->settings->get( 'kit', 'last_reconcile_at' ) ),
+			'error_count_24h'       => $this->errorCount(),
+			'members_with_errors'   => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_sync_error IS NOT NULL" ), // phpcs:ignore WordPress.DB
+			'synced_members'        => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_subscriber_id IS NOT NULL" ), // phpcs:ignore WordPress.DB
+			'unsubscribed'          => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$m} WHERE kit_unsubscribed_at IS NOT NULL" ), // phpcs:ignore WordPress.DB
+			'webhooks_connected'    => (bool) $this->settings->get( 'kit', 'webhooks_connected_at' ),
+			'webhooks_connected_at' => Clock::iso( $this->settings->get( 'kit', 'webhooks_connected_at' ) ),
+			'marketing_tag'         => $this->marketingTag(),
 		);
 	}
 

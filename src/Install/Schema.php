@@ -100,6 +100,8 @@ final class Schema {
   kit_subscriber_id varchar(50) NULL,
   kit_last_synced_at datetime NULL,
   kit_sync_error text NULL,
+  kit_unsubscribed_at datetime NULL,
+  kit_unsubscribe_reason varchar(20) NULL,
   notes_count int(11) NOT NULL DEFAULT 0,
   anonymised_at datetime NULL,
   created_at datetime NOT NULL,

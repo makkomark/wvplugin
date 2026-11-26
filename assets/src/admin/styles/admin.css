@@ -5968,3 +5968,17 @@ body.wvm-a-noscroll {
 	line-height: 1.4;
 	color: var(--wvm-ink);
 }
+
+/* Kit status: connection + action on top, the four counters in an even row below. */
+@media (min-width: 900px) {
+	.wvm-a-kitstatus:not(:has(> .wvm-a-skel)) {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 16px 0;
+	}
+	.wvm-a-kitstatus__main { grid-column: 1 / 4; grid-row: 1; }
+	.wvm-a-kitstatus__actions { grid-column: 4; grid-row: 1; justify-self: end; }
+	.wvm-a-kitstatus__num { grid-row: 2; }
+	.wvm-a-kitstatus__main + .wvm-a-kitstatus__num { padding-left: 0; border-left: 0; }
+	.wvm-a-kitstatus .wvm-a-kitstatus__num { padding-top: 14px; border-top: 1px solid var(--wvm-border); }
+}

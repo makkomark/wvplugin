@@ -15,11 +15,12 @@ Deviations from the brief, and why:
 | — | `subscriptions.pending_plan_id`, `autocharge_attempts` | Downgrade at renewal; auto-charge retry tracking |
 | — | `orders.organisation_id`, `description`, `pay_link_used_at`, `receipt_number`, `paid_at` | Enterprise invoices, single-use pay links, receipts |
 | — | `members.notification_prefs`, `anonymised_at` | Profile toggles; GDPR pseudonymisation |
+| — | `members.kit_unsubscribed_at`, `kit_unsubscribe_reason` | Set by the Kit webhooks (unsubscribe / bounce / complain); blocks re-creating the Kit subscriber |
 | — | `payment_methods.woo_token_id` | Mirror of the WooCommerce payment token |
 | — | `organisation_members.subscription_id`, `organisations.programme_title/description` | Seat → subscription link; Programme tab |
 | `plan_prices` (no timestamps) | has `created_at/updated_at` | Consistency |
 
-Secrets (`payments.raw_payload`, `payment_methods.token`, Kit/email/S3 keys in `settings`) are encrypted with libsodium `secretbox`
+Secrets (`payments.raw_payload`, `payment_methods.token`, Kit/email/S3 keys and the Kit webhook secret in `settings`) are encrypted with libsodium `secretbox`
 (`src/Support/Encryption.php`); encrypted strings are prefixed `enc:`.
 
 The only meta the plugin writes: post meta `_wvm_level`, `_wvm_plans`, `_wvm_teaser_paragraphs`; term meta `_wvm_level`; Woo product/order meta

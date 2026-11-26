@@ -39,6 +39,9 @@ GET /kit/tag-map
 PUT /kit/tag-map
 GET /kit/tags
 POST /kit/test-connection
+GET /kit/webhooks
+POST /kit/webhooks
+DELETE /kit/webhooks
 GET /me
 PATCH /me
 GET /me/consultations
@@ -129,6 +132,7 @@ DELETE /plans/{id}/prices/{currency}
 PUT /plans/{id}/prices/{currency}
 POST /plans/{id}/restore
 POST /public/applications
+POST /public/kit/webhook/{secret}/{event}   (Kit → plugin; event = unsubscribe|bounce|complain|activate)
 GET /public/geo
 GET /public/invites/{token}
 POST /public/invites/{token}/accept

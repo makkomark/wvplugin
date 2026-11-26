@@ -26,6 +26,9 @@ final class SettingsController extends Controller {
 				if ( 'branding' === $group ) {
 					$body = self::cleanBranding( $body );
 				}
+				if ( 'kit' === $group ) {
+					$body = self::cleanKit( $body );
+				}
 				$diff = $this->settings->update( $group, $body );
 				wvm( Audit::class )->log( 'settings.updated', 'settings', null, $diff['before'], $diff['after'], $group );
 				if ( 'kit' === $group ) {
@@ -91,6 +94,25 @@ final class SettingsController extends Controller {
 		}
 		if ( $errors ) {
 			throw DomainError::validation( $errors );
+		}
+		return $b;
+	}
+
+	/**
+	 * @param array<string,mixed> $b
+	 * @return array<string,mixed>
+	 */
+	private static function cleanKit( array $b ): array {
+		// Managed by "Connect Kit webhooks" and the reconcile job, never by the form.
+		foreach ( array( 'webhook_secret', 'webhook_ids', 'webhooks_connected_at', 'last_reconcile_at', 'last_reconcile_errors' ) as $k ) {
+			unset( $b[ $k ] );
+		}
+		if ( isset( $b['marketing_tag'] ) ) {
+			$tag = strtoupper( trim( (string) preg_replace( '/[^A-Za-z0-9\-_]/', '', (string) $b['marketing_tag'] ) ) );
+			if ( '' !== $tag && ! str_starts_with( $tag, \WitsValley\Members\Domain\Kit\TagMap::PREFIX ) ) {
+				throw DomainError::validation( array( 'marketing_tag' => 'The marketing tag must start with WV- so the plugin can manage it.' ) );
+			}
+			$b['marketing_tag'] = $tag;
 		}
 		return $b;
 	}

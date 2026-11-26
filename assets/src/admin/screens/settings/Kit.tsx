@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useApi } from '../../hooks/useApi';
-import { api } from '../../lib/api';
+import { api, fieldError } from '../../lib/api';
 import type { KitLogRow, KitStatus, TagRule } from '../../lib/types';
 import { relativeTime, formatDateTime } from '../../../shared/format';
 import { Btn, Chip, Mono, Muted, EmptyState, Notice2, ResultBlock, StatusChip, A, Card, Skeleton, Tabs, cx } from '../../components/ui';
@@ -16,6 +16,8 @@ interface KitValues extends Record< string, unknown > {
 	api_key: string;
 	api_key_set?: boolean;
 	create_subscribers_on_paid: boolean;
+	create_subscribers_on_free: boolean;
+	marketing_tag: string;
 	tag_map?: unknown;
 	last_reconcile_at?: string | null;
 	last_reconcile_errors?: number;
@@ -67,6 +69,10 @@ export function KitSettings() {
 						<div className={ cx( 'wvm-a-kitstatus__num', st.members_with_errors > 0 && 'is-bad' ) }>
 							<strong>{ st.members_with_errors }</strong>
 							<span>Members with errors</span>
+						</div>
+						<div className="wvm-a-kitstatus__num" title="Unsubscribed, bounced or marked as spam in Kit (reported by the webhooks)">
+							<strong>{ st.unsubscribed }</strong>
+							<span>Unsubscribed</span>
 						</div>
 						<div className="wvm-a-kitstatus__actions">
 							<Btn
@@ -136,15 +142,70 @@ export function KitSettings() {
 							</Notice2>
 						) }
 					</Section>
-					<Section title="Subscribers">
-						<Toggle label="Create Kit subscribers when a member pays" checked={ v.create_subscribers_on_paid } onChange={ ( create_subscribers_on_paid ) => s.set( { create_subscribers_on_paid } ) } help="Paid members need a Kit subscriber to receive content, even without marketing consent. Free members are only added with consent." />
+					<Section title="Subscribers" description="Membership emails (lessons, newsletter, programme content) are part of what members join for, so members are added to Kit without a separate tick-box. Anyone who unsubscribes in Kit stays unsubscribed.">
+						<Toggle label="Add free members to Kit" checked={ v.create_subscribers_on_free } onChange={ ( create_subscribers_on_free ) => s.set( { create_subscribers_on_free } ) } help="The Free plan includes the weekly WitsValley newsletter. Turn off to add free members only when they opt in to offers and news." />
+						<Toggle label="Add paying members to Kit" checked={ v.create_subscribers_on_paid } onChange={ ( create_subscribers_on_paid ) => s.set( { create_subscribers_on_paid } ) } help="Paid members need a Kit subscriber to receive their programme content." />
+						<TextField
+							label="Marketing tag"
+							value={ v.marketing_tag }
+							onChange={ ( marketing_tag ) => s.set( { marketing_tag: marketing_tag.toUpperCase() } ) }
+							placeholder="WV-MARKETING"
+							help="Added while a member has ticked “offers and news”, removed when they untick it. Send promotional broadcasts to this tag only. Leave empty to turn off."
+							error={ fieldError( s.error, 'marketing_tag' ) }
+						/>
 					</Section>
+					<WebhooksSection onChange={ status.reload } />
 				</>
 			) }
 			{ tab === 'tagmap' && <TagMapEditor /> }
 			{ tab === 'tags' && <KitTags /> }
 			{ tab === 'log' && <KitLog /> }
 		</SettingsFrame>
+	);
+}
+
+interface WebhookState { connected: boolean; webhooks: number; connected_at: string | null }
+
+function WebhooksSection( { onChange }: { onChange: () => void } ) {
+	const toast = useToast();
+	const res = useApi< WebhookState >( 'kit/webhooks' );
+	const [ busy, setBusy ] = useState< 'connect' | 'disconnect' | null >( null );
+	const run = async ( what: 'connect' | 'disconnect' ) => {
+		setBusy( what );
+		try {
+			const r = what === 'connect' ? await api.post< WebhookState >( 'kit/webhooks' ) : await api.del< WebhookState >( 'kit/webhooks' );
+			res.setData( () => r.data );
+			onChange();
+			toast.success( what === 'connect' ? 'Kit webhooks connected' : 'Kit webhooks removed' );
+		} catch ( e ) {
+			toast.error( e );
+		} finally {
+			setBusy( null );
+		}
+	};
+	const w = res.data;
+	return (
+		<Section title="Unsubscribe webhooks" description="Lets Kit tell the plugin when someone unsubscribes, bounces, marks an email as spam or subscribes again, so their consent and status here stay correct. Needs a public HTTPS site.">
+			{ ! w ? (
+				<Skeleton h={ 44 } r={ 10 } />
+			) : (
+				<div className="wvm-a-inline">
+					{ w.connected ? (
+						<Chip tone="success">{ `Connected · ${ w.webhooks } webhooks${ w.connected_at ? ` · ${ relativeTime( w.connected_at ) }` : '' }` }</Chip>
+					) : (
+						<Chip tone="neutral">Not connected</Chip>
+					) }
+					<Btn icon={ w.connected ? 'refresh' : 'link' } busy={ busy === 'connect' } onClick={ () => run( 'connect' ) }>
+						{ w.connected ? 'Reconnect' : 'Connect Kit webhooks' }
+					</Btn>
+					{ w.connected && (
+						<Btn variant="ghost" busy={ busy === 'disconnect' } onClick={ () => run( 'disconnect' ) }>
+							Disconnect
+						</Btn>
+					) }
+				</div>
+			) }
+		</Section>
 	);
 }
 

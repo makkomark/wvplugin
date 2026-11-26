@@ -500,6 +500,11 @@ function AccessTab( { d, onResync }: { d: MemberDetailData; onResync: () => void
 						{ d.kit.error }
 					</Notice2>
 				) }
+				{ d.kit.unsubscribed_at && (
+					<Notice2 tone="warning" title={ KIT_UNSUB[ d.kit.unsubscribe_reason || 'unsubscribe' ] }>
+						Kit reported this { formatDate( d.kit.unsubscribed_at ) }. Kit won’t email them, and the plugin won’t re-subscribe them. Tags still follow their membership. They can opt back in through any Kit form.
+					</Notice2>
+				) }
 				<DescList
 					cols={ 1 }
 					items={ [
@@ -515,6 +520,12 @@ function AccessTab( { d, onResync }: { d: MemberDetailData; onResync: () => void
 		</div>
 	);
 }
+
+const KIT_UNSUB: Record< string, string > = {
+	unsubscribe: 'Unsubscribed in Kit',
+	bounce: 'Emails to this address bounce',
+	complain: 'Marked a Kit email as spam',
+};
 
 function NotesTab( { memberId, initial, onChanged }: { memberId: number; initial: Note[]; onChanged: () => void } ) {
 	const toast = useToast();

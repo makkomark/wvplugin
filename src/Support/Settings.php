@@ -11,7 +11,7 @@ final class Settings {
 
 	/** @var array<string,list<string>> Keys in each group that are secrets. */
 	public const SECRETS = array(
-		'kit'    => array( 'api_key' ),
+		'kit'    => array( 'api_key', 'webhook_secret' ),
 		'emails' => array( 'provider_key' ),
 		'tools'  => array( 's3_secret' ),
 	);
@@ -80,6 +80,11 @@ final class Settings {
 				'api_key'                    => '',
 				'tag_map'                    => array(),
 				'create_subscribers_on_paid' => true,
+				'create_subscribers_on_free' => true,
+				'marketing_tag'              => 'WV-MARKETING',
+				'webhook_secret'             => '',
+				'webhook_ids'                => array(),
+				'webhooks_connected_at'      => null,
 				'last_reconcile_at'          => null,
 				'last_reconcile_errors'      => 0,
 			),

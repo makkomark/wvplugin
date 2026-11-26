@@ -105,10 +105,12 @@ final class MembersController extends Controller {
 				'subscriptions'  => count( $this->subs->forMember( $id ) ),
 			),
 			'kit'             => array(
-				'subscriber_id' => $member['kit_subscriber_id'],
-				'last_synced'   => $member['kit_last_synced_at'],
-				'error'         => $member['kit_sync_error'],
-				'expected'      => wvm( KitSync::class )->stateFor( $id ),
+				'subscriber_id'      => $member['kit_subscriber_id'],
+				'last_synced'        => $member['kit_last_synced_at'],
+				'error'              => $member['kit_sync_error'],
+				'unsubscribed_at'    => $member['kit_unsubscribed_at'] ?? null,
+				'unsubscribe_reason' => $member['kit_unsubscribe_reason'] ?? null,
+				'expected'           => wvm( KitSync::class )->stateFor( $id ),
 			),
 			'wp_user_url'     => admin_url( 'user-edit.php?user_id=' . (int) $member['user_id'] ),
 		);

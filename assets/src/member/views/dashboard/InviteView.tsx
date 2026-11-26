@@ -184,7 +184,7 @@ export function InviteView( { token, standalone, onDone }: Props ) {
 
 function CreateAccount( { token, email }: { token: string; email: string } ) {
 	const countries = useMemo( countryOptions, [] );
-	const [ f, setF ] = useState( { name: '', password: '', phone: '', country: config.countries.UG ? 'UG' : countries[ 0 ]?.value || '', marketing_consent: true } );
+	const [ f, setF ] = useState( { name: '', password: '', phone: '', country: config.countries.UG ? 'UG' : countries[ 0 ]?.value || '', marketing_consent: false } );
 	const [ errors, setErrors ] = useState< Record< string, string > >( {} );
 	const [ error, setError ] = useState< string | null >( null );
 	const [ busy, setBusy ] = useState( false );
@@ -226,7 +226,7 @@ function CreateAccount( { token, email }: { token: string; email: string } ) {
 				<Input label="Phone" type="tel" autoComplete="tel" value={ f.phone } onValue={ ( v ) => setF( { ...f, phone: v } ) } error={ errors.phone } optional />
 				<Select label="Country" value={ f.country } onValue={ ( v ) => setF( { ...f, country: v } ) } options={ countries } error={ errors.country } />
 			</div>
-			<Toggle checked={ f.marketing_consent } onChange={ ( v ) => setF( { ...f, marketing_consent: v } ) } label="Send me WitsValley insights and news" />
+			<Toggle checked={ f.marketing_consent } onChange={ ( v ) => setF( { ...f, marketing_consent: v } ) } label="Also send me WitsValley offers and news (optional)" description="Your programme emails come either way. Unsubscribe any time." />
 			{ error && <Banner tone="danger">{ error }</Banner> }
 			<Button type="submit" size="lg" block loading={ busy } iconRight="arrow-right">Create account &amp; join</Button>
 		</form>

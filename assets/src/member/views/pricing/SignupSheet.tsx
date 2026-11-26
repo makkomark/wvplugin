@@ -31,7 +31,7 @@ export function SignupSheet( { plan, currency, defaultCountry, onClose, onLogin 
 		country: config.countries[ defaultCountry ] ? defaultCountry : countries[ 0 ]?.value || 'UG',
 		password: '',
 		terms: false,
-		marketing_consent: true,
+		marketing_consent: false,
 		website: '',
 	} );
 	const [ errors, setErrors ] = useState< Record< string, string > >( {} );
@@ -169,7 +169,12 @@ export function SignupSheet( { plan, currency, defaultCountry, onClose, onLogin 
 					) }
 					.
 				</Checkbox>
-				<Toggle checked={ f.marketing_consent } onChange={ ( v ) => set( 'marketing_consent', v ) } label="Send me WitsValley insights and news" description="A couple of emails a month. Unsubscribe any time." />
+				<Toggle
+					checked={ f.marketing_consent }
+					onChange={ ( v ) => set( 'marketing_consent', v ) }
+					label="Also send me WitsValley offers and news (optional)"
+					description={ plan.is_free ? 'Your free membership already includes the weekly WitsValley newsletter. Unsubscribe any time.' : 'Your membership emails come either way. Unsubscribe any time.' }
+				/>
 				<Honeypot value={ f.website } onValue={ ( v ) => set( 'website', v ) } />
 
 				{ error && <Banner tone="danger">{ error }</Banner> }

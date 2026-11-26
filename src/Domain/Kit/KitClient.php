@@ -137,6 +137,36 @@ class KitClient {
 		return array_values( $all );
 	}
 
+	/**
+	 * Register a webhook (Kit → this site).
+	 *
+	 * @return int|null Webhook id.
+	 */
+	public function createWebhook( string $targetUrl, string $event ): ?int {
+		$res = $this->request(
+			'POST',
+			'/webhooks',
+			array(
+				'target_url' => $targetUrl,
+				'event'      => array( 'name' => $event ),
+			)
+		);
+		$this->logCall( null, 'webhook', $event, $res );
+		$id = is_array( $res['body'] ) ? (int) ( $res['body']['webhook']['id'] ?? 0 ) : 0;
+		return $id ?: null;
+	}
+
+	/** @return list<array<string,mixed>> */
+	public function listWebhooks(): array {
+		$res = $this->request( 'GET', '/webhooks?per_page=1000' );
+		return is_array( $res['body'] ) ? array_values( (array) ( $res['body']['webhooks'] ?? array() ) ) : array();
+	}
+
+	public function deleteWebhook( int $id ): bool {
+		$res = $this->request( 'DELETE', '/webhooks/' . $id );
+		return ( $res['status'] >= 200 && $res['status'] < 300 ) || 404 === $res['status'];
+	}
+
 	/** @param array{status:int, body:mixed, raw:string, error:?string} $res */
 	private function logCall( ?int $memberId, string $action, ?string $tag, array $res ): void {
 		$ok = $res['status'] >= 200 && $res['status'] < 300;

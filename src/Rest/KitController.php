@@ -6,13 +6,14 @@ namespace WitsValley\Members\Rest;
 use WitsValley\Members\Domain\Audit\Audit;
 use WitsValley\Members\Domain\Kit\KitClient;
 use WitsValley\Members\Domain\Kit\KitSync;
+use WitsValley\Members\Domain\Kit\KitWebhooks;
 use WitsValley\Members\Domain\Kit\TagMap;
 use WitsValley\Members\Support\DomainError;
 use WitsValley\Members\Support\Settings;
 
 final class KitController extends Controller {
 
-	public function __construct( private KitClient $client, private KitSync $sync, private TagMap $map, private Settings $settings ) {}
+	public function __construct( private KitClient $client, private KitSync $sync, private TagMap $map, private Settings $settings, private KitWebhooks $webhooks ) {}
 
 	public function routes(): void {
 		$cap = 'wvm_manage_settings';
@@ -80,6 +81,16 @@ final class KitController extends Controller {
 				return array( 'map' => $this->map->map() );
 			},
 			$cap
+		);
+		$this->route( 'GET', '/kit/webhooks', fn() => $this->webhooks->state(), $cap );
+		$this->route( 'POST', '/kit/webhooks', fn() => $this->webhooks->connect(), $cap );
+		$this->route( 'DELETE', '/kit/webhooks', fn() => $this->webhooks->disconnect(), $cap );
+		// Kit → plugin. The secret in the path authenticates the delivery (Kit doesn't sign webhooks).
+		$this->route(
+			'POST',
+			'/public/kit/webhook/(?P<secret>[a-f0-9]{32,64})/(?P<event>[a-z]+)',
+			fn( $r ) => $this->webhooks->handle( (string) $r['secret'], (string) $r['event'], (array) ( $r->get_json_params() ?: $r->get_body_params() ) ),
+			'public'
 		);
 		$this->route( 'POST', '/kit/reconcile', fn() => array( 'queued' => $this->sync->reconcile() ), $cap );
 		$this->route( 'GET', '/kit/log', fn( $r ) => $this->paged( $this->sync->logList( $this->query( $r ), $this->pagination( $r, 50 ) ) ), array( 'any' => array( $cap, 'wvm_view_members' ) ) );

@@ -205,8 +205,8 @@ function NotificationsCard() {
 					<Toggle key={ p.key } label={ p.label } description={ p.desc } checked={ !! prefs[ p.key ] } busy={ saving === p.key } onChange={ ( v ) => togglePref( p.key, v ) } />
 				) ) }
 				<Toggle
-					label="Marketing emails"
-					description="Insights, offers and news from WitsValley."
+					label="Offers and news"
+					description="Occasional offers and news from WitsValley. Your membership emails (newsletter, lessons, programme content) are separate. To stop those, use the unsubscribe link in any of them."
 					checked={ consent }
 					busy={ saving === 'consent' }
 					onChange={ ( v ) => {

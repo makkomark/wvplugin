@@ -40,7 +40,7 @@ export interface MemberDetailData {
 	payment_methods: PaymentMethod[];
 	notes: Note[];
 	stats: { lifetime_value: { currency: string; total_minor: number; display: string; orders: number }[]; member_since: string; subscriptions: number };
-	kit: { subscriber_id: string | null; last_synced: string | null; error: string | null; expected: { state: string; plan_tag: string | null; extra: string[]; paid: boolean } };
+	kit: { subscriber_id: string | null; last_synced: string | null; error: string | null; unsubscribed_at: string | null; unsubscribe_reason: 'unsubscribe' | 'bounce' | 'complain' | null; expected: { state: string; plan_tag: string | null; extra: string[]; paid: boolean } };
 	wp_user_url: string;
 }
 
@@ -52,7 +52,7 @@ export interface AccessPost { id: number; title: string; post_type: string; stat
 
 export interface AccessTerm { id: number; name: string; taxonomy: string; taxonomy_label: string; count: number; level: number; level_label: string }
 
-export interface KitStatus { configured: boolean; connected: boolean; account_name: string | null; last_reconcile_at: string | null; error_count_24h: number; members_with_errors: number; synced_members: number }
+export interface KitStatus { configured: boolean; connected: boolean; account_name: string | null; last_reconcile_at: string | null; error_count_24h: number; members_with_errors: number; synced_members: number; unsubscribed: number; webhooks_connected: boolean; webhooks_connected_at: string | null; marketing_tag: string | null }
 
 export interface KitLogRow { id: number; member_id: number; action: string; tag: string | null; status: 'ok' | 'error'; response: string | null; created_at: string; member_name?: string; public_id?: string }
 
