@@ -58,5 +58,6 @@ enforced by `phpcs.xml`. PHPStan level 6 runs in CI.
 - [Runbook](docs/RUNBOOK.md) — incidents, replays, reconciliation, backups
 - [Adding a gateway](docs/ADDING_A_GATEWAY.md) · [Gateway trials](docs/GATEWAYS.md)
 - [Adding an email](docs/ADDING_AN_EMAIL.md)
+- [How Kit works](docs/KIT.md)
 - [Schema notes](docs/SCHEMA.md) · [REST API](docs/API.md)
 - [Launch checklist](docs/LAUNCH_CHECKLIST.md) · [Changelog](docs/CHANGELOG.md)

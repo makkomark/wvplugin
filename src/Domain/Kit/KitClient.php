@@ -22,7 +22,12 @@ class KitClient {
 	/** @return array{status:int, body:mixed, raw:string, error:?string} */
 	protected function request( string $method, string $path, ?array $body = null ): array {
 		$key = (string) $this->settings->get( 'kit', 'api_key', '' );
-		return Http::json( $method, self::BASE . $path, array( 'X-Kit-Api-Key' => $key ), $body );
+		$res = Http::json( $method, self::BASE . $path, array( 'X-Kit-Api-Key' => $key ), $body );
+		if ( 429 === $res['status'] ) {
+			// Kit allows ~120 requests per rolling minute per API key; back off and let the job retry.
+			throw new KitRateLimited( 60 );
+		}
+		return $res;
 	}
 
 	/** @return array<string,mixed>|null */

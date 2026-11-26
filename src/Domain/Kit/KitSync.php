@@ -33,7 +33,19 @@ final class KitSync {
 		add_action( 'wvm/member/consent_changed', fn( $m ) => $this->queue( (int) $m['id'] ) );
 		add_action( 'wvm/member/created', fn( $m ) => $this->queue( (int) $m['id'] ) );
 		add_action( 'wvm/member/email_changed', array( $this, 'emailChanged' ) );
-		add_action( 'wvm/member/bulk_tag', fn( $id, $tag ) => $this->scheduler->async( Scheduler::KIT_TAG, array( (int) $id, (string) $tag ) ), 10, 2 );
+		add_action( 'wvm/member/bulk_tag', array( $this, 'queueBulkTag' ), 10, 2 );
+	}
+
+	/** Members processed per minute by paced batches (reconcile, bulk tagging). */
+	public const MEMBERS_PER_MINUTE = 25;
+
+	private int $bulkQueued = 0;
+
+	/** Bulk "add Kit tag": spread the jobs out so a large selection doesn't hit Kit's rate limit. */
+	public function queueBulkTag( int $memberId, string $tag ): void {
+		$delay = (int) floor( $this->bulkQueued / self::MEMBERS_PER_MINUTE ) * MINUTE_IN_SECONDS;
+		++$this->bulkQueued;
+		$this->scheduler->at( time() + 5 + $delay, Scheduler::KIT_TAG, array( $memberId, $tag ) );
 	}
 
 	/** @param array<string,mixed> $member Presented member (new email). */
@@ -176,6 +188,13 @@ final class KitSync {
 				'added'    => $to_add,
 				'removed'  => $to_rm,
 			);
+		} catch ( KitRateLimited $e ) {
+			// Explicit schedule: the running job itself would make a "unique" check skip the retry.
+			$this->scheduler->at( time() + $e->retryAfter + wp_rand( 0, 30 ), Scheduler::KIT_SYNC, array( $memberId ) );
+			return array(
+				'status' => 'rate_limited',
+				'error'  => $e->getMessage(),
+			);
 		} catch ( \Throwable $e ) {
 			$this->members->update( $memberId, array( 'kit_sync_error' => mb_substr( $e->getMessage(), 0, 500 ) ) );
 			return array(
@@ -192,13 +211,22 @@ final class KitSync {
 			return;
 		}
 		$user = get_userdata( (int) $member['user_id'] );
-		$sid  = $member['kit_subscriber_id'] ?: ( $user ? ( $this->client->findSubscriberByEmail( (string) $user->user_email, $memberId )['id'] ?? null ) : null );
+		try {
+			$sid = $member['kit_subscriber_id'] ?: ( $user ? ( $this->client->findSubscriberByEmail( (string) $user->user_email, $memberId )['id'] ?? null ) : null );
+		} catch ( KitRateLimited $e ) {
+			$this->scheduler->at( time() + $e->retryAfter + wp_rand( 0, 30 ), Scheduler::KIT_TAG, array( $memberId, $tag ) );
+			return;
+		}
 		if ( ! $sid ) {
 			return;
 		}
-		$tid = $this->client->tagId( $tag );
-		if ( $tid ) {
-			$this->client->addTag( (string) $sid, $tid, $tag, $memberId );
+		try {
+			$tid = $this->client->tagId( $tag );
+			if ( $tid ) {
+				$this->client->addTag( (string) $sid, $tid, $tag, $memberId );
+			}
+		} catch ( KitRateLimited $e ) {
+			$this->scheduler->at( time() + $e->retryAfter + wp_rand( 0, 30 ), Scheduler::KIT_TAG, array( $memberId, $tag ) );
 		}
 	}
 
@@ -208,12 +236,11 @@ final class KitSync {
 			return 0;
 		}
 		global $wpdb;
-		$m     = Db::table( 'members' );
-		$ids   = $wpdb->get_col( "SELECT id FROM {$m} WHERE anonymised_at IS NULL" ); // phpcs:ignore WordPress.DB
-		$delay = 0;
+		$m   = Db::table( 'members' );
+		$ids = $wpdb->get_col( "SELECT id FROM {$m} WHERE anonymised_at IS NULL" ); // phpcs:ignore WordPress.DB
+		// ~25 members per minute (2–4 API calls each) keeps well under Kit's ~120 requests/minute limit.
 		foreach ( $ids as $i => $id ) {
-			$this->scheduler->unique( Scheduler::KIT_SYNC, array( (int) $id ), 5 + (int) floor( $i / 20 ) * 10 );
-			++$delay;
+			$this->scheduler->unique( Scheduler::KIT_SYNC, array( (int) $id ), 5 + (int) floor( $i / self::MEMBERS_PER_MINUTE ) * MINUTE_IN_SECONDS );
 		}
 		$this->settings->set( 'kit', 'last_reconcile_at', Clock::mysql() );
 		$this->settings->set( 'kit', 'last_reconcile_errors', $this->errorCount() );
