@@ -2,6 +2,7 @@
  * Modal / bottom sheet. Centered dialog on desktop, bottom sheet under 640px.
  * Rendered in a portal inside a themed host so tokens + scoped styles apply; focus trap + Esc + scroll lock.
  */
+import { themeClasses } from '../lib/config';
 import { createPortal, useEffect, useRef, useId } from '@wordpress/element';
 import type { ReactNode } from 'react';
 import { Icon } from './Icon';
@@ -28,7 +29,7 @@ function getHost(): HTMLElement {
 		return host;
 	}
 	host = document.createElement( 'div' );
-	host.className = 'wvm-root wvm-theme wvm-theme--auto wvm-portal';
+	host.className = `wvm-root ${ themeClasses( 'portal' ) } wvm-portal`;
 	document.body.appendChild( host );
 	return host;
 }

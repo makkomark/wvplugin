@@ -18,8 +18,16 @@ final class BrandingSettingsTest extends TestCase {
 		$css = wvm( Branding::class )->css();
 		$this->assertStringContainsString( '--wvm-primary:#0B4C25', $css );
 		$this->assertStringContainsString( '--wvm-accent:#FFAC04', $css );
-		$this->assertStringContainsString( 'prefers-color-scheme: dark', $css );
 		$this->assertStringNotContainsStringIgnoringCase( '5b3df5', $css );
+	}
+
+	public function test_light_by_default_and_pricing_header_copy(): void {
+		$this->assertSame( 'off', wvm( Branding::class )->forApp()['darkMode'], 'Always light unless the owner opts in.' );
+		$this->assertStringNotContainsString( 'prefers-color-scheme', wvm( Branding::class )->css() );
+		$config = wvm( \WitsValley\Members\Frontend\Frontend::class )->config();
+		$this->assertSame( 'WitsValley Membership', $config['pricingCopy']['eyebrow'] );
+		$this->assertSame( 'Reprogram Your Subconscious Mind. Transform Your Life.', $config['pricingCopy']['title'] );
+		$this->assertSame( 'Your journey to transformation begins here.', $config['pricingCopy']['closing'] );
 	}
 
 	public function test_font_sources(): void {

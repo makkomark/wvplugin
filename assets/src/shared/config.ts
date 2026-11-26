@@ -25,11 +25,15 @@ export interface MemberConfig {
 	timezones: string[];
 	logoUrl: string;
 	branding?: Branding;
+	pricingCopy?: PricingCopy;
 	version: string;
 }
 
 /** Brand colours + resolved font stacks (src/Support/Branding.php). */
-export interface Branding { primary: string; accent: string; font: string; heading: string }
+export interface Branding { primary: string; accent: string; font: string; heading: string; darkMode?: 'auto' | 'off' }
+
+/** Editable pricing page header (Settings › General). */
+export interface PricingCopy { eyebrow: string; title: string; subtitle: string; intro: string; closing: string }
 
 export interface AdminPage { slug: string; title: string; route: string; url: string; allowed: boolean }
 

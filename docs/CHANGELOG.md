@@ -1,6 +1,10 @@
 # Changelog
 
 ## 1.0.2 — 2026-11-26
+- New pricing page header ("WitsValley Membership — Reprogram Your Subconscious Mind. Transform Your Life." + subheadline, introduction
+  and closing line), editable in Settings › General › Pricing page header.
+- **Fix: unreadable pricing section on devices in dark mode.** Pricing and enterprise sections always follow the (light) theme; the
+  dashboard's dark mode is now opt-in (Settings › Branding), and existing installs are switched to "always light".
 - **Fix: gateways charging the wrong currency.** Some gateway plugins (e.g. JPesa) send the store currency (often USD) with the
   order total, so a UGX 20,000 membership was charged as USD 20,000. While a WitsValley order is being paid, WooCommerce now
   reports the order's own currency and decimals to every gateway (pay page, pay form, thank-you page, gateway callbacks, auto-charges, manual payments).

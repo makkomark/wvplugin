@@ -1,4 +1,5 @@
 /* Toast notifications (portal, auto-dismiss). */
+import { themeClasses } from '../lib/config';
 import { createContext, createPortal, useCallback, useContext, useMemo, useRef, useState } from '@wordpress/element';
 import type { ReactNode } from 'react';
 import { Icon } from './Icon';
@@ -37,7 +38,7 @@ export function ToastProvider( { children }: { children: ReactNode } ) {
 		<Ctx.Provider value={ api }>
 			{ children }
 			{ createPortal(
-				<div className="wvm-root wvm-theme wvm-theme--auto wvm-toasts" aria-live="polite" aria-atomic="false">
+				<div className={ `wvm-root ${ themeClasses( 'portal' ) } wvm-toasts` } aria-live="polite" aria-atomic="false">
 					{ items.map( ( t ) => (
 						<div key={ t.id } className={ cx( 'wvm-toast', `wvm-toast--${ t.tone }` ) } role={ t.tone === 'danger' ? 'alert' : 'status' }>
 							<span className="wvm-toast__icon" aria-hidden="true">

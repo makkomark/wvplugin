@@ -175,6 +175,13 @@ final class Frontend {
 			'timezones'       => timezone_identifiers_list(),
 			'logoUrl'         => (string) $this->settings->get( 'emails', 'logo_url', '' ),
 			'branding'        => wvm( \WitsValley\Members\Support\Branding::class )->forApp(),
+			'pricingCopy'     => array(
+				'eyebrow'  => (string) $general['pricing_eyebrow'],
+				'title'    => (string) $general['pricing_title'],
+				'subtitle' => (string) $general['pricing_subtitle'],
+				'intro'    => (string) $general['pricing_intro'],
+				'closing'  => (string) $general['pricing_closing'],
+			),
 			'version'         => WVM_VERSION,
 		);
 	}

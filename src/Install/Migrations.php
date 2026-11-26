@@ -15,7 +15,14 @@ final class Migrations {
 			'1.0.0' => static function (): void {
 				// Initial release: nothing to transform.
 			},
-			'1.0.2' => array( self::class, 'planCopy2026' ),
+			'1.0.2' => static function (): void {
+				self::planCopy2026();
+				// Dark mode shipped as "auto" in 1.0.1 and clashed with light themes; default is now "always light".
+				$settings = wvm( \WitsValley\Members\Support\Settings::class );
+				if ( 'auto' === $settings->get( 'branding', 'dark_mode', 'off' ) ) {
+					$settings->set( 'branding', 'dark_mode', 'off' );
+				}
+			},
 		);
 	}
 

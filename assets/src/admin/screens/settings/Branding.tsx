@@ -162,11 +162,13 @@ export function BrandingSettings() {
 						<Preview v={ v } />
 						<SelectField
 							label="Dark mode (member dashboard)"
+							help="The pricing and enterprise sections always follow your theme (light)."
+
 							value={ v.dark_mode }
 							onChange={ ( d ) => s.set( { dark_mode: d as BrandingValues[ 'dark_mode' ] } ) }
 							options={ [
+								{ value: 'off', label: 'Always light (recommended for light themes)' },
 								{ value: 'auto', label: 'Follow the visitor’s device setting' },
-								{ value: 'off', label: 'Always light' },
 							] }
 						/>
 					</Section>

@@ -16,6 +16,14 @@ import { LoginForm } from '../../components/Auth';
 import { useToast } from '../../components/Toast';
 import { SignupSheet } from './SignupSheet';
 
+const PRICING_COPY_DEFAULTS = {
+	eyebrow: 'WitsValley Membership',
+	title: 'Reprogram Your Subconscious Mind. Transform Your Life.',
+	subtitle: 'Awaken your awareness, master your inner world, and discover your untapped potential.',
+	intro: 'Explore practical subconscious mind reprogramming systems, guided protocols, spiritual awareness, and self-mastery programmes designed to transform how you think, feel, live, and experience the world.',
+	closing: 'Your journey to transformation begins here.',
+};
+
 interface Geo { country: string; currency: string }
 
 export function PricingView( { preselect }: { preselect?: string } ) {
@@ -123,15 +131,18 @@ export function PricingView( { preselect }: { preselect?: string } ) {
 	};
 
 	const preselected = preselect || '';
+	const copy = { ...PRICING_COPY_DEFAULTS, ...( config.pricingCopy || {} ) };
 
 	return (
 		<div className="wvm-pricing">
 			<header className="wvm-pricing__head">
 				<span className="wvm-pill-eyebrow">
-					<Icon name="sparkles" size={ 14 } /> Membership
+					<Icon name="sparkles" size={ 14 } /> { copy.eyebrow }
 				</span>
-				<h2 className="wvm-display">Begin your journey of personal transformation</h2>
-				<p className="wvm-lead">Lessons, subconscious reprogramming systems and live sessions to reshape your thinking and grow. Start free, go deeper whenever you're ready, cancel anytime.</p>
+				<h2 className="wvm-display">{ copy.title }</h2>
+				{ copy.subtitle && <p className="wvm-lead wvm-pricing__subtitle">{ copy.subtitle }</p> }
+				{ copy.intro && <p className="wvm-pricing__intro">{ copy.intro }</p> }
+				{ copy.closing && <p className="wvm-pricing__closing">{ copy.closing }</p> }
 				<div className="wvm-pricing__controls">
 					{ config.currencies.length > 1 && currency && (
 						<Segmented label="Currency" value={ currency } onChange={ setCurrency } options={ config.currencies.map( ( c ) => ( { value: c, label: c } ) ) } />

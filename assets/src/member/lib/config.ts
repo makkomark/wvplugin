@@ -55,3 +55,12 @@ export function decodeEntities( s: string ): string {
 	el.innerHTML = s;
 	return el.value;
 }
+
+/**
+ * Dark mode only for the dashboard (it paints its own background) and only when Settings › Branding allows it.
+ * Pricing and enterprise sections sit on the theme's page, so they always follow the (light) theme.
+ */
+export function themeClasses( view: 'dashboard' | 'pricing' | 'enterprise' | 'portal' ): string {
+	const auto = config.branding?.darkMode === 'auto' && ( view === 'dashboard' || ( view === 'portal' && !! document.querySelector( '.wvm-root--dashboard' ) ) );
+	return auto ? 'wvm-theme wvm-theme--auto' : 'wvm-theme';
+}

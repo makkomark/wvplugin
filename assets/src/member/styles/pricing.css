@@ -168,3 +168,8 @@
 .wvm-root .wvm-plan__included + .wvm-plan__benefits { margin-top: 12px; padding-top: 0; border-top: 0; }
 /* "Most popular" sits on the card's top edge so every plan title stays on one line. */
 .wvm-root .wvm-plan__top .wvm-plan__badge { position: absolute; top: -13px; right: 20px; box-shadow: 0 6px 14px -6px rgba(var(--wvm-accent-rgb), 0.8); }
+
+/* Pricing header copy (Settings › General › Pricing page header). */
+.wvm-root .wvm-pricing__subtitle { color: var(--wvm-text); font-weight: 600; }
+.wvm-root .wvm-pricing__intro { max-width: 680px; margin: 12px auto 0; color: var(--wvm-muted); font-size: var(--wvm-text-md); line-height: 1.65; }
+.wvm-root .wvm-pricing__closing { margin: 14px auto 0; font-weight: 700; color: var(--wvm-primary); font-size: var(--wvm-text-md); }

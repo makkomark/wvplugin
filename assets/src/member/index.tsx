@@ -2,6 +2,7 @@
  * WitsValley member app entry. Mounts every `.wvm-root[data-wvm-view]` rendered by the
  * [wvm_dashboard], [wvm_pricing] and [wvm_enterprise_form] shortcodes.
  */
+import { themeClasses } from './lib/config';
 import { createRoot } from '@wordpress/element';
 import '../shared/tokens.css';
 import './styles/base.css';
@@ -20,7 +21,7 @@ function mount( el: HTMLElement ) {
 	el.dataset.wvmMounted = '1';
 	const requested = ( el.dataset.wvmView || 'dashboard' ) as View;
 	const view: View = VIEWS.includes( requested ) ? requested : 'dashboard';
-	el.classList.add( 'wvm-theme', 'wvm-theme--auto', `wvm-root--${ view }` );
+	el.classList.add( ...themeClasses( view ).split( ' ' ), `wvm-root--${ view }` );
 	el.innerHTML = '';
 	createRoot( el ).render( <App view={ view } plan={ el.dataset.plan || undefined } /> );
 }

@@ -78,6 +78,11 @@ interface GeneralValues extends Record< string, unknown > {
 	privacy_url: string;
 	country_detection: { provider: string };
 	analytics: boolean;
+	pricing_eyebrow: string;
+	pricing_title: string;
+	pricing_subtitle: string;
+	pricing_intro: string;
+	pricing_closing: string;
 }
 
 function General() {
@@ -115,6 +120,13 @@ function General() {
 							<TextField label="Support email" type="email" value={ v.support_email } onChange={ ( support_email ) => s.set( { support_email } ) } />
 						</FieldGrid>
 						<TextareaField label="Address" value={ v.address } onChange={ ( address ) => s.set( { address } ) } rows={ 2 } />
+					</Section>
+					<Section title="Pricing page header" description="The text above the plan cards on the Membership page. Leave a line empty to hide it.">
+						<TextField label="Eyebrow label" value={ v.pricing_eyebrow } onChange={ ( pricing_eyebrow ) => s.set( { pricing_eyebrow } ) } />
+						<TextField label="Headline" value={ v.pricing_title } onChange={ ( pricing_title ) => s.set( { pricing_title } ) } />
+						<TextField label="Subheadline" value={ v.pricing_subtitle } onChange={ ( pricing_subtitle ) => s.set( { pricing_subtitle } ) } />
+						<TextareaField label="Introduction" value={ v.pricing_intro } onChange={ ( pricing_intro ) => s.set( { pricing_intro } ) } rows={ 3 } />
+						<TextField label="Closing line" value={ v.pricing_closing } onChange={ ( pricing_closing ) => s.set( { pricing_closing } ) } help="Shown in the brand colour, e.g. “Your journey to transformation begins here.”" />
 					</Section>
 					<Section title="Receipts" description="Receipt numbers are sequential and never reused.">
 						<FieldGrid>

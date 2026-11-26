@@ -284,10 +284,11 @@ final class Branding {
 	public function forApp(): array {
 		$fonts = $this->fonts( true );
 		return array(
-			'primary' => $this->primary(),
-			'accent'  => $this->accent(),
-			'font'    => $fonts['body'],
-			'heading' => $fonts['heading'],
+			'primary'  => $this->primary(),
+			'accent'   => $this->accent(),
+			'darkMode' => 'auto' === ( $this->values()['dark_mode'] ?? 'off' ) ? 'auto' : 'off',
+			'font'     => $fonts['body'],
+			'heading'  => $fonts['heading'],
 		);
 	}
 
