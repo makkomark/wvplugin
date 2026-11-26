@@ -34,6 +34,10 @@ final class Settings {
 				),
 				'sandbox_mode'                => true,
 				'checkout_fields'             => array( 'billing_phone' ),
+				'gateway_currencies'          => array(
+					'paypal'       => array( 'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'CHF', 'JPY', 'SEK', 'NOK', 'DKK', 'NZD', 'SGD', 'HKD', 'PLN', 'CZK', 'HUF', 'ILS', 'MXN', 'BRL', 'PHP', 'THB', 'TWD', 'MYR' ),
+					'ppcp-gateway' => array( 'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'CHF', 'JPY', 'SEK', 'NOK', 'DKK', 'NZD', 'SGD', 'HKD', 'PLN', 'CZK', 'HUF', 'ILS', 'MXN', 'BRL', 'PHP', 'THB', 'TWD', 'MYR' ),
+				),
 				'transaction_meta_keys'       => array(
 					'flutterwave' => array( '_flutterwave_transaction_id', '_transaction_id', 'flw_ref' ),
 					'pesapal'     => array( '_pesapal_tracking_id', 'pesapal_transaction_tracking_id', '_transaction_id' ),

@@ -56,6 +56,7 @@ final class Plugin {
 		OrderListener::class,
 		ProductSync::class,
 		GatewayFilter::class,
+		\WitsValley\Members\Woo\CurrencyContext::class,
 		CheckoutCustomiser::class,
 		Redirects::class,
 		EmailSuppressor::class,

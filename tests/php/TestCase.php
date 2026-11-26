@@ -23,6 +23,7 @@ abstract class TestCase extends \WP_UnitTestCase {
 	public function set_up(): void {
 		parent::set_up();
 		Clock::unfreeze();
+		\WitsValley\Members\Woo\CurrencyContext::reset();
 		Plugin::instance()->reset();
 		wvm( Settings::class )->flush();
 		add_filter( 'pre_wp_mail', '__return_true' );

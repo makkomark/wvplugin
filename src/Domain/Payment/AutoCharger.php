@@ -47,7 +47,7 @@ final class AutoCharger {
 			);
 		}
 		try {
-			return $adapter->charge( $wc, (string) $method['token'] );
+			return \WitsValley\Members\Woo\CurrencyContext::with( $wc->get_currency(), fn() => $adapter->charge( $wc, (string) $method['token'] ) );
 		} catch ( \Throwable $e ) {
 			return array(
 				'ok'      => false,

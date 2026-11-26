@@ -41,7 +41,7 @@ final class GatewayFilter {
 		}
 		unset( $gateways['wvm_manual'] );
 		$country = strtoupper( $order->get_billing_country() ?: 'default' );
-		return $this->forCountry( $gateways, $country );
+		return $this->forCurrency( $this->forCountry( $gateways, $country ), strtoupper( (string) $order->get_currency( 'edit' ) ) );
 	}
 
 	/**
@@ -67,6 +67,26 @@ final class GatewayFilter {
 		}
 		// Never leave a member with no way to pay: fall back to everything enabled.
 		return $out ?: $gateways;
+	}
+
+	/**
+	 * Drop gateways that cannot take the order's currency (Settings › Payments › Gateway currencies).
+	 * A gateway with no list is assumed to accept any currency. Never falls back to unsupported gateways:
+	 * charging a UGX amount in another currency is worse than showing "no payment method".
+	 *
+	 * @param array<string,\WC_Payment_Gateway> $gateways
+	 * @return array<string,\WC_Payment_Gateway>
+	 */
+	public function forCurrency( array $gateways, string $currency ): array {
+		$map = (array) $this->settings->get( 'payments', 'gateway_currencies', array() );
+		return array_filter(
+			$gateways,
+			static function ( $gw, $id ) use ( $map, $currency ): bool {
+				$list = array_map( 'strtoupper', (array) ( $map[ $id ] ?? array() ) );
+				return ! $list || in_array( $currency, $list, true );
+			},
+			ARRAY_FILTER_USE_BOTH
+		);
 	}
 
 	private function currentOrder(): ?\WC_Order {

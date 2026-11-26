@@ -185,6 +185,7 @@ interface PaymentValues extends Record< string, unknown > {
 	sandbox_mode: boolean;
 	checkout_fields: string[];
 	transaction_meta_keys: Record< string, string[] >;
+	gateway_currencies: Record< string, string[] >;
 }
 
 function Payments() {
@@ -273,6 +274,20 @@ function Payments() {
 								</span>
 							) ) }
 						</p>
+					</Section>
+					<Section
+						title="Gateway currencies"
+						description="Which currencies each gateway can charge. A gateway is hidden on orders in other currencies (e.g. PayPal does not support UGX). Gateways not listed accept any currency."
+					>
+						<MapEditor< string[] >
+							value={ v.gateway_currencies || {} }
+							onChange={ ( gateway_currencies ) => s.set( { gateway_currencies } ) }
+							keyLabel="Gateway"
+							valueLabel="Currencies it can charge"
+							keyPlaceholder="gateway id"
+							newValue={ () => [ ...config.currencies ] }
+							renderValue={ ( val, set ) => <TokenInput value={ val } onChange={ ( x ) => set( ( x as string[] ).map( ( c ) => c.toUpperCase() ) ) } placeholder="UGX, USD…" /> }
+						/>
 					</Section>
 					<Section title="Transaction ID meta keys" description="Where each gateway stores its transaction reference on the Woo order. Used for provider_ref and duplicate detection.">
 						<MapEditor< string[] >

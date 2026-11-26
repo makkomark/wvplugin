@@ -93,7 +93,8 @@ final class OrderService {
 				);
 			}
 		);
-		$wc_id = $this->createWooOrder( $id, $member, $plan, $currency, (int) $amount, (string) $this->orders->findOrFail( $id )['description'] );
+		$desc  = (string) $this->orders->findOrFail( $id )['description'];
+		$wc_id = \WitsValley\Members\Woo\CurrencyContext::with( $currency, fn() => $this->createWooOrder( $id, $member, $plan, $currency, (int) $amount, $desc ) );
 		$this->orders->update( $id, array( 'woo_order_id' => $wc_id ) );
 		$order = $this->get( $id );
 		$this->audit->log( 'order.created', 'order', $id, null, $order );
@@ -122,7 +123,7 @@ final class OrderService {
 				'description'     => mb_substr( $description, 0, 255 ),
 			)
 		);
-		$wc_id    = $this->createWooOrder( $id, $member, null, $currency, $amountMinor, $description );
+		$wc_id    = \WitsValley\Members\Woo\CurrencyContext::with( $currency, fn() => $this->createWooOrder( $id, $member, null, $currency, $amountMinor, $description ) );
 		$this->orders->update( $id, array( 'woo_order_id' => $wc_id ) );
 		$order = $this->get( $id );
 		$this->audit->log( 'order.invoice_created', 'order', $id, null, $order );
@@ -448,7 +449,7 @@ final class OrderService {
 		}
 		$wc->add_order_note( sprintf( 'Manual payment recorded by %s (%s, ref %s).', wp_get_current_user()->display_name, $method, $reference ) );
 		$wc->save();
-		$wc->payment_complete( sanitize_text_field( $reference ) );
+		\WitsValley\Members\Woo\CurrencyContext::with( (string) $order['currency'], static fn() => $wc->payment_complete( sanitize_text_field( $reference ) ) );
 		$after = $this->get( (int) $order['id'] );
 		$this->audit->log( 'order.manual_recorded', 'order', (int) $order['id'], null, $after, sprintf( '%s ref %s', $method, $reference ) );
 		wvm( Notifier::class )->member(

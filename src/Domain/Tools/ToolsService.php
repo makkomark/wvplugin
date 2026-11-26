@@ -172,6 +172,10 @@ final class ToolsService {
 		$sandbox = (bool) $this->settings->get( 'payments', 'sandbox_mode', false );
 		$add( 'sandbox', 'Payment mode', $sandbox ? 'warning' : 'ok', $sandbox ? 'Sandbox mode is ON — real payments are not processed.' : 'Live', admin_url( 'admin.php?page=wvm-settings#/settings/payments' ) );
 
+		$store_cur = strtoupper( (string) get_option( 'woocommerce_currency', '' ) );
+		$main_cur  = strtoupper( (string) ( ( (array) $this->settings->get( 'payments', 'currencies_enabled', array( 'UGX' ) ) )[0] ?? 'UGX' ) );
+		$add( 'store_currency', 'WooCommerce store currency', $store_cur === $main_cur ? 'ok' : 'warning', $store_cur === $main_cur ? $store_cur : sprintf( 'Store currency is %s but your main membership currency is %s. WitsValley orders are charged in their own currency, but set WooCommerce › Settings › General › Currency to %s so every gateway agrees.', $store_cur, $main_cur, $main_cur ), admin_url( 'admin.php?page=wc-settings&tab=general' ) );
+
 		$coming = 'yes' === get_option( 'woocommerce_coming_soon' );
 		$add( 'coming_soon', 'WooCommerce visibility', $coming ? 'warning' : 'ok', $coming ? 'Store is in "Coming soon" mode. Membership checkout still works, but switch it to Live before launch.' : 'Live', admin_url( 'admin.php?page=wc-settings&tab=site-visibility' ) );
 

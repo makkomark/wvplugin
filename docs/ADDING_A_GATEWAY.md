@@ -19,7 +19,11 @@ WitsValley uses provider-maintained WooCommerce gateway plugins (Flutterwave, Pe
 
    The reference is stored as `payments.provider_ref = "{gateway}:{reference}"` (unique — a duplicate reference on another order goes to review).
    Developers can also use the `wvm_transaction_meta_keys` filter.
-4. Run a sandbox payment, open the order in **WitsValley › Payments** and confirm the payment row shows the right gateway and reference.
+4. **Currencies**: in *Gateway currencies* list the currencies the gateway can charge (e.g. `paypal: USD, EUR, GBP`). It is hidden on
+   orders in any other currency. Gateways not listed are offered for every currency. While a member pays, the plugin makes WooCommerce
+   report the order's currency to the gateway, so gateways that read the store currency still charge the right one. Also set
+   WooCommerce › Settings › General › Currency to your main currency (UGX), and check the gateway's own settings page for a fixed currency option.
+5. Run a sandbox payment, open the order in **WitsValley › Payments** and confirm the payment row shows the right gateway and reference.
 
 ## Automatic renewals (saved cards)
 Most mobile-money gateways cannot charge without the member present, so renewals default to a pay link. If a gateway exposes saved tokens:

@@ -1,6 +1,13 @@
 # Changelog
 
 ## 1.0.2 — 2026-11-26
+- **Fix: gateways charging the wrong currency.** Some gateway plugins (e.g. JPesa) send the store currency (often USD) with the
+  order total, so a UGX 20,000 membership was charged as USD 20,000. While a WitsValley order is being paid, WooCommerce now
+  reports the order's own currency and decimals to every gateway (pay page, pay form, thank-you page, gateway callbacks, auto-charges, manual payments).
+- New **Settings › Payments › Gateway currencies**: gateways are only offered for currencies they can charge
+  (PayPal is hidden on UGX orders by default).
+- Health check warns when the WooCommerce store currency differs from the main membership currency.
+- Payment page: gateway rows (radio, name, logo) stay on one line in any theme, price line no longer breaks, brand name uses the primary colour.
 - New plan copy for Free, Basic and Premium (tagline, description, "What's included" list). Existing installs are updated automatically
   unless an admin already edited the plan wording.
 - Plans have a **tagline** (bold one-line promise on the pricing card), editable in WitsValley › Plans (also by the Content role).
