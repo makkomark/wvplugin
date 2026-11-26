@@ -18,6 +18,7 @@ export interface Plan {
 	id: number;
 	slug: string;
 	name: string;
+	tagline: string;
 	description: string;
 	level: number;
 	interval: Interval;
@@ -44,6 +45,7 @@ export interface PublicPlan {
 	id: number;
 	slug: string;
 	name: string;
+	tagline: string;
 	description: string;
 	level: number;
 	interval: Interval;

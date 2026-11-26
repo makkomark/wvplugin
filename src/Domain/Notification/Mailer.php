@@ -345,7 +345,7 @@ final class Mailer {
 			'days'              => '14',
 			'reason'            => 'Goodwill credit',
 			'reference'         => 'MM-889123',
-			'workshop_title'    => 'Personal Finance Masterclass',
+			'workshop_title'    => 'Reprogramming the Subconscious Mind',
 			'workshop_time'     => wp_date( 'D j M, H:i', time() + DAY_IN_SECONDS ),
 			'join_url'          => Urls::dashboard( 'workshops' ),
 			'meeting_url'       => Urls::dashboard( 'workshops' ),

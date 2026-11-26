@@ -71,21 +71,34 @@ final class Seeder {
 			array(
 				'slug'        => 'free',
 				'name'        => 'Free',
-				'description' => 'Start learning with our free newsletter and selected lessons.',
+				'tagline'     => 'Begin your journey of awareness and personal transformation.',
+				'description' => 'Explore selected WitsValley insights, lessons, and resources to start understanding your mind and discovering new possibilities for personal growth.',
 				'level'       => 0,
 				'interval'    => 'none',
 				'kit_tag'     => 'WV-FREE',
 				'is_free'     => true,
-				'benefits'    => array( 'Weekly WitsValley newsletter', 'Selected free lessons', 'Community updates' ),
+				'benefits'    => array(
+					'Weekly WitsValley newsletter.',
+					'Selected free lessons and insights.',
+					'Community updates.',
+					'Access to introductory resources.',
+				),
 			),
 			array(
 				'slug'        => 'basic',
 				'name'        => 'Basic',
-				'description' => 'Core lessons and monthly live sessions.',
+				'tagline'     => 'Build the foundation for personal transformation.',
+				'description' => 'Gain access to practical lessons, subconscious mind reprogramming systems, and guided protocols that help you reshape your thinking, develop empowering habits, and strengthen self-awareness.',
 				'level'       => 1,
 				'interval'    => 'monthly',
 				'kit_tag'     => 'WV-BASIC',
-				'benefits'    => array( 'All Basic lessons by email', 'Video lessons (members-only links)', 'Monthly live workshop', 'Member dashboard & receipts' ),
+				'benefits'    => array(
+					'Access to Basic lessons and learning materials.',
+					'Subconscious mind reprogramming protocols.',
+					'Guided affirmation and personal development exercises.',
+					'Monthly live learning sessions.',
+					'Regular transformational insights and resources.',
+				),
 				'prices'      => array(
 					array(
 						'currency'     => 'UGX',
@@ -100,12 +113,21 @@ final class Seeder {
 			array(
 				'slug'        => 'premium',
 				'name'        => 'Premium',
-				'description' => 'Everything in Basic plus deep-dive programmes and 1:1 consultations.',
+				'tagline'     => 'Go deeper. Experience a greater level of transformation.',
+				'description' => 'Access an expanded collection of WitsValley programmes, exclusive learning resources, advanced reprogramming systems, and deeper explorations of consciousness, spiritual awareness, and self-mastery.',
 				'level'       => 2,
 				'interval'    => 'monthly',
 				'kit_tag'     => 'WV-PREMIUM',
 				'highlight'   => true,
-				'benefits'    => array( 'Everything in Basic', 'Premium deep-dive programmes', 'All live workshops + recordings', 'Request 1:1 consultations', 'Priority support' ),
+				'benefits'    => array(
+					'Everything in Basic membership.',
+					'Full access to premium learning programmes.',
+					'Advanced subconscious reprogramming systems.',
+					'Exclusive guided meditation and affirmation protocols.',
+					'Premium workshops and learning sessions.',
+					'Deeper lessons on consciousness, awareness, purpose, and personal mastery.',
+					'Exclusive transformational resources.',
+				),
 				'prices'      => array(
 					array(
 						'currency'     => 'UGX',

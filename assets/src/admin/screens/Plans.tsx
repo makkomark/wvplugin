@@ -86,7 +86,7 @@ export function Plans( { route }: { route: Route } ) {
 		<div>
 			<PageHeader
 				title="Plans"
-				subtitle={ full ? 'Drag cards to reorder how plans appear on the pricing page.' : 'You can edit plan descriptions, benefits and access levels.' }
+				subtitle={ full ? 'Drag cards to reorder how plans appear on the pricing page.' : 'You can edit plan taglines, descriptions, benefits and access levels.' }
 				actions={
 					<>
 						<Btn icon="external" href={ config.pricingUrl } target="_blank">
@@ -229,6 +229,7 @@ function PlanCard( p: { plan: Plan; draggable?: boolean; dragging?: boolean; ove
 					</span>
 				) }
 			</div>
+			{ plan.tagline && <p className="wvm-a-plancard__tagline">{ plan.tagline }</p> }
 			<p className="wvm-a-plancard__desc">{ plan.description }</p>
 			<ul className="wvm-a-plancard__benefits">
 				{ plan.benefits.slice( 0, 4 ).map( ( b, i ) => (
@@ -253,6 +254,7 @@ function PlanCard( p: { plan: Plan; draggable?: boolean; dragging?: boolean; ove
 interface PlanForm {
 	name: string;
 	slug: string;
+	tagline: string;
 	description: string;
 	level: number;
 	interval: string;
@@ -268,8 +270,8 @@ interface PlanForm {
 
 function toForm( p: Plan | null ): PlanForm {
 	return p
-		? { name: p.name, slug: p.slug, description: p.description, level: p.level, interval: p.interval, interval_count: p.interval_count, trial_days: p.trial_days, kit_tag: p.kit_tag, visibility: p.visibility, highlight: p.highlight, is_quoted: p.is_quoted, is_free: p.is_free, benefits: p.benefits.slice() }
-		: { name: '', slug: '', description: '', level: 1, interval: 'monthly', interval_count: 1, trial_days: 0, kit_tag: '', visibility: 'public', highlight: false, is_quoted: false, is_free: false, benefits: [] };
+		? { name: p.name, slug: p.slug, tagline: p.tagline || '', description: p.description, level: p.level, interval: p.interval, interval_count: p.interval_count, trial_days: p.trial_days, kit_tag: p.kit_tag, visibility: p.visibility, highlight: p.highlight, is_quoted: p.is_quoted, is_free: p.is_free, benefits: p.benefits.slice() }
+		: { name: '', slug: '', tagline: '', description: '', level: 1, interval: 'monthly', interval_count: 1, trial_days: 0, kit_tag: '', visibility: 'public', highlight: false, is_quoted: false, is_free: false, benefits: [] };
 }
 
 function PlanEditor( { plan, onClose, onSaved }: { plan: Plan | 'new' | null; onClose: () => void; onSaved: ( p?: Plan ) => void } ) {
@@ -314,7 +316,7 @@ function PlanEditor( { plan, onClose, onSaved }: { plan: Plan | 'new' | null; on
 				toast.success( `Plan “${ r.data.name }” created` );
 				onSaved( r.data );
 			} else if ( existing ) {
-				const body = locked ? { description: f.description, level: f.level, benefits: f.benefits } : { ...f, slug: undefined, is_free: undefined };
+				const body = locked ? { tagline: f.tagline, description: f.description, level: f.level, benefits: f.benefits } : { ...f, slug: undefined, is_free: undefined };
 				const r = await api.patch< Plan & { price_changed?: boolean } >( `plans/${ existing.id }`, body );
 				toast.success( 'Plan saved' );
 				if ( r.data.price_changed ) {
@@ -382,7 +384,7 @@ function PlanEditor( { plan, onClose, onSaved }: { plan: Plan | 'new' | null; on
 			>
 				{ locked && (
 					<Notice2 tone="info" title="Limited editing">
-						Your role can change the description, benefits and access level. Prices, slug and visibility are managed by the owner.
+						Your role can change the tagline, description, benefits and access level. Prices, slug and visibility are managed by the owner.
 					</Notice2>
 				) }
 				{ priceNotice && existing && <PriceNotice plan={ existing } /> }
@@ -426,7 +428,8 @@ function PlanEditor( { plan, onClose, onSaved }: { plan: Plan | 'new' | null; on
 									error={ fieldError( err, 'slug' ) }
 								/>
 							</FieldGrid>
-							<TextareaField label="Description" value={ f.description } onChange={ ( description ) => set( { description } ) } rows={ 3 } error={ fieldError( err, 'description' ) } />
+							<TextField label="Tagline" value={ f.tagline } onChange={ ( tagline ) => set( { tagline } ) } placeholder="One-line promise shown in bold on the pricing card" error={ fieldError( err, 'tagline' ) } />
+							<TextareaField label="Description" value={ f.description } onChange={ ( description ) => set( { description } ) } rows={ 4 } error={ fieldError( err, 'description' ) } />
 							<FieldGrid>
 								<LevelSelect value={ f.level } onChange={ ( level ) => set( { level } ) } error={ fieldError( err, 'level' ) } help="Content at or below this level unlocks." />
 								<TextField label="Kit tag" value={ f.kit_tag } disabled={ locked } onChange={ ( kit_tag ) => set( { kit_tag: kit_tag.toUpperCase() } ) } placeholder={ f.slug ? `WV-${ f.slug.toUpperCase() }` : 'WV-…' } error={ fieldError( err, 'kit_tag' ) } />

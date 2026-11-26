@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.2 — 2026-11-26
+- New plan copy for Free, Basic and Premium (tagline, description, "What's included" list). Existing installs are updated automatically
+  unless an admin already edited the plan wording.
+- Plans have a **tagline** (bold one-line promise on the pricing card), editable in WitsValley › Plans (also by the Content role).
+- Pricing cards show "Free/Basic/Premium Membership", a "What's included:" label, the "Most popular" badge on the card edge, and stay aligned.
+- Pricing, Enterprise, consultation and consent wording rewritten for WitsValley's personal-transformation focus (replacing generic finance placeholder text).
+- Remaining lime-green glows replaced with the amber accent.
+
 ## 1.0.1 — 2026-11-17
 - WitsValley brand colours everywhere: primary green `#0B4C25` + amber accent `#FFAC04` (member app, pricing, checkout, paywall, admin, emails, receipts, charts).
 - New **Settings › Branding**: brand colours with live preview (all shades, gradients and dark-mode variants derived automatically), font source

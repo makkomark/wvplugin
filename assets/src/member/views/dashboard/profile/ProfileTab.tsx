@@ -206,7 +206,7 @@ function NotificationsCard() {
 				) ) }
 				<Toggle
 					label="Marketing emails"
-					description="Money tips, offers and news from WitsValley."
+					description="Insights, offers and news from WitsValley."
 					checked={ consent }
 					busy={ saving === 'consent' }
 					onChange={ ( v ) => {

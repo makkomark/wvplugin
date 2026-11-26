@@ -21,7 +21,7 @@ export function Consultations() {
 
 	return (
 		<section className="wvm-section">
-			<SectionTitle title="1:1 consultations" subtitle="Get personal advice from a WitsValley expert on your money goals." />
+			<SectionTitle title="1:1 consultations" subtitle="Get personal guidance from a WitsValley expert on your growth journey." />
 			{ eligible ? (
 				<ConsultationsInner />
 			) : (
@@ -29,7 +29,7 @@ export function Consultations() {
 					<span className="wvm-upsell-card__icon" aria-hidden="true"><Icon name="message" size={ 22 } /></span>
 					<div className="wvm-upsell-card__body">
 						<p className="wvm-h3">Consultations are included with { premium?.name || 'Premium' }</p>
-						<p className="wvm-muted">Book a private session to plan savings, investments or your business finances.</p>
+						<p className="wvm-muted">Book a private session with a WitsValley expert to go deeper on your personal growth.</p>
 					</div>
 					<Button onClick={ () => navigate( 'billing' ) } iconRight="arrow-right">Upgrade</Button>
 				</Card>

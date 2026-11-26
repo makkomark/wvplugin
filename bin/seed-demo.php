@@ -83,22 +83,22 @@ Audit::asSystem(
 
 		$ws = wvm( WorkshopService::class );
 		if ( ! $ws->list( array(), new \WitsValley\Members\Support\Pagination( 1, 1 ) )['items'] ) {
-			$ws->create( array( 'title' => 'Personal Finance Masterclass', 'description' => 'Budgeting, saving and investing basics for young professionals.', 'starts_at' => gmdate( 'c', time() + 2 * DAY_IN_SECONDS ), 'ends_at' => gmdate( 'c', time() + 2 * DAY_IN_SECONDS + 90 * MINUTE_IN_SECONDS ), 'host' => 'WitsValley Team', 'required_level' => 1, 'join_url' => 'https://meet.google.com/demo-wits-valley', 'capacity' => 100, 'publish' => true ) );
-			$ws->create( array( 'title' => 'Investing in Uganda: Premium deep dive', 'description' => 'Treasury bonds, unit trusts and the USE.', 'starts_at' => gmdate( 'c', time() + 9 * DAY_IN_SECONDS ), 'ends_at' => gmdate( 'c', time() + 9 * DAY_IN_SECONDS + HOUR_IN_SECONDS ), 'host' => 'Guest expert', 'required_level' => 2, 'join_url' => 'https://zoom.us/j/000000', 'publish' => true ) );
+			$ws->create( array( 'title' => 'Reprogramming the Subconscious Mind', 'description' => 'A guided live session on affirmations, visualisation and building empowering habits.', 'starts_at' => gmdate( 'c', time() + 2 * DAY_IN_SECONDS ), 'ends_at' => gmdate( 'c', time() + 2 * DAY_IN_SECONDS + 90 * MINUTE_IN_SECONDS ), 'host' => 'WitsValley Team', 'required_level' => 1, 'join_url' => 'https://meet.google.com/demo-wits-valley', 'capacity' => 100, 'publish' => true ) );
+			$ws->create( array( 'title' => 'Consciousness & Self-Mastery: Premium deep dive', 'description' => 'An advanced session on awareness, purpose and personal mastery.', 'starts_at' => gmdate( 'c', time() + 9 * DAY_IN_SECONDS ), 'ends_at' => gmdate( 'c', time() + 9 * DAY_IN_SECONDS + HOUR_IN_SECONDS ), 'host' => 'Guest expert', 'required_level' => 2, 'join_url' => 'https://zoom.us/j/000000', 'publish' => true ) );
 			$past = $ws->create( array( 'title' => 'Getting started with WitsValley', 'description' => 'Orientation session.', 'starts_at' => gmdate( 'c', time() - 7 * DAY_IN_SECONDS ), 'ends_at' => gmdate( 'c', time() - 7 * DAY_IN_SECONDS + HOUR_IN_SECONDS ), 'host' => 'WitsValley Team', 'required_level' => 0, 'publish' => true ) );
 			$ws->attachRecording( (int) $past['id'], 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' );
 			$ws->create( array( 'title' => 'Draft: Career clinic', 'starts_at' => gmdate( 'c', time() + 20 * DAY_IN_SECONDS ), 'ends_at' => gmdate( 'c', time() + 20 * DAY_IN_SECONDS + HOUR_IN_SECONDS ), 'required_level' => 1 ) );
 		}
 		if ( $demo && 0 === wvm( ConsultationRepository::class )->count() ) {
-			wvm( ConsultationRepository::class )->insert( array( 'member_id' => (int) $demo[0]['id'], 'topic' => 'Planning my first investment portfolio', 'preferred_dates' => 'Weekday evenings', 'notes' => 'I have about UGX 5M to start.', 'status' => 'new' ) );
+			wvm( ConsultationRepository::class )->insert( array( 'member_id' => (int) $demo[0]['id'], 'topic' => 'Breaking a limiting belief about my career', 'preferred_dates' => 'Weekday evenings', 'notes' => 'I keep holding myself back from applying for promotions.', 'status' => 'new' ) );
 		}
 		$apps = wvm( ApplicationService::class );
 		if ( 0 === $apps->counts()['new'] ) {
-			$apps->submit( array( 'org_name' => 'Kampala Tech Hub', 'contact_name' => 'Ruth Nabirye', 'email' => 'ruth@kampalatech.demo', 'phone' => '+256701111111', 'country' => 'UG', 'org_size' => '51-200', 'programme_type' => 'Financial literacy for staff', 'participants' => 40, 'duration' => '3 months', 'start_preference' => 'Next month', 'budget_range' => 'UGX 5–10M', 'message' => 'We would like a programme for our new graduates.' ), '127.0.0.' . wp_rand( 2, 250 ) );
+			$apps->submit( array( 'org_name' => 'Kampala Tech Hub', 'contact_name' => 'Ruth Nabirye', 'email' => 'ruth@kampalatech.demo', 'phone' => '+256701111111', 'country' => 'UG', 'org_size' => '51-200', 'programme_type' => 'Personal transformation for staff', 'participants' => 40, 'duration' => '3 months', 'start_preference' => 'Next month', 'budget_range' => 'UGX 5–10M', 'message' => 'We would like a mindset and personal growth programme for our new graduates.' ), '127.0.0.' . wp_rand( 2, 250 ) );
 		}
 		$orgs = wvm( OrganisationService::class );
 		if ( ! $orgs->list( array(), new \WitsValley\Members\Support\Pagination( 1, 1 ) )['items'] ) {
-			$org = $orgs->create( array( 'name' => 'Acme Uganda Ltd', 'seats' => 25, 'term_start' => gmdate( 'Y-m-d' ), 'term_end' => gmdate( 'Y-m-d', strtotime( '+6 months' ) ), 'contract_ref' => 'ACME-2026-01', 'programme_title' => 'Money Matters for Teams', 'programme_description' => 'Six-module financial wellbeing programme with monthly live sessions.' ) );
+			$org = $orgs->create( array( 'name' => 'Acme Uganda Ltd', 'seats' => 25, 'term_start' => gmdate( 'Y-m-d' ), 'term_end' => gmdate( 'Y-m-d', strtotime( '+6 months' ) ), 'contract_ref' => 'ACME-2026-01', 'programme_title' => 'Awareness & Growth for Teams', 'programme_description' => 'Six-module personal transformation programme with monthly live sessions.' ) );
 			$orgs->invite( (int) $org['id'], array( 'hr@acme.demo', 'staff1@acme.demo', 'staff2@acme.demo' ) );
 		}
 		WP_CLI::success( 'Demo data ready. Demo member password: demo1234pass' );

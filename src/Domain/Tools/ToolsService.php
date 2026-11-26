@@ -97,6 +97,7 @@ final class ToolsService {
 			$dto = array(
 				'slug'           => $p['slug'] ?? '',
 				'name'           => $p['name'] ?? '',
+				'tagline'        => $p['tagline'] ?? '',
 				'description'    => $p['description'] ?? '',
 				'level'          => (int) ( $p['level'] ?? 0 ),
 				'interval'       => $p['interval_unit'] ?? 'monthly',

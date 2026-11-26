@@ -55,6 +55,7 @@ final class Schema {
   id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   slug varchar(50) NOT NULL,
   name varchar(100) NOT NULL,
+  tagline varchar(200) NULL,
   description text NULL,
   level tinyint(3) unsigned NOT NULL DEFAULT 0,
   interval_unit varchar(20) NOT NULL DEFAULT 'monthly',

@@ -226,7 +226,7 @@ function CreateAccount( { token, email }: { token: string; email: string } ) {
 				<Input label="Phone" type="tel" autoComplete="tel" value={ f.phone } onValue={ ( v ) => setF( { ...f, phone: v } ) } error={ errors.phone } optional />
 				<Select label="Country" value={ f.country } onValue={ ( v ) => setF( { ...f, country: v } ) } options={ countries } error={ errors.country } />
 			</div>
-			<Toggle checked={ f.marketing_consent } onChange={ ( v ) => setF( { ...f, marketing_consent: v } ) } label="Send me money tips and news" />
+			<Toggle checked={ f.marketing_consent } onChange={ ( v ) => setF( { ...f, marketing_consent: v } ) } label="Send me WitsValley insights and news" />
 			{ error && <Banner tone="danger">{ error }</Banner> }
 			<Button type="submit" size="lg" block loading={ busy } iconRight="arrow-right">Create account &amp; join</Button>
 		</form>

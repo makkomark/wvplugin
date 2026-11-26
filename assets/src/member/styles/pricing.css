@@ -40,7 +40,9 @@
 @media (min-width: 1040px) {
 	.wvm-root .wvm-plans--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 	.wvm-root .wvm-plans--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-	.wvm-root .wvm-plan__desc { min-height: 42px; }
+	/* Keep prices and buttons aligned across cards despite different copy lengths. */
+	.wvm-root .wvm-plan__tagline { min-height: 2.8em; }
+	.wvm-root .wvm-plan__desc { min-height: 10.5em; }
 	.wvm-root .wvm-plan__price { min-height: 72px; }
 }
 
@@ -68,24 +70,22 @@
 	border-color: transparent;
 	color: #fff;
 	box-shadow: var(--wvm-hero-shadow);
-	overflow: hidden;
 	isolation: isolate;
 }
 .wvm-root .wvm-plan--hero::before {
 	content: "";
 	position: absolute;
-	width: 260px;
-	height: 260px;
-	right: -90px;
-	top: -110px;
-	border-radius: 50%;
-	background: radial-gradient(circle, rgba(198, 244, 50, 0.35), transparent 65%);
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(260px 260px at calc(100% + 40px) -40px, rgba(var(--wvm-accent-rgb), 0.35), transparent 65%);
 	z-index: -1;
+	pointer-events: none;
 }
 .wvm-root .wvm-plan--hero::after {
 	content: "";
 	position: absolute;
 	inset: 0;
+	border-radius: inherit;
 	background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
 	background-size: 18px 18px;
 	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 45%);
@@ -154,3 +154,17 @@
 }
 .wvm-root .wvm-signup-summary__plan { font-weight: 800; font-size: 17px; letter-spacing: -0.01em; }
 .wvm-root .wvm-signup-summary__meta { font-size: 13px; opacity: 0.8; }
+
+/* Plan copy: "Basic Membership" title, bold tagline, description, "What's included" label. */
+.wvm-root .wvm-plan__name-suffix { font-weight: 800; }
+.wvm-root .wvm-plan__tagline { margin-top: 8px; font-size: var(--wvm-text-md); font-weight: 700; line-height: 1.4; color: var(--wvm-ink); }
+.wvm-root .wvm-plan--hero .wvm-plan__tagline { color: #fff; }
+.wvm-root .wvm-plan__tagline + .wvm-plan__desc { margin-top: 6px; }
+/* Empty taglines only reserve space where cards sit side by side. */
+@media (max-width: 1039px) { .wvm-root .wvm-plan__tagline:empty { display: none; } }
+.wvm-root .wvm-plan__included { margin: 22px 0 0; padding-top: 20px; border-top: 1px solid var(--wvm-border); font-size: var(--wvm-text-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--wvm-muted); }
+.wvm-root .wvm-plan--hero .wvm-plan__included { color: rgba(255, 255, 255, 0.75); border-top-color: rgba(255, 255, 255, 0.18); }
+/* The label carries the divider, so the list sits directly under it. */
+.wvm-root .wvm-plan__included + .wvm-plan__benefits { margin-top: 12px; padding-top: 0; border-top: 0; }
+/* "Most popular" sits on the card's top edge so every plan title stays on one line. */
+.wvm-root .wvm-plan__top .wvm-plan__badge { position: absolute; top: -13px; right: 20px; box-shadow: 0 6px 14px -6px rgba(var(--wvm-accent-rgb), 0.8); }

@@ -169,7 +169,7 @@ export function SignupSheet( { plan, currency, defaultCountry, onClose, onLogin 
 					) }
 					.
 				</Checkbox>
-				<Toggle checked={ f.marketing_consent } onChange={ ( v ) => set( 'marketing_consent', v ) } label="Send me money tips and news" description="A couple of emails a month. Unsubscribe any time." />
+				<Toggle checked={ f.marketing_consent } onChange={ ( v ) => set( 'marketing_consent', v ) } label="Send me WitsValley insights and news" description="A couple of emails a month. Unsubscribe any time." />
 				<Honeypot value={ f.website } onValue={ ( v ) => set( 'website', v ) } />
 
 				{ error && <Banner tone="danger">{ error }</Banner> }

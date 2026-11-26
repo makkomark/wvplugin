@@ -23,6 +23,7 @@ final class PlanService {
 	private const RULES = array(
 		'slug'           => 'slug',
 		'name'           => 'maxlen:100',
+		'tagline'        => 'maxlen:200',
 		'description'    => 'text',
 		'level'          => 'int|min:0|max:9',
 		'interval'       => 'in:none,monthly,quarterly,annual,one_off,custom,contract',
@@ -38,7 +39,7 @@ final class PlanService {
 	);
 
 	/** Fields the Content role may change (benefits/levels only). */
-	public const CONTENT_FIELDS = array( 'benefits', 'level', 'description' );
+	public const CONTENT_FIELDS = array( 'benefits', 'level', 'tagline', 'description' );
 
 	public function __construct(
 		private PlanRepository $plans,
@@ -100,6 +101,7 @@ final class PlanService {
 					array(
 						'slug'           => $data['slug'],
 						'name'           => $data['name'],
+						'tagline'        => $data['tagline'] ?? '',
 						'description'    => $data['description'] ?? '',
 						'level'          => (int) $data['level'],
 						'interval_unit'  => $is_free ? 'none' : ( $data['interval'] ?? 'monthly' ),
@@ -146,7 +148,7 @@ final class PlanService {
 			throw DomainError::validation( array( 'is_free' => 'The free flag cannot be changed after creation.' ) );
 		}
 		$row = array();
-		foreach ( array( 'name', 'description', 'level', 'interval_count', 'trial_days', 'kit_tag', 'visibility', 'is_quoted', 'highlight' ) as $key ) {
+		foreach ( array( 'name', 'tagline', 'description', 'level', 'interval_count', 'trial_days', 'kit_tag', 'visibility', 'is_quoted', 'highlight' ) as $key ) {
 			if ( array_key_exists( $key, $data ) ) {
 				$row[ $key ] = $data[ $key ];
 			}
@@ -268,6 +270,7 @@ final class PlanService {
 				'id'             => $p['id'],
 				'slug'           => $p['slug'],
 				'name'           => $p['name'],
+				'tagline'        => $p['tagline'],
 				'description'    => $p['description'],
 				'level'          => $p['level'],
 				'interval'       => $p['interval'],
@@ -301,6 +304,7 @@ final class PlanService {
 			'id'              => (int) $row['id'],
 			'slug'            => (string) $row['slug'],
 			'name'            => (string) $row['name'],
+			'tagline'         => (string) ( $row['tagline'] ?? '' ),
 			'description'     => (string) ( $row['description'] ?? '' ),
 			'level'           => (int) $row['level'],
 			'interval'        => (string) $row['interval_unit'],

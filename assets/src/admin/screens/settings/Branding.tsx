@@ -96,7 +96,7 @@ function Preview( { v }: { v: BrandingValues } ) {
 				</span>
 			</div>
 			<div className="wvm-a-brandpreview__side">
-				<h4 style={ { fontFamily: heading } }>Grow your money skills</h4>
+				<h4 style={ { fontFamily: heading } }>Begin your journey of transformation</h4>
 				<p>Practical lessons, live workshops and expert help. This is how body text looks.</p>
 				<div className="wvm-a-brandpreview__row">
 					<span className="wvm-a-brandpreview__primary" style={ { background: p, color: onColor( p ) } }>

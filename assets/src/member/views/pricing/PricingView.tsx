@@ -130,8 +130,8 @@ export function PricingView( { preselect }: { preselect?: string } ) {
 				<span className="wvm-pill-eyebrow">
 					<Icon name="sparkles" size={ 14 } /> Membership
 				</span>
-				<h2 className="wvm-display">Grow your money skills, one month at a time</h2>
-				<p className="wvm-lead">Practical lessons, live workshops and expert help. Start free, upgrade whenever you're ready, cancel anytime.</p>
+				<h2 className="wvm-display">Begin your journey of personal transformation</h2>
+				<p className="wvm-lead">Lessons, subconscious reprogramming systems and live sessions to reshape your thinking and grow. Start free, go deeper whenever you're ready, cancel anytime.</p>
 				<div className="wvm-pricing__controls">
 					{ config.currencies.length > 1 && currency && (
 						<Segmented label="Currency" value={ currency } onChange={ setCurrency } options={ config.currencies.map( ( c ) => ( { value: c, label: c } ) ) } />
@@ -255,11 +255,15 @@ function PlanTile( { plan, currency, current, loggedIn, livePaid, busy, focused,
 	return (
 		<article className={ cx( 'wvm-plan', hero && 'wvm-plan--hero', focused && 'is-focused', ! plan.available && ! plan.is_quoted && 'is-unavailable' ) } aria-label={ `${ plan.name } plan` }>
 			<div className="wvm-plan__top">
-				<h3 className="wvm-plan__name">{ plan.name }</h3>
+				<h3 className="wvm-plan__name">
+					{ plan.name }
+					{ ! plan.is_quoted && <span className="wvm-plan__name-suffix"> Membership</span> }
+				</h3>
 				{ hero && <Chip tone="primary" className="wvm-plan__badge" icon="star">Most popular</Chip> }
 				{ current && ! hero && <Chip tone="success">Current</Chip> }
 			</div>
-			<p className="wvm-plan__desc">{ plan.description }</p>
+			<p className="wvm-plan__tagline" aria-hidden={ plan.tagline ? undefined : true }>{ plan.tagline }</p>
+			{ plan.description && <p className="wvm-plan__desc">{ plan.description }</p> }
 			<div className="wvm-plan__price">
 				{ plan.is_quoted ? (
 					<span className="wvm-money wvm-money--lg"><span className="wvm-money__amt wvm-money__amt--word">Custom</span></span>
@@ -271,6 +275,7 @@ function PlanTile( { plan, currency, current, loggedIn, livePaid, busy, focused,
 				<span className="wvm-plan__interval">{ plan.is_quoted ? 'tailored quote' : interval }</span>
 			</div>
 			{ cta }
+			{ plan.benefits.length > 0 && <p className="wvm-plan__included">What's included:</p> }
 			{ plan.benefits.length > 0 && (
 				<ul className="wvm-plan__benefits">
 					{ plan.benefits.map( ( b ) => (

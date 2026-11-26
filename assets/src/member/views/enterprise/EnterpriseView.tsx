@@ -13,13 +13,13 @@ import { Card } from '../../components/Card';
 const opts = ( list: string[] ) => list.map( ( v ) => ( { value: v, label: v } ) );
 
 const ORG_SIZES = opts( [ '1–10 people', '11–50 people', '51–200 people', '201–1,000 people', '1,000+ people' ] );
-const PROGRAMMES = opts( [ 'Financial literacy for staff', 'Leadership & management', 'School or student programme', 'Savings group / SACCO training', 'Custom programme', 'Not sure yet' ] );
+const PROGRAMMES = opts( [ 'Personal transformation for staff', 'Mindset & leadership development', 'School or student programme', 'Wellbeing & self-awareness programme', 'Custom programme', 'Not sure yet' ] );
 const DURATIONS = opts( [ 'One-off session', '1 month', '3 months', '6 months', '12 months', 'Ongoing' ] );
 const STARTS = opts( [ 'As soon as possible', 'Within 1 month', 'Within 3 months', 'Later this year', 'Just exploring' ] );
 const BUDGETS = opts( [ 'Under UGX 5M', 'UGX 5M – 20M', 'UGX 20M – 50M', 'Over UGX 50M', 'Not sure yet' ] );
 
 const FEATURES: { icon: IconName; title: string; text: string }[] = [
-	{ icon: 'sparkles', title: 'Tailored to your team', text: 'We shape lessons around your people, goals and pay cycles.' },
+	{ icon: 'sparkles', title: 'Tailored to your team', text: 'We shape lessons and protocols around your people and their goals.' },
 	{ icon: 'video', title: 'Private live workshops', text: 'On-site or online sessions just for your organisation.' },
 	{ icon: 'users', title: 'Seat management', text: 'Invite staff in minutes and see who has joined.' },
 	{ icon: 'shield', title: 'A dedicated manager', text: 'One person who knows your programme end to end.' },
@@ -119,8 +119,8 @@ export function EnterpriseView() {
 				<span className="wvm-pill-eyebrow">
 					<Icon name="building" size={ 14 } /> Enterprise &amp; private programmes
 				</span>
-				<h2 className="wvm-display">Money skills for your whole team</h2>
-				<p className="wvm-lead">From staff wellbeing to school programmes, we design practical financial education that people actually use. Tell us a little about your organisation and we'll send a tailored proposal.</p>
+				<h2 className="wvm-display">Transformation programmes for your whole team</h2>
+				<p className="wvm-lead">From staff development to school programmes, we design guided programmes in awareness, mindset and personal growth that people actually use. Tell us a little about your organisation and we'll send a tailored proposal.</p>
 				<ul className="wvm-ent__features">
 					{ FEATURES.map( ( x ) => (
 						<li key={ x.title }>

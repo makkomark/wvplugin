@@ -230,7 +230,7 @@ body.wvm-a-noscroll {
 	min-height: calc(100vh - 32px);
 	background:
 		radial-gradient(900px 400px at 100% -10%, rgba(139, 108, 255, 0.10), transparent 60%),
-		radial-gradient(700px 300px at -10% 0%, rgba(198, 244, 50, 0.08), transparent 60%),
+		radial-gradient(700px 300px at -10% 0%, rgba(var(--wvm-accent-rgb), 0.08), transparent 60%),
 		var(--wvm-bg);
 }
 .wvm-a-topbar {
@@ -2642,7 +2642,7 @@ body.wvm-a-noscroll {
 	right: -120px;
 	top: -200px;
 	border-radius: 50%;
-	background: radial-gradient(circle at 50% 50%, rgba(198, 244, 50, 0.38), rgba(198, 244, 50, 0) 62%);
+	background: radial-gradient(circle at 50% 50%, rgba(var(--wvm-accent-rgb), 0.38), rgba(var(--wvm-accent-rgb), 0) 62%);
 	z-index: -1;
 	pointer-events: none;
 }
@@ -5959,4 +5959,12 @@ body.wvm-a-noscroll {
 	border-radius: 999px;
 	font-size: 12px;
 	font-weight: 700;
+}
+
+.wvm-a-plancard__tagline {
+	margin: 6px 0 0;
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1.4;
+	color: var(--wvm-ink);
 }
