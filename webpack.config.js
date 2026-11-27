@@ -1,6 +1,6 @@
 /**
- * Two React apps (member dashboard + admin), built with @wordpress/scripts.
- * WVM_ENTRY=member|admin builds a single app without wiping the other's output.
+ * Two React apps (member dashboard + admin) and the plain-TS membership popup, built with @wordpress/scripts.
+ * WVM_ENTRY=member|admin|popup builds a single app without wiping the other's output.
  */
 const path = require( 'path' );
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
@@ -8,6 +8,7 @@ const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 const entries = {
 	member: './assets/src/member/index.tsx',
 	admin: './assets/src/admin/index.tsx',
+	popup: './assets/src/popup/index.ts',
 };
 const only = process.env.WVM_ENTRY;
 

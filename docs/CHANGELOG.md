@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.4 — 2026-11-27
+- **Membership popup** (Settings › Popup), off until you switch it on:
+  - Offers the free book. "Join free" (default) creates a free membership in one step; "Email only" sends a Kit lead instead.
+  - Logged-in free members see a Premium upgrade version; paying members never see it.
+  - Triggers: seconds on page, scroll depth, leaving the page (desktop), reaching a members-only paywall, from the Nth page view.
+    Shown once per visit, hidden for N days after closing. Never on the membership, dashboard, enterprise, payment or checkout pages.
+  - Popup sign-ups get the Kit tag `WV-FREE-BOOK` (email-only leads also `WV-LEAD`), so a Kit automation can send the book and guide emails.
+    Join-free members also get a download button straight away.
+  - A/B test a second headline; Results tab shows views, closes, sign-ups, conversion and how many later paid.
+  - Plain script (~10 KB + 8 KB CSS), no React, so blog pages stay fast. A bottom sheet on phones.
+- The pricing page opens the plan named in `?plan=` (used by the upgrade popup).
+
 ## 1.0.3 — 2026-11-26
 - **Kit: free members get the newsletter.** Free members are added to Kit (tag `WV-FREE`) without a separate tick-box, because the
   Free plan includes the weekly newsletter (Settings › Kit › "Add free members to Kit", on by default).

@@ -62,6 +62,7 @@ export interface AdminConfig {
 	postTypes: { name: string; label: string }[];
 	sandbox: boolean;
 	siteName: string;
+	homeUrl: string;
 	branding?: Branding;
 	version: string;
 }

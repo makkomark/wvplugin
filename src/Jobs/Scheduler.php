@@ -28,6 +28,7 @@ final class Scheduler {
 	public const ORG_EXPIRE        = 'wvm_job_org_expire';
 	public const TEST_GATEWAY      = 'wvm_job_test_gateway_complete';
 	public const PENDING_NUDGE     = 'wvm_job_payment_pending_nudge';
+	public const KIT_LEAD          = 'wvm_job_kit_popup_lead';
 
 	/** Per-subscription hooks cleared on reschedule. */
 	public const SUBSCRIPTION_HOOKS = array( self::REMINDER, self::RENEWAL_DUE, self::END_GRACE, self::EXPIRE, self::RETRY_AUTOCHARGE, self::EXPIRE_CANCELLED );

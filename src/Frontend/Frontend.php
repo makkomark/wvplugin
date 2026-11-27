@@ -124,6 +124,9 @@ final class Frontend {
 		$this->needsApp = true;
 		$this->enqueueApp();
 		$plan = isset( $atts['plan'] ) ? sanitize_key( (string) $atts['plan'] ) : '';
+		if ( '' === $plan && 'pricing' === $view && isset( $_GET['plan'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			$plan = sanitize_key( wp_unslash( $_GET['plan'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		}
 		return '<div class="wvm-root" data-wvm-view="' . esc_attr( $view ) . '" data-plan="' . esc_attr( $plan ) . '"><noscript>' . esc_html__( 'Please enable JavaScript to use your WitsValley dashboard.', 'wv-members' ) . '</noscript><div class="wvm-boot" aria-busy="true"><span class="wvm-boot__dot"></span><span class="wvm-boot__dot"></span><span class="wvm-boot__dot"></span></div></div>';
 	}
 

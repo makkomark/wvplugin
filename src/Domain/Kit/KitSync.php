@@ -157,10 +157,12 @@ final class KitSync {
 			$current  = $this->client->subscriberTags( $sid, $memberId );
 			$rule     = $this->map->resolve( $state['state'], $state['plan_tag'], $state['extra'] );
 			$expected = $this->withMarketingTag( TagMap::apply( $current, $rule ), (bool) $member['marketing_consent'] );
-			$owned    = array_values( array_filter( $current, array( TagMap::class, 'isOwned' ) ) );
-			$to_add   = array_values( array_diff( $expected, $owned ) );
-			$to_rm    = array_values( array_diff( $owned, $expected ) );
-			$errors   = array();
+			$expected = array_values( array_unique( array_merge( $expected, $this->extraTags( (int) $member['user_id'] ) ) ) );
+			sort( $expected );
+			$owned  = array_values( array_filter( $current, array( TagMap::class, 'isOwned' ) ) );
+			$to_add = array_values( array_diff( $expected, $owned ) );
+			$to_rm  = array_values( array_diff( $owned, $expected ) );
+			$errors = array();
 			foreach ( $to_add as $tag ) {
 				$tid = $this->client->tagId( $tag );
 				if ( ! $tid || ! $this->client->addTag( $sid, $tid, $tag, $memberId ) ) {
@@ -218,13 +220,24 @@ final class KitSync {
 		if ( ! empty( $member['kit_unsubscribed_at'] ) ) {
 			return false;
 		}
-		if ( $member['marketing_consent'] ) {
+		if ( $member['marketing_consent'] || $this->extraTags( (int) $member['user_id'] ) ) {
+			// Consent, or they asked for something Kit delivers (e.g. the popup's free book).
 			return true;
 		}
 		if ( $state['paid'] ) {
 			return (bool) $this->settings->get( 'kit', 'create_subscribers_on_paid', true );
 		}
 		return (bool) $this->settings->get( 'kit', 'create_subscribers_on_free', true );
+	}
+
+	/**
+	 * Owned tags a member should always carry, e.g. WV-FREE-BOOK for popup sign-ups.
+	 *
+	 * @return list<string>
+	 */
+	public function extraTags( int $userId ): array {
+		$tags = get_user_meta( $userId, \WitsValley\Members\Domain\Popup\PopupService::EXTRA_TAGS_META, true );
+		return array_values( array_filter( array_map( 'strval', is_array( $tags ) ? $tags : array() ), array( TagMap::class, 'isOwned' ) ) );
 	}
 
 	/** The marketing tag (default WV-MARKETING) follows marketing consent; other tags are untouched. */

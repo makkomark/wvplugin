@@ -29,6 +29,9 @@ final class SettingsController extends Controller {
 				if ( 'kit' === $group ) {
 					$body = self::cleanKit( $body );
 				}
+				if ( 'popup' === $group ) {
+					$body = self::cleanPopup( $body );
+				}
 				$diff = $this->settings->update( $group, $body );
 				wvm( Audit::class )->log( 'settings.updated', 'settings', null, $diff['before'], $diff['after'], $group );
 				if ( 'kit' === $group ) {
@@ -113,6 +116,63 @@ final class SettingsController extends Controller {
 				throw DomainError::validation( array( 'marketing_tag' => 'The marketing tag must start with WV- so the plugin can manage it.' ) );
 			}
 			$b['marketing_tag'] = $tag;
+		}
+		return $b;
+	}
+
+	/**
+	 * @param array<string,mixed> $b
+	 * @return array<string,mixed>
+	 */
+	private static function cleanPopup( array $b ): array {
+		$errors = array();
+		foreach ( array( 'offer_tag', 'lead_tag' ) as $k ) {
+			if ( isset( $b[ $k ] ) ) {
+				$tag = strtoupper( trim( (string) preg_replace( '/[^A-Za-z0-9\-_]/', '', (string) $b[ $k ] ) ) );
+				if ( '' !== $tag && ! str_starts_with( $tag, \WitsValley\Members\Domain\Kit\TagMap::PREFIX ) ) {
+					$errors[ $k ] = 'Kit tags managed by the plugin must start with WV-.';
+				}
+				$b[ $k ] = $tag;
+			}
+		}
+		if ( isset( $b['mode'] ) && ! in_array( $b['mode'], array( 'join', 'email' ), true ) ) {
+			$errors['mode'] = 'Invalid choice.';
+		}
+		foreach ( array( 'image_url', 'book_url' ) as $k ) {
+			if ( isset( $b[ $k ] ) ) {
+				$b[ $k ] = esc_url_raw( trim( (string) $b[ $k ] ), array( 'https', 'http' ) );
+			}
+		}
+		foreach ( array(
+			'delay_seconds'  => array( 0, 600 ),
+			'scroll_percent' => array( 0, 100 ),
+			'min_pageviews'  => array( 1, 20 ),
+			'dismiss_days'   => array( 0, 365 ),
+		) as $k => [ $min, $max ] ) {
+			if ( isset( $b[ $k ] ) ) {
+				$b[ $k ] = min( $max, max( $min, (int) $b[ $k ] ) );
+			}
+		}
+		foreach ( array( 'bullets', 'post_types', 'exclude_paths' ) as $k ) {
+			if ( isset( $b[ $k ] ) ) {
+				$b[ $k ] = array_values( array_filter( array_map( static fn( $v ) => sanitize_text_field( (string) $v ), (array) $b[ $k ] ) ) );
+			}
+		}
+		if ( isset( $b['post_types'] ) ) {
+			$b['post_types'] = array_values( array_filter( array_map( 'sanitize_key', $b['post_types'] ) ) );
+		}
+		foreach ( array( 'eyebrow', 'headline', 'headline_b', 'button', 'email_button', 'note', 'success_title', 'upgrade_eyebrow', 'upgrade_headline', 'upgrade_button', 'upgrade_plan' ) as $k ) {
+			if ( isset( $b[ $k ] ) ) {
+				$b[ $k ] = sanitize_text_field( (string) $b[ $k ] );
+			}
+		}
+		foreach ( array( 'body', 'success_body', 'email_success', 'upgrade_body' ) as $k ) {
+			if ( isset( $b[ $k ] ) ) {
+				$b[ $k ] = sanitize_textarea_field( (string) $b[ $k ] );
+			}
+		}
+		if ( $errors ) {
+			throw DomainError::validation( $errors );
 		}
 		return $b;
 	}

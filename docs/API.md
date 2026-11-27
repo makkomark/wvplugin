@@ -123,6 +123,7 @@ POST /organisations/{id}/renew
 DELETE /organisations/{id}/seats/{memberId}
 POST /organisations/{id}/suspend
 GET /plans
+GET /popup/stats?days=30
 POST /plans
 POST /plans/reorder
 DELETE /plans/{id}
@@ -132,6 +133,8 @@ DELETE /plans/{id}/prices/{currency}
 PUT /plans/{id}/prices/{currency}
 POST /plans/{id}/restore
 POST /public/applications
+POST /public/popup/event   (view | close | upgrade_click)
+POST /public/popup/lead    (email-only mode)
 POST /public/kit/webhook/{secret}/{event}   (Kit → plugin; event = unsubscribe|bounce|complain|activate)
 GET /public/geo
 GET /public/invites/{token}

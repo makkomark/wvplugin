@@ -18,6 +18,7 @@ Deviations from the brief, and why:
 | — | `members.kit_unsubscribed_at`, `kit_unsubscribe_reason` | Set by the Kit webhooks (unsubscribe / bounce / complain); blocks re-creating the Kit subscriber |
 | — | `payment_methods.woo_token_id` | Mirror of the WooCommerce payment token |
 | — | `organisation_members.subscription_id`, `organisations.programme_title/description` | Seat → subscription link; Programme tab |
+| — | `popup_stats` (day, variant, event, count) | Daily popup counters: view, close, signup, lead, upgrade_click |
 | `plan_prices` (no timestamps) | has `created_at/updated_at` | Consistency |
 
 Secrets (`payments.raw_payload`, `payment_methods.token`, Kit/email/S3 keys and the Kit webhook secret in `settings`) are encrypted with libsodium `secretbox`

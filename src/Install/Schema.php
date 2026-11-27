@@ -40,6 +40,7 @@ final class Schema {
 			'audit_log',
 			'settings',
 			'hook_inbox',
+			'popup_stats',
 		);
 	}
 
@@ -419,6 +420,16 @@ final class Schema {
   value longtext NULL,
   updated_at datetime NOT NULL,
   PRIMARY KEY  (setting_key)
+) $c;";
+
+		$sql[] = "CREATE TABLE {$t('popup_stats')} (
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  day date NOT NULL,
+  variant varchar(10) NOT NULL,
+  event varchar(20) NOT NULL,
+  count int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY  (id),
+  UNIQUE KEY day_variant_event (day,variant,event)
 ) $c;";
 
 		$sql[] = "CREATE TABLE {$t('hook_inbox')} (

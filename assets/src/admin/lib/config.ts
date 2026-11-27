@@ -31,6 +31,7 @@ export const config: AdminConfig = {
 	// wp_localize_script stringifies top-level scalars ("1" / "").
 	sandbox: [ true, 1, '1', 'true' ].includes( raw.sandbox as never ),
 	siteName: raw.siteName || 'WitsValley',
+	homeUrl: raw.homeUrl || '/',
 	version: raw.version || '',
 };
 

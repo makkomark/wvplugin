@@ -12,6 +12,7 @@ import { useToast } from '../../components/Toasts';
 import { useSettingsGroup, SettingsFrame, Section } from './shared';
 import { EmailsSettings } from './Emails';
 import { NotificationsLog } from './Notifications';
+import { PopupSettings } from './Popup';
 import { KitSettings } from './Kit';
 import { ToolsSettings } from './Tools';
 import { BrandingSettings } from './Branding';
@@ -24,6 +25,7 @@ const GROUPS: { key: string; label: string; icon: IconName; desc: string }[] = [
 	{ key: 'emails', label: 'Emails', icon: 'mail', desc: 'Sender, provider, templates' },
 	{ key: 'notifications', label: 'Email log', icon: 'inbox', desc: 'Sent & failed emails' },
 	{ key: 'kit', label: 'Kit', icon: 'tag', desc: 'API key, tag map, sync' },
+	{ key: 'popup', label: 'Popup', icon: 'sparkles', desc: 'Free-book offer, triggers, results' },
 	{ key: 'access', label: 'Content access', icon: 'lock', desc: 'Paywall defaults' },
 	{ key: 'tools', label: 'Tools', icon: 'wand', desc: 'Export, import, health, backups' },
 ];
@@ -55,6 +57,7 @@ export function Settings( { group, route }: { group: string; route: Route } ) {
 					{ g === 'emails' && <EmailsSettings route={ route } /> }
 					{ g === 'notifications' && <NotificationsLog /> }
 					{ g === 'kit' && <KitSettings /> }
+					{ g === 'popup' && <PopupSettings /> }
 					{ g === 'access' && <AccessLink /> }
 					{ g === 'tools' && <ToolsSettings /> }
 				</div>

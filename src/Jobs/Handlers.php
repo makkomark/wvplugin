@@ -40,6 +40,7 @@ final class Handlers {
 			Scheduler::ORG_EXPIRE        => array( 0, fn() => wvm( OrganisationService::class )->expireEnded() ),
 			Scheduler::TEST_GATEWAY      => array( 1, fn( $id ) => TestGateway::completeAsync( (int) $id ) ),
 			Scheduler::PENDING_NUDGE     => array( 1, fn( $id ) => $this->pendingNudge( (int) $id ) ),
+			Scheduler::KIT_LEAD          => array( 2, fn( $email, $name ) => wvm( \WitsValley\Members\Domain\Popup\PopupService::class )->deliverLead( (string) $email, (string) $name ) ),
 		);
 		foreach ( $map as $hook => [ $args, $fn ] ) {
 			add_action(

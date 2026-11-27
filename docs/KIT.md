@@ -25,6 +25,8 @@ Only tags starting with `WV-` are ever added or removed. Any other tags you use 
 | Cancelled (membership ended) | `WV-CANCELLED` | plan tags, `WV-PAST-DUE` |
 | Enterprise seat holder | `WV-ENTERPRISE` (in addition to any personal plan) | — |
 | Opted in to offers and news (any state) | `WV-MARKETING` | — (removed when they opt out) |
+| Signed up through the popup | `WV-FREE-BOOK` (Settings › Popup › Kit tag for the offer) | — (kept) |
+| Email-only popup sign-up (not a member) | `WV-LEAD` + `WV-FREE-BOOK` | — |
 
 Each plan's tag is set on the plan (WitsValley › Plans › General › Kit tag). The whole table is editable under
 Settings › Kit › Tag map (tokens: `{plan_tag}`, `{plan_tags}`, `{other_plan_tags}`). The marketing tag's name is set

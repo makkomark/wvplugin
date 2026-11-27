@@ -87,6 +87,9 @@ final class PublicController extends Controller {
 				'marketing_consent' => ! empty( $b['marketing_consent'] ),
 			)
 		);
+		if ( isset( $b['source'] ) && 'popup' === $b['source'] ) {
+			wvm( \WitsValley\Members\Domain\Popup\PopupService::class )->joined( (int) $member['user_id'], (string) ( $b['variant'] ?? 'a' ) );
+		}
 		wp_set_current_user( (int) $member['user_id'] );
 		wp_set_auth_cookie( (int) $member['user_id'], true, is_ssl() );
 		update_user_meta( (int) $member['user_id'], 'wvm_known_devices', array( substr( hash( 'sha256', \WitsValley\Members\Frontend\Frontend::describeDevice( isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '' ) ), 0, 16 ) ) );

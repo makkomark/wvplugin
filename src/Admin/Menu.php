@@ -131,6 +131,7 @@ final class Menu {
 				),
 				'sandbox'            => (bool) $this->settings->get( 'payments', 'sandbox_mode', false ),
 				'siteName'           => (string) $this->settings->get( 'general', 'business_name', 'WitsValley' ),
+				'homeUrl'            => home_url( '/' ),
 				'branding'           => wvm( \WitsValley\Members\Support\Branding::class )->forApp(),
 				'version'            => WVM_VERSION,
 			)

@@ -49,6 +49,7 @@ final class Plugin {
 		Rest\AuditController::class,
 		Rest\InsightsController::class,
 		Rest\HomeController::class,
+		Rest\PopupController::class,
 	);
 
 	/** Services with a register() method that attaches WordPress hooks. */
@@ -71,6 +72,7 @@ final class Plugin {
 		Handlers::class,
 		\WitsValley\Members\Support\Branding::class,
 		\WitsValley\Members\Domain\Member\MemberListeners::class,
+		\WitsValley\Members\Frontend\Popup::class,
 	);
 
 	private function __construct() {
