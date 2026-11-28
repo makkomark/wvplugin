@@ -9,7 +9,8 @@
 - [ ] Server cron runs Action Scheduler every 5 minutes; no failed `wvm_` actions
 - [ ] Lifecycle settings back to **day** units; reminder/grace/expiry values agreed
 - [ ] Dashboard, Membership and Enterprise pages published and linked in the main menu; Woo shop/cart/my-account hidden from menus
-- [ ] `/my-account` → `/dashboard`, thank-you → dashboard, shop/product → `/membership` verified
+- [ ] Membership-only site: `/my-account` → `/dashboard`, thank-you → dashboard, shop/product → `/membership` verified.
+      Also selling other products: "Keep the WooCommerce shop" is on, a product page opens and can be bought, and `/product/wvm-plan-basic/` → `/membership`
 - [ ] Protected content check: post with level 2 not visible via REST, RSS, search or direct media URL when logged out (Gate 3)
 - [ ] Protected uploads folder denied on the web server (nginx rule in RUNBOOK)
 - [ ] Dashboard usable at 360px; full checkout on throttled 3G < 2 min

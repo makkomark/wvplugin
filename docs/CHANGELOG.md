@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.5 — 2026-11-28
+- **Keep the WooCommerce shop** (Settings › Payments). Off by default, which keeps the earlier behaviour: WooCommerce only takes
+  membership payments, and the shop, product pages, cart and checkout open the membership page; My Account opens the dashboard.
+  When it is on, the shop, product pages, cart, checkout and My Account work as normal, Woo pages stay in menus and sitemaps,
+  and only the hidden membership products (and the plugin's own payment/thank-you pages) are redirected.
+
 ## 1.0.4 — 2026-11-27
 - **Membership popup** (Settings › Popup), off until you switch it on:
   - Offers the free book. "Join free" (default) creates a free membership in one step; "Email only" sends a Kit lead instead.

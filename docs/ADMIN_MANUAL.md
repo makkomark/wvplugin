@@ -71,6 +71,11 @@ the paywall card, the admin screens, emails and PDF receipts.
 - **Dark mode**: follow the visitor's device, or always light.
 
 ## Settings
-General (business details, receipts, pages), Branding (colours, fonts, dark mode), Payments (sandbox, currencies, gateways per country, transaction-id meta keys), Lifecycle (reminders,
+General (business details, receipts, pages), Branding (colours, fonts, dark mode), Payments (sandbox, "Keep the WooCommerce shop", currencies, gateways per country, transaction-id meta keys), Lifecycle (reminders,
 grace, expiry, retries, stale orders, rejoin window; time unit "minute" compresses dunning for staging tests), Emails (sender, provider, templates with
 live preview and test send), Email log, Kit (API key, tag map, reconcile), Tools (export/import configuration, health, backup now).
+
+**Selling other products in WooCommerce.** By default the plugin treats WooCommerce as payment plumbing only, so the shop,
+product pages, cart and checkout redirect to the membership page and My Account goes to the member dashboard. If you also sell
+books, courses or merchandise through WooCommerce, turn on Settings › Payments › **Keep the WooCommerce shop**. The membership
+products stay hidden and still open the membership page; members still use the dashboard for their membership.

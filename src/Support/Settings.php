@@ -33,6 +33,7 @@ final class Settings {
 					'default' => 'USD',
 				),
 				'sandbox_mode'                => true,
+				'woo_shop'                    => false,
 				'checkout_fields'             => array( 'billing_phone' ),
 				'gateway_currencies'          => array(
 					'paypal'       => array( 'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'CHF', 'JPY', 'SEK', 'NOK', 'DKK', 'NZD', 'SGD', 'HKD', 'PLN', 'CZK', 'HUF', 'ILS', 'MXN', 'BRL', 'PHP', 'THB', 'TWD', 'MYR' ),

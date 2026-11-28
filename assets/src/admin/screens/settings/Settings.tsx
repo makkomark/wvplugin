@@ -201,6 +201,7 @@ interface PaymentValues extends Record< string, unknown > {
 	checkout_fields: string[];
 	transaction_meta_keys: Record< string, string[] >;
 	gateway_currencies: Record< string, string[] >;
+	woo_shop: boolean;
 }
 
 function Payments() {
@@ -238,6 +239,18 @@ function Payments() {
 								</Notice2>
 							) }
 						</div>
+					</Section>
+					<Section title="WooCommerce shop" description="Whether the site also sells normal WooCommerce products (books, courses, merchandise).">
+						<Toggle
+							label="Keep the WooCommerce shop"
+							checked={ !! v.woo_shop }
+							onChange={ ( woo_shop ) => s.set( { woo_shop } ) }
+							help={
+								v.woo_shop
+									? 'On: the shop, product pages, cart, checkout and My Account work as normal. Only the hidden membership products open the membership page.'
+									: 'Off: WooCommerce is used only to take membership payments. The shop, product pages, cart and checkout open the membership page, and My Account opens the member dashboard.'
+							}
+						/>
 					</Section>
 					<Section title="Currencies" description="Currencies members can pay in. Each plan needs a price per currency.">
 						<div className="wvm-a-checkpills">

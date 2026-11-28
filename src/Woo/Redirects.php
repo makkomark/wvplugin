@@ -6,9 +6,15 @@ namespace WitsValley\Members\Woo;
 use WitsValley\Members\Domain\Notification\Urls;
 use WitsValley\Members\Domain\Order\OrderRepository;
 use WitsValley\Members\Domain\Order\OrderService;
+use WitsValley\Members\Support\Settings;
 
 /**
- * Hides the WooCommerce storefront: account → dashboard, thank-you → dashboard, shop/cart/product → membership.
+ * Membership-only sites (default): hides the WooCommerce storefront — account → dashboard,
+ * thank-you → dashboard, shop/cart/product → membership.
+ *
+ * With Settings › Payments › "Keep the WooCommerce shop" on, only the plugin's own hidden
+ * plan products and its own orders are redirected; the shop, cart, checkout, product pages
+ * and My Account work as normal.
  */
 final class Redirects {
 
@@ -22,7 +28,12 @@ final class Redirects {
 		'downloads'       => '',
 	);
 
-	public function __construct( private OrderRepository $orders ) {}
+	public function __construct( private OrderRepository $orders, private Settings $settings ) {}
+
+	/** True when the site also sells normal WooCommerce products. */
+	public function shopEnabled(): bool {
+		return (bool) $this->settings->get( 'payments', 'woo_shop', false );
+	}
 
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'redirect' ), 1 );
@@ -34,7 +45,7 @@ final class Redirects {
 		add_filter( 'wp_sitemaps_taxonomies', array( $this, 'hideSitemapTaxonomies' ) );
 		add_filter( 'wp_sitemaps_posts_query_args', array( $this, 'hideSitemapPages' ), 10, 2 );
 		add_filter( 'woocommerce_get_myaccount_page_permalink', array( $this, 'accountPermalink' ) );
-		add_filter( 'woocommerce_return_to_shop_redirect', static fn() => Urls::pricing() );
+		add_filter( 'woocommerce_return_to_shop_redirect', array( $this, 'returnToShop' ) );
 	}
 
 	public function redirect(): void {
@@ -47,6 +58,14 @@ final class Redirects {
 			return;
 		}
 		if ( is_checkout_pay_page() ) {
+			return;
+		}
+		if ( $this->shopEnabled() ) {
+			// Only the plugin's own (hidden) plan products go to the membership page.
+			if ( is_product() && get_post_meta( (int) get_queried_object_id(), ProductSync::META_PLAN, true ) ) {
+				wp_safe_redirect( Urls::pricing() );
+				exit;
+			}
 			return;
 		}
 		if ( is_account_page() ) {
@@ -96,8 +115,15 @@ final class Redirects {
 		exit;
 	}
 
+	public function returnToShop( string $url ): string {
+		return $this->shopEnabled() ? $url : Urls::pricing();
+	}
+
 	/** @param mixed $user */
 	public function loginRedirect( string $redirect, $user = null ): string {
+		if ( $this->shopEnabled() ) {
+			return $redirect;
+		}
 		if ( $user instanceof \WP_User && ( user_can( $user, 'manage_options' ) || user_can( $user, 'wvm_access' ) ) ) {
 			return $redirect;
 		}
@@ -117,19 +143,19 @@ final class Redirects {
 		if ( user_can( $user, 'edit_posts' ) ) {
 			return $redirect;
 		}
-		if ( ! $requested || str_contains( $requested, 'wp-admin' ) || str_contains( $requested, 'my-account' ) ) {
+		if ( ! $requested || str_contains( $requested, 'wp-admin' ) || ( ! $this->shopEnabled() && str_contains( $requested, 'my-account' ) ) ) {
 			return Urls::dashboard();
 		}
 		return $redirect;
 	}
 
 	public function accountPermalink( string $url ): string {
-		return is_admin() ? $url : Urls::dashboard();
+		return ( is_admin() || $this->shopEnabled() ) ? $url : Urls::dashboard();
 	}
 
 	/** @return list<int> */
 	private function wooPageIds(): array {
-		if ( ! function_exists( 'wc_get_page_id' ) ) {
+		if ( ! function_exists( 'wc_get_page_id' ) || $this->shopEnabled() ) {
 			return array();
 		}
 		return array_values( array_filter( array_map( 'intval', array( wc_get_page_id( 'shop' ), wc_get_page_id( 'cart' ), wc_get_page_id( 'checkout' ), wc_get_page_id( 'myaccount' ), wc_get_page_id( 'refund_returns' ) ) ), static fn( $id ) => $id > 0 ) );
@@ -161,6 +187,9 @@ final class Redirects {
 	 * @return array<string,mixed>
 	 */
 	public function hideSitemapTypes( array $types ): array {
+		if ( $this->shopEnabled() ) {
+			return $types;
+		}
 		unset( $types['product'] );
 		return $types;
 	}
@@ -170,6 +199,9 @@ final class Redirects {
 	 * @return array<string,mixed>
 	 */
 	public function hideSitemapTaxonomies( array $taxonomies ): array {
+		if ( $this->shopEnabled() ) {
+			return $taxonomies;
+		}
 		unset( $taxonomies['product_cat'], $taxonomies['product_tag'], $taxonomies['product_brand'] );
 		return $taxonomies;
 	}
